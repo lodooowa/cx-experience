@@ -4,8 +4,8 @@
   // Mapa przepływu (swimlane): układ węzłów i krawędzi w jednostkach SVG. Bez DOM i CSS, wynik deterministyczny.
   // Kolumna = proces (kolejność matrix.processes), pas = tor (CX_FLOW_CORE.lanes). Liczby torów, kolumn i krawędzi wynikają z danych.
   const DEFAULTS = {
-    nodeW: 168,
-    nodeH: 40,
+    nodeW: 208,
+    nodeH: 30,
     gapX: 72,      // odstęp poziomy między kartami sąsiednich kolumn
     gapY: 8,       // odstęp pionowy kart w jednej komórce (tor x proces)
     padY: 32,      // margines pionowy wewnątrz pasa (miejsce na łuki wstecz)

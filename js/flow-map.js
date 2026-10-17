@@ -7,7 +7,7 @@
   const MIN_K = 0.5, MAX_K = 8;
   const view = { k: 1, x: 0, y: 0 };
   const state = { lanes: new Set(), selected: null };
-  let allLanes = [], layout = null, svg, root, viewport, dragged = false;
+  let allLanes = [], layout = null, svg, root, viewport, hoverLayer, nodePos = new Map(), lastBase = 0, dragged = false;
 
   const laneLabel = id => (allLanes.find(lane => lane.id === id) || {}).label || id;
   const nodeLabel = (tp, id) => `${tp.title}. Tor: ${laneLabel(id)}. Proces: ${tp.process}. ${mx.ratingLabel(tp.rating)}.`;
@@ -54,6 +54,7 @@
     }
     const laneIndex = new Map(layout.lanes.map((lane, i) => [lane.id, i]));
     const ordered = layout.nodes.map((n, i) => ({ n, i })).sort((a, b) => a.n.col - b.n.col || laneIndex.get(a.n.lane) - laneIndex.get(b.n.lane) || a.i - b.i);
+    nodePos = new Map(layout.nodes.map(n => [n.id, n]));
     for (const { n } of ordered) {
       const tp = tpIndex.get(n.id);
       const g = el('g', { class: `flow-node rating-${tp.rating}`, transform: `translate(${n.x} ${n.y})`, tabindex: 0, role: 'button', 'data-id': n.id, 'aria-label': nodeLabel(tp, n.lane) });
@@ -68,7 +69,8 @@
       g.appendChild(fo);
       nodes.appendChild(g);
     }
-    body.append(bands, heads, edges, nodes);
+    hoverLayer = el('g', { class: 'flow-hover', 'pointer-events': 'none', 'aria-hidden': 'true' });
+    body.append(bands, heads, edges, nodes, hoverLayer);
     root.appendChild(body);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
@@ -97,6 +99,33 @@
   }
   function apply() {
     root.setAttribute('transform', `translate(${view.x} ${view.y}) scale(${view.k})`);
+    lastBase = metrics().base;
+  }
+  // Zmiana rozmiaru obszaru (np. szuflada szczegółów) nie zmienia skali ani położenia mapy na ekranie.
+  function keepScreenScale() {
+    const { base } = metrics();
+    if (!root || !lastBase || !(base > 0) || base === lastBase) return;
+    const r = lastBase / base;
+    view.k *= r; view.x *= r; view.y *= r;
+    apply();
+  }
+  // Pełny tytuł obciętej karty: nakładka nad resztą węzłów, bez zmiany kolejności DOM.
+  function showFull(id, textEl) {
+    hoverLayer.replaceChildren();
+    if (!id || !textEl || textEl.scrollWidth <= textEl.clientWidth) return;
+    const n = nodePos.get(id), tp = tpIndex.get(id);
+    const lines = Math.ceil(tp.title.length * 6.8 / (n.w - 20));
+    const h = lines * 15 + 12;
+    const g = el('g', { class: `flow-full rating-${tp.rating}`, transform: `translate(${n.x} ${n.y})` });
+    g.appendChild(el('rect', { class: 'node-card', width: n.w, height: h + 4 }));
+    g.appendChild(el('rect', { class: 'node-bar', y: h, width: n.w, height: 4 }));
+    const fo = el('foreignObject', { x: 0, y: 0, width: n.w, height: h });
+    const div = document.createElement('div');
+    div.className = 'node-full';
+    div.textContent = tp.title;
+    fo.appendChild(div);
+    g.appendChild(fo);
+    hoverLayer.appendChild(g);
   }
   function fit() { view.k = 1; view.x = 0; view.y = 0; apply(); }
   // 100% = jednostka SVG to piksel ekranu
@@ -208,8 +237,9 @@
       else if (event.key === '-' || event.key === '_') zoom(0.8);
       else if (event.key === '0') fit();
     });
-    viewport.addEventListener('mouseover', event => { const node = event.target.closest('.flow-node'); if (node) highlight(node.dataset.id); });
-    viewport.addEventListener('mouseout', event => { if (event.target.closest('.flow-node')) highlight(null); });
+    viewport.addEventListener('mouseover', event => { const node = event.target.closest('.flow-node'); if (node) { highlight(node.dataset.id); showFull(node.dataset.id, node.querySelector('.node-text')); } });
+    viewport.addEventListener('mouseout', event => { if (event.target.closest('.flow-node')) { highlight(null); showFull(null); } });
+    if (window.ResizeObserver) new ResizeObserver(keepScreenScale).observe(viewport);
     viewport.addEventListener('focusin', event => {
       const node = event.target.closest('.flow-node');
       if (!node) return;

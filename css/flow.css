@@ -27,7 +27,9 @@
 .node-card { fill: var(--surface-panel); stroke: var(--line); stroke-width: 1; }
 .node-bar { fill: var(--rating); }
 .flow-node.rating-brak_oceny .node-bar { opacity: .5; }
-.node-text { display: -webkit-box; overflow: hidden; box-sizing: border-box; height: 100%; padding: 4px 10px 2px; color: var(--text-primary); font: 700 12px/1.25 var(--font-ui); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.node-text { display: block; overflow: hidden; box-sizing: border-box; height: 100%; padding: 0 10px; color: var(--text-primary); font: 700 12px/26px var(--font-ui); white-space: nowrap; text-overflow: ellipsis; }
+.node-full { box-sizing: border-box; padding: 6px 10px 0; color: var(--text-primary); font: 700 12px/15px var(--font-ui); }
+.flow-full .node-card { stroke: var(--rating); stroke-width: 2; }
 .flow-node:hover .node-card, .flow-node.is-hl .node-card { stroke: var(--rating); stroke-width: 2; }
 .flow-node:focus-visible .node-card { stroke: var(--focus); stroke-width: 3; }
 .flow-node.is-selected .node-card { stroke: var(--selected); stroke-width: 3; }
