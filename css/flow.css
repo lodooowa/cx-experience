@@ -1,6 +1,6 @@
 .zoom-tools { display: flex; gap: 6px; margin-left: auto; }
 .zoom-tools + .legend-tip { margin-left: 0; }
-:root { --lane-0: #2f6fdd; --lane-1: #8a4fd6; --lane-2: #e8731a; --lane-3: #d1478f; --lane-4: #7a5a2e; --lane-5: #4a5568; }
+:root { --lane-0: #2f6fdd; --lane-1: #6f9a0c; --lane-2: #e8731a; --lane-3: #d1478f; --lane-4: #7a5a2e; --lane-5: #4a5568; }
 .lc-0 { --lane: var(--lane-0); } .lc-1 { --lane: var(--lane-1); } .lc-2 { --lane: var(--lane-2); }
 .lc-3 { --lane: var(--lane-3); } .lc-4 { --lane: var(--lane-4); } .lc-5 { --lane: var(--lane-5); }
 .lane-swatch { fill: var(--lane); }
