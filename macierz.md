@@ -58,6 +58,8 @@ Dane wymyślone, do pracy nad wizualizacją: 30 punktów styku w każdej z dwóc
 - [macierz-demo/cechy.csv](macierz-demo/cechy.csv): wiele cech na punkt (dobre praktyki, błędy typowe i diagnozowane, przykłady, źródła),
 - [macierz-demo/akcje.csv](macierz-demo/akcje.csv): wiele akcji naprawczych na punkt (koszt, ryzyko, zysk, czas, ryzyka wdrożenia).
 
+Punkty w macierzy dealera mają podtyp (kolumna `podtyp`: dealer, salon, serwis); przypisanie w danych DEMO jest przykładowe. Importer podtypów nie ma.
+
 Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Pliki (razem z `data/matrix.js`) generuje [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py): źródłem jest skrypt, więc nie edytuj wygenerowanych plików ręcznie.
 
 Wizualizacje (otwierane dwuklikiem, offline, na tych samych danych):

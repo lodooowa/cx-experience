@@ -116,3 +116,4 @@
   .tile { width: calc(50% - 4px); }
 }
 @media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
+.tile-sub { color: var(--text-faint); font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }

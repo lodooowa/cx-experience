@@ -3,7 +3,7 @@
 
   const mx = window.CX_MX;
   const { $, esc, data, marks, levels, tpIndex } = mx;
-  const state = { matrix: 'all', ratings: new Set(mx.queueRatings), kinds: new Set(), plan: new Set(), selected: null };
+  const state = { matrix: 'all', ratings: new Set(mx.queueRatings), kinds: new Set(), subs: new Set(), plan: new Set(), selected: null };
   const rows = ['wysoki', 'średni', 'niski'];
   const cols = ['niski', 'średni', 'wysoki'];
   const horizon = [4, 12, 26, 52];
@@ -12,9 +12,9 @@
   const tpOf = action => tpIndex.get(action.touchpointId);
   const visible = () => data.actions.filter(a => {
     const tp = tpOf(a);
-    return (state.matrix === 'all' || tp.matrix === state.matrix) && state.ratings.has(tp.rating) && state.kinds.has(a.kind);
+    return (state.matrix === 'all' || tp.matrix === state.matrix) && state.ratings.has(tp.rating) && state.kinds.has(a.kind) && mx.passSub(tp, state.subs);
   });
-  const matrixTag = key => esc(mx.matrixLabel(key).charAt(0));
+  const ringTag = tp => esc(mx.ringOf(tp).label.slice(0, 3).toUpperCase());
   const risk = value => `<span class="risk lvl-${levels.indexOf(value) + 1}" role="img" aria-label="ryzyko: ${esc(value)}"><i></i><i></i><i></i></span>`;
 
   function actionHtml(a) {
@@ -23,7 +23,7 @@
     const label = `${tp.title}: ${a.text}. Koszt ${a.cost}, zysk ${a.gain}, ryzyko ${a.risk}, około ${a.weeks} tygodni.`;
     return `<div class="act rating-${esc(tp.rating)} kind-${esc(a.kind)}${inPlan ? ' in-plan' : ''}${tp.id === state.selected ? ' is-selected' : ''}" data-aid="${esc(a.id)}">
       <button type="button" class="act-open" data-open="${esc(tp.id)}" aria-label="${esc(label + ' Pokaż szczegóły.')}" title="${esc(label)}">
-        <span class="act-tp"><i class="mark" aria-hidden="true">${esc(marks[tp.rating] || '')}</i><b>${esc(tp.title)}</b><em title="${esc(mx.matrixLabel(tp.matrix))}">${matrixTag(tp.matrix)}</em></span>
+        <span class="act-tp"><i class="mark" aria-hidden="true">${esc(marks[tp.rating] || '')}</i><b>${esc(tp.title)}</b><em title="${esc(mx.matrixLabel(tp.matrix) + (tp.subtype ? ', ' + data.labels.subtype[tp.subtype] : ''))}">${ringTag(tp)}</em></span>
         <span class="act-text">${esc(a.text)}</span>
         <span class="act-meta"><span>ok. ${esc(a.weeks)} tyg.</span>${risk(a.risk)}<span class="act-kind">${esc(data.labels.actionKind[a.kind])}</span></span>
       </button>
@@ -48,6 +48,7 @@
   function renderChips() {
     const pool = data.actions.map(tpOf).filter(tp => state.matrix === 'all' || tp.matrix === state.matrix);
     $('chips').innerHTML = mx.chipsHtml(state.ratings, pool);
+    $('subs').innerHTML = mx.subChipsHtml(state.subs, pool);
     $('kinds').innerHTML = kindKeys.map(key => `<button type="button" class="chip" data-kind="${esc(key)}" aria-pressed="${state.kinds.has(key)}">${esc(data.labels.actionKind[key])} <b>${data.actions.filter(a => a.kind === key && state.ratings.has(tpOf(a).rating) && (state.matrix === 'all' || tpOf(a).matrix === state.matrix)).length}</b></button>`).join('');
   }
 
@@ -106,22 +107,9 @@
 
   function bind() {
     $('matrixSelect').addEventListener('change', event => { state.matrix = event.target.value; refilter(); });
-    $('chips').addEventListener('click', event => {
-      const chip = event.target.closest('[data-rating]');
-      if (!chip) return;
-      toggle(state.ratings, chip.dataset.rating);
-      refilter();
-      const again = document.querySelector(`.chip[data-rating="${CSS.escape(chip.dataset.rating)}"]`);
-      if (again) again.focus();
-    });
-    $('kinds').addEventListener('click', event => {
-      const chip = event.target.closest('[data-kind]');
-      if (!chip) return;
-      toggle(state.kinds, chip.dataset.kind);
-      refilter();
-      const again = document.querySelector(`.chip[data-kind="${CSS.escape(chip.dataset.kind)}"]`);
-      if (again) again.focus();
-    });
+    mx.bindToggle($('chips'), 'rating', state.ratings, refilter);
+    mx.bindToggle($('subs'), 'sub', state.subs, refilter);
+    mx.bindToggle($('kinds'), 'kind', state.kinds, refilter);
     document.addEventListener('click', event => {
       const add = event.target.closest('[data-add]');
       if (add) {
@@ -147,8 +135,9 @@
     mx.init();
     kindKeys = Object.keys(data.labels.actionKind);
     state.kinds = new Set(kindKeys);
+    state.subs = new Set(mx.subtypeKeys);
     $('matrixSelect').innerHTML = `<option value="all">Obie macierze</option>` + mx.matrixKeys.map(key => `<option value="${esc(key)}">${esc(mx.matrixLabel(key))}</option>`).join('');
-    $('legend').innerHTML = mx.matrixKeys.map(key => `<span>${matrixTag(key)} = ${esc(mx.matrixLabel(key))}</span>`).join('') + '<span>Liczby przy filtrach: akcje naprawcze</span><span>Kolor karty: ocena CX punktu</span><span>Trzy kreski: ryzyko wdrożenia</span><span>Koszt, zysk, ryzyko i czas to szacunki' + (data.status === 'DEMO' ? ' (DEMO)' : '') + '</span>';
+    $('legend').innerHTML = mx.rings.map(ring => `<span>${esc(ring.label.slice(0, 3).toUpperCase())} = ${esc(ring.label)}</span>`).join('') + '<span>Liczby przy filtrach: akcje naprawcze</span><span>Kolor karty: ocena CX punktu</span><span>Trzy kreski: ryzyko wdrożenia</span><span>Koszt, zysk, ryzyko i czas to szacunki' + (data.status === 'DEMO' ? ' (DEMO)' : '') + '</span>';
     renderChips();
     renderBoard();
     renderPlan();

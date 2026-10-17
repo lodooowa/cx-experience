@@ -3,9 +3,9 @@
 
   const mx = window.CX_MX;
   const { $, esc, data, marks, tpIndex } = mx;
-  const R_IN = 150, R_OUT = 450, GAP = 12, LABEL_R = 478, ZOOM = 340, AUTO_MS = 7000;
-  const overview = { x: -560, y: -560, w: 1120, h: 1120 };
-  const state = { ratings: new Set(), selected: null, queue: null, pos: 0, auto: null };
+  const R_IN = 175, R_OUT = 510, GAP = 10, LABEL_R = 532, TOP_GAP = 26, NODE_R = 9, STEP = 22, ZOOM = 300, AUTO_MS = 7000;
+  const overview = { x: -660, y: -575, w: 1320, h: 1150 };
+  const state = { ratings: new Set(), subs: new Set(), selected: null, queue: null, pos: 0, auto: null };
   const pos = new Map();
   const discussHint = $('discuss').title;
   let svg, view = { ...overview }, raf = 0;
@@ -20,38 +20,68 @@
   }
 
   function build() {
-    const P = data.processes.length, M = mx.matrixKeys.length, span = 360 / P, band = (R_OUT - R_IN) / M;
-    const bandOf = key => { const m = mx.matrixKeys.indexOf(key), outer = R_OUT - m * band; return [outer - band + GAP, outer]; };
+    const P = data.processes.length, R = mx.rings.length, span = (360 - TOP_GAP) / P, band = (R_OUT - R_IN) / R, start = -90 + TOP_GAP / 2;
+    const bandOf = ring => { const i = mx.rings.indexOf(ring), outer = R_OUT - i * band; return [outer - band + GAP, outer]; };
     let html = `<defs><linearGradient id="sweepGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5fd0ff" stop-opacity="0"/><stop offset="1" stop-color="#5fd0ff" stop-opacity=".16"/></linearGradient>
-      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
-    html += [150, 250, 350, 450].map(r => `<circle class="guide" r="${r}"/>`).join('');
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
     html += `<g class="sweep"><path d="${sectorPath(0, R_OUT + 20, -40, 0)}" fill="url(#sweepGrad)"/></g>`;
+    mx.rings.forEach(ring => {
+      const [r0, r1] = bandOf(ring), m = mx.matrixKeys.indexOf(ring.matrix);
+      html += `<circle class="ring-edge m${m}" r="${num(r1)}"/>`;
+    });
     data.processes.forEach((process, p) => {
-      const a0 = -90 + p * span, a1 = a0 + span, mid = (a0 + a1) / 2;
-      mx.matrixKeys.forEach(key => { const [r0, r1] = bandOf(key); html += `<path class="sector" data-p="${p}" data-m="${esc(key)}" d="${sectorPath(r0, r1, a0 + .4, a1 - .4)}"/>`; });
+      const a0 = start + p * span, a1 = a0 + span, mid = (a0 + a1) / 2;
+      mx.rings.forEach(ring => { const [r0, r1] = bandOf(ring); html += `<path class="sector" data-p="${p}" data-r="${esc(ring.key)}" d="${sectorPath(r0, r1, a0 + .4, a1 - .4)}"/>`; });
       const [lx, ly] = polar(LABEL_R, mid), c = Math.cos(mid * Math.PI / 180);
       html += `<text class="plabel" x="${num(lx)}" y="${num(ly)}" dy=".35em" text-anchor="${c > .25 ? 'start' : c < -.25 ? 'end' : 'middle'}">${esc(process)}</text>`;
     });
-    html += `<circle class="hub" r="${R_IN - GAP - 6}"/><text class="hub-text" y="-4">KLIENT</text><text class="hub-sub" y="18">w centrum</text>`;
-    data.processes.forEach((process, p) => mx.matrixKeys.forEach(key => {
-      const items = data.touchpoints.filter(tp => tp.process === process && tp.matrix === key);
-      const [r0, r1] = bandOf(key), mid = (r0 + r1) / 2, a0 = -90 + p * span;
-      const rows = Math.ceil(items.length / 3), cols = Math.ceil(items.length / rows);
+    mx.rings.forEach(ring => {
+      const [r0, r1] = bandOf(ring), m = mx.matrixKeys.indexOf(ring.matrix);
+      html += `<text class="ring-label m${m}" x="0" y="${num(-(r0 + r1) / 2)}" dy=".35em" text-anchor="middle">${esc(ring.label.toUpperCase())}</text>`;
+    });
+    html += `<circle class="hub" r="${R_IN - GAP - 8}"/>
+      <g class="client" aria-hidden="true"><circle class="client-head" cx="0" cy="-42" r="27"/><path class="client-body" d="M-62 40C-62 -2 -34 -10 0 -10S62 -2 62 40Z"/></g>
+      <text class="hub-text" y="76">KLIENT</text>`;
+    data.processes.forEach((process, p) => mx.rings.forEach(ring => {
+      const items = data.touchpoints.filter(tp => tp.process === process && mx.ringKey(tp) === ring.key);
+      if (!items.length) return;
+      const [r0, r1] = bandOf(ring), mid = (r0 + r1) / 2, a0 = start + p * span;
+      const cap = Math.max(1, Math.floor((span * Math.PI / 180 * mid - 8) / STEP)), maxRows = Math.max(1, Math.floor((r1 - r0 - 4) / STEP));
+      const rows = Math.min(maxRows, Math.ceil(items.length / cap)), cols = Math.ceil(items.length / rows);
       items.forEach((tp, i) => {
         const row = i % rows, col = Math.floor(i / rows);
-        const angle = a0 + span * (col + .5 + (row % 2 ? .22 : 0)) / (cols + (rows > 1 ? .22 : 0)), radius = mid + (row - (rows - 1) / 2) * 28;
+        const angle = a0 + span * (col + .5 + (row % 2 ? .25 : 0)) / (cols + (rows > 1 ? .25 : 0)), radius = mid + (row - (rows - 1) / 2) * STEP;
         const [x, y] = polar(radius, angle);
         pos.set(tp.id, [x, y]);
-        const text = `${tp.title}. ${process}. ${mx.matrixLabel(key)}. ${mx.ratingLabel(tp.rating)}.`;
-        html += `<g class="node rating-${esc(tp.rating)}" data-id="${esc(tp.id)}" tabindex="0" role="button" aria-label="${esc(text)}" transform="translate(${num(x)} ${num(y)})"><title>${esc(text)}</title>
-          ${tp.rating === 'niezaopiekowany' ? '<circle class="pulse" r="10"/>' : ''}<circle class="dot" r="10"/><text class="mark" y="3.5" aria-hidden="true">${esc(marks[tp.rating] || '')}</text>
-          <text class="label" y="-22" text-anchor="middle" aria-hidden="true">${esc(tp.title)}</text></g>`;
+        const text = `${tp.title}. ${process}. ${ring.label}. ${mx.ratingLabel(tp.rating)}.`;
+        html += `<g class="node rating-${esc(tp.rating)}" data-id="${esc(tp.id)}" tabindex="0" role="button" aria-label="${esc(text)}" transform="translate(${num(x)} ${num(y)})">
+          ${tp.rating === 'niezaopiekowany' ? `<circle class="pulse" r="${NODE_R}"/>` : ''}<circle class="dot" r="${NODE_R}"/><text class="mark" y="3.5" aria-hidden="true">${esc(marks[tp.rating] || '')}</text></g>`;
       });
     }));
+    html += '<g class="tag" id="tag" hidden><rect/><text/></g>';
     svg.innerHTML = html;
   }
 
-  const visible = () => data.touchpoints.filter(tp => state.ratings.has(tp.rating));
+  // Jedna etykieta nad wszystkimi punktami: nie nakłada się na sąsiadów, ma tło i stały rozmiar na ekranie.
+  function scale() { return Math.min(svg.clientWidth / view.w, svg.clientHeight / view.h) || 1; }
+  function showTag(id) {
+    const tag = $('tag');
+    if (!id || !pos.has(id)) { tag.setAttribute('hidden', ''); return; }
+    const tp = tpIndex.get(id), k = 1 / scale(), [x, y] = pos.get(id);
+    const text = tag.querySelector('text'), rect = tag.querySelector('rect');
+    tag.removeAttribute('hidden');
+    text.textContent = tp.title;
+    text.setAttribute('style', `font-size:${num(14 * k)}px`);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('x', 0); text.setAttribute('y', 0);
+    const box = text.getBBox(), padX = 8 * k, padY = 4 * k;
+    rect.setAttribute('x', num(box.x - padX)); rect.setAttribute('y', num(box.y - padY));
+    rect.setAttribute('width', num(box.width + 2 * padX)); rect.setAttribute('height', num(box.height + 2 * padY));
+    tag.setAttribute('transform', `translate(${num(x)} ${num(y - NODE_R * 1.6 - 12 * k - box.height / 2 - padY)})`);
+  }
+  const currentTag = () => state.queue ? state.queue[state.pos].id : state.selected;
+
+  const visible = () => data.touchpoints.filter(tp => state.ratings.has(tp.rating) && mx.passSub(tp, state.subs));
 
   function refresh() {
     const shown = new Set(visible().map(tp => tp.id));
@@ -68,10 +98,11 @@
       node.classList.toggle('is-selected', id === state.selected);
     });
     svg.querySelectorAll('.sector').forEach(sector => {
-      const items = data.touchpoints.filter(tp => tp.process === data.processes[sector.dataset.p] && tp.matrix === sector.dataset.m && shown.has(tp.id));
+      const items = data.touchpoints.filter(tp => tp.process === data.processes[sector.dataset.p] && mx.ringKey(tp) === sector.dataset.r && shown.has(tp.id));
       const heat = !items.length ? 'none' : items.some(tp => tp.rating === 'niezaopiekowany') ? 'crit' : items.some(tp => tp.rating === 'do_poprawy') ? 'warn' : items.some(tp => tp.rating === 'ok') ? 'ok' : 'none';
       sector.setAttribute('class', 'sector heat-' + heat);
     });
+    showTag(currentTag());
     const empty = !mx.sortQueue(visible()).length;
     $('discuss').disabled = empty && !state.queue;
     $('discuss').title = empty ? 'Brak punktów do przelotu w bieżących filtrach' : discussHint;
@@ -79,7 +110,7 @@
 
   function fly(target) {
     cancelAnimationFrame(raf);
-    const apply = v => { view = v; svg.setAttribute('viewBox', `${num(v.x)} ${num(v.y)} ${num(v.w)} ${num(v.h)}`); };
+    const apply = v => { view = v; svg.setAttribute('viewBox', `${num(v.x)} ${num(v.y)} ${num(v.w)} ${num(v.h)}`); showTag(currentTag()); };
     if (mx.reducedMotion()) return apply({ ...target });
     const from = { ...view }, t0 = performance.now();
     const step = now => {
@@ -131,6 +162,7 @@
     state.queue = queue;
     $('discussBar').hidden = false;
     $('discuss').hidden = true;
+    $('stage').scrollIntoView({ block: 'start', behavior: mx.reducedMotion() ? 'auto' : 'smooth' });
     spotlight(0);
   }
 
@@ -143,7 +175,10 @@
     closeDetails();
   }
 
-  const renderChips = () => { $('chips').innerHTML = mx.chipsHtml(state.ratings, data.touchpoints); };
+  const renderChips = () => {
+    $('chips').innerHTML = mx.chipsHtml(state.ratings, data.touchpoints);
+    $('subs').innerHTML = mx.subChipsHtml(state.subs, data.touchpoints);
+  };
 
   function refilter() {
     const focusId = document.activeElement && document.activeElement.id;
@@ -168,19 +203,16 @@
       return `<div class="stat"><b data-to="${all.filter(tp => tp.rating === key).length}">0</b><span>${esc(mx.matrixLabel(m))}</span><small>${esc(mx.ratingLabel(key).toLowerCase())} z ${all.length} punktów</small></div>`;
     }).join('');
     $('stats').querySelectorAll('b').forEach(el => countUp(el, +el.dataset.to));
-    $('legend').textContent = mx.matrixKeys.map((m, i) => `${i ? 'Kolejny' : 'Zewnętrzny'} pierścień: ${mx.matrixLabel(m)}`).join(' · ') + '. Wycinek to proces, jego barwa wskazuje najgorszą ocenę w wybranych filtrach.' + (data.status === 'DEMO' ? ' Dane DEMO.' : '');
+    $('legend').textContent = 'Pierścienie od zewnątrz: ' + mx.rings.map(r => r.label).join(', ') + '. Wycinek to proces, jego barwa wskazuje najgorszą ocenę w wybranych filtrach.' + (data.status === 'DEMO' ? ' Dane DEMO.' : '');
+    $('ringKey').innerHTML = mx.matrixKeys.map((m, i) => {
+      const rings = mx.rings.filter(r => r.matrix === m);
+      return `<div class="key-group m${i}"><b>${esc(mx.matrixLabel(m))}</b>${rings.length > 1 ? `<span>${rings.map(r => esc(r.label)).join(' · ')}</span>` : ''}</div>`;
+    }).join('');
   }
 
   function bind() {
-    $('chips').addEventListener('click', event => {
-      const chip = event.target.closest('[data-rating]');
-      if (!chip) return;
-      const key = chip.dataset.rating;
-      state.ratings.has(key) ? state.ratings.delete(key) : state.ratings.add(key);
-      refilter();
-      const again = document.querySelector(`.chip[data-rating="${CSS.escape(key)}"]`);
-      if (again) again.focus();
-    });
+    mx.bindToggle($('chips'), 'rating', state.ratings, refilter);
+    mx.bindToggle($('subs'), 'sub', state.subs, refilter);
     const activate = node => {
       if (node.classList.contains('is-off')) return;
       if (state.queue) {
@@ -190,6 +222,11 @@
       }
       select(node.dataset.id);
     };
+    svg.addEventListener('pointerover', event => { const node = event.target.closest('.node'); if (node) showTag(node.dataset.id); });
+    svg.addEventListener('pointerout', event => { if (event.target.closest('.node')) showTag(currentTag()); });
+    svg.addEventListener('focusin', event => { const node = event.target.closest('.node'); if (node) showTag(node.dataset.id); });
+    svg.addEventListener('focusout', () => showTag(currentTag()));
+    window.addEventListener('resize', () => showTag(currentTag()));
     svg.addEventListener('click', event => { const node = event.target.closest('.node'); if (node) activate(node); });
     svg.addEventListener('keydown', event => {
       const node = event.target.closest('.node');
@@ -216,6 +253,7 @@
     mx.init();
     svg = $('radar');
     state.ratings = new Set(mx.ratingKeys);
+    state.subs = new Set(mx.subtypeKeys);
     build();
     renderStats();
     renderChips();

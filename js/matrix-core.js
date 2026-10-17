@@ -32,6 +32,7 @@
       if (!tp.id || !tp.title || ids.has(tp.id)) throw Error('data/matrix.js: brak lub powtórzone ID punktu: ' + tp.id);
       ids.add(tp.id);
       if (!known('matrix', tp.matrix)) throw Error('data/matrix.js: nieznana macierz "' + tp.matrix + '" (' + tp.id + ')');
+      if (tp.subtype !== undefined && !(data.labels.subtype && Object.prototype.hasOwnProperty.call(data.labels.subtype, tp.subtype))) throw Error('data/matrix.js: nieznany podtyp "' + tp.subtype + '" (' + tp.id + ')');
       if (!known('rating', tp.rating)) throw Error('data/matrix.js: nieznana ocena "' + tp.rating + '" (' + tp.id + ')');
       if (!data.processes.includes(tp.process)) throw Error('data/matrix.js: proces "' + tp.process + '" spoza listy processes (' + tp.id + ')');
       if (tp.emotionValue !== null && tp.emotionValue !== undefined && !(Number.isInteger(tp.emotionValue) && tp.emotionValue >= 1 && tp.emotionValue <= 5)) throw Error('data/matrix.js: emocja musi być 1–5 lub null (' + tp.id + ')');
@@ -55,6 +56,13 @@
 
   mx.init = () => {
     validate();
+    mx.subtypeKeys = Object.keys(data.labels.subtype || {});
+    mx.rings = [];
+    for (const m of Object.keys(data.labels.matrix)) {
+      const own = data.touchpoints.filter(tp => tp.matrix === m);
+      if (own.some(tp => !tp.subtype)) mx.rings.push({ key: m, label: data.labels.matrix[m], matrix: m });
+      for (const k of mx.subtypeKeys) if (own.some(tp => tp.subtype === k)) mx.rings.push({ key: m + '/' + k, label: data.labels.subtype[k], matrix: m });
+    }
     mx.ratingKeys = Object.keys(data.labels.rating);
     mx.matrixKeys = Object.keys(data.labels.matrix);
     mx.maxWeeks = Math.max(1, ...data.actions.map(a => a.weeks));
@@ -68,6 +76,21 @@
     }
   };
 
+  // Pierścień (podtyp) punktu: macierz albo macierz/podtyp.
+  mx.ringKey = tp => tp.subtype ? tp.matrix + '/' + tp.subtype : tp.matrix;
+  mx.ringOf = tp => mx.rings.find(r => r.key === mx.ringKey(tp));
+  mx.passSub = (tp, set) => !tp.subtype || set.has(tp.subtype);
+  mx.subChipsHtml = (selected, pool) => mx.subtypeKeys.map(key => `<button type="button" class="chip chip-sub" data-sub="${esc(key)}" aria-pressed="${selected.has(key)}">${esc(data.labels.subtype[key])} <b>${pool.filter(tp => tp.subtype === key).length}</b></button>`).join('');
+  // Przełącza klucz w zbiorze po kliknięciu chipa [attr] w kontenerze, wywołuje onChange i oddaje fokus chipowi.
+  mx.bindToggle = (container, attr, set, onChange) => container.addEventListener('click', event => {
+    const chip = event.target.closest(`[data-${attr}]`);
+    if (!chip) return;
+    const key = chip.dataset[attr];
+    set.has(key) ? set.delete(key) : set.add(key);
+    onChange();
+    const again = container.querySelector(`[data-${attr}="${CSS.escape(key)}"]`);
+    if (again) again.focus();
+  });
   mx.ratingLabel = key => data.labels.rating[key];
   mx.matrixLabel = key => data.labels.matrix[key];
   mx.emotionText = tp => tp.emotionValue ? `${tp.emotion ? tp.emotion + ' ' : ''}(${tp.emotionValue}/5)` : 'brak danych';
@@ -103,7 +126,7 @@
     const section = (title, body) => `<section class="detail-section"><h3>${esc(title)}</h3>${body}</section>`;
     const block = (cls, mark, title, body) => `<section class="detail-block ${cls}"><h3><span aria-hidden="true">${mark}</span>${esc(title)}</h3>${body}</section>`;
     const pros = ft('dobra_praktyka'), cons = [ft('blad_typowy'), ft('blad_diagnozowany')], examples = ft('przyklad'), sources = ft('zrodlo');
-    let html = `<div class="detail-kicker">${esc(mx.matrixLabel(tp.matrix))} · ${esc(tp.process)}</div><h2>${esc(tp.title)}</h2>
+    let html = `<div class="detail-kicker">${esc(mx.matrixLabel(tp.matrix))}${tp.subtype ? ' · ' + esc(data.labels.subtype[tp.subtype]) : ''} · ${esc(tp.process)}</div><h2>${esc(tp.title)}</h2>
       <section class="assessment rating-${esc(tp.rating)}"><span class="assessment-label">Ocena obecna</span>
         <span class="rating-pill"><span aria-hidden="true">${esc(marks[tp.rating] || '')}</span>${esc(mx.ratingLabel(tp.rating))}</span>
         <div class="detail-meta"><span>Emocja klienta: <b>${esc(mx.emotionText(tp))}</b></span>${tp.emotionImpact ? `<span>${esc(tp.emotionImpact)}</span>` : ''}<span>Monitoring: <b>${esc(data.labels.monitoring[tp.monitoring] || 'brak danych')}</b></span><span>Właściciel: <b>${esc(tp.owner || 'brak danych')}</b></span></div></section>`;

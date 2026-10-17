@@ -4,12 +4,12 @@
   const mx = window.CX_MX;
   const { $, esc, data, marks, tpIndex } = mx;
   const { ratingLabel, matrixLabel } = mx;
-  const state = { matrix: 'all', ratings: new Set(), selected: null, queue: null, pos: 0 };
+  const state = { matrix: 'all', ratings: new Set(), selected: null, queue: null, pos: 0, subs: new Set() };
   const discussHint = $('discuss').title;
   let ratingKeys = [], matrixKeys = [];
 
   function inMatrix(tp) { return state.matrix === 'all' || tp.matrix === state.matrix; }
-  function visible() { return data.touchpoints.filter(tp => inMatrix(tp) && state.ratings.has(tp.rating)); }
+  function visible() { return data.touchpoints.filter(tp => inMatrix(tp) && state.ratings.has(tp.rating) && mx.passSub(tp, state.subs)); }
 
   function tileHtml(tp) {
     const bar = tp.emotionValue
@@ -17,7 +17,7 @@
       : '<span class="emo-none">brak emocji</span>';
     const label = `${tp.title}. ${tp.process}. ${ratingLabel(tp.rating)}.`;
     return `<button type="button" class="tile rating-${esc(tp.rating)}" data-id="${esc(tp.id)}" title="${esc(label)}" aria-label="${esc(label)}">
-      <span class="tile-title">${esc(tp.title)}</span>
+      ${tp.subtype ? `<span class="tile-sub">${esc(data.labels.subtype[tp.subtype])}</span>` : ''}<span class="tile-title">${esc(tp.title)}</span>
       <span class="tile-foot"><span class="mark" aria-hidden="true">${esc(marks[tp.rating] || '')}</span>${bar}</span></button>`;
   }
 
@@ -53,6 +53,7 @@
   function renderChips() {
     const pool = data.touchpoints.filter(inMatrix);
     $('chips').innerHTML = mx.chipsHtml(state.ratings, pool);
+    $('subs').innerHTML = mx.subChipsHtml(state.subs, pool);
     $('legend').innerHTML = ratingKeys.map(key => `<span>${esc(marks[key] || '')} ${esc(ratingLabel(key))}</span>`).join('') + '<span>Pasek: emocja klienta (1–5), tylko gdy podana w danych</span>';
     refreshDiscussButton();
   }
@@ -131,15 +132,8 @@
 
   function bind() {
     $('matrixSelect').addEventListener('change', event => { state.matrix = event.target.value; refilter(); });
-    $('chips').addEventListener('click', event => {
-      const chip = event.target.closest('[data-rating]');
-      if (!chip) return;
-      const key = chip.dataset.rating;
-      state.ratings.has(key) ? state.ratings.delete(key) : state.ratings.add(key);
-      refilter();
-      const again = document.querySelector(`.chip[data-rating="${CSS.escape(key)}"]`);
-      if (again) again.focus();
-    });
+    mx.bindToggle($('chips'), 'rating', state.ratings, refilter);
+    mx.bindToggle($('subs'), 'sub', state.subs, refilter);
     $('onlyRed').addEventListener('click', () => { state.ratings = new Set(['niezaopiekowany']); refilter(); });
     $('allRatings').addEventListener('click', () => { state.ratings = new Set(ratingKeys); refilter(); });
     $('matrixGrid').addEventListener('click', event => {
@@ -175,6 +169,7 @@
     ratingKeys = mx.ratingKeys;
     matrixKeys = mx.matrixKeys;
     state.ratings = new Set(ratingKeys);
+    state.subs = new Set(mx.subtypeKeys);
     $('matrixSelect').innerHTML = `<option value="all">Obie macierze</option>` + matrixKeys.map(key => `<option value="${esc(key)}">${esc(matrixLabel(key))}</option>`).join('');
     renderChips();
     renderGrid();

@@ -27,6 +27,7 @@
 
     <section class="matrix-toolbar" aria-label="Filtry">
       <div class="chips" id="chips" role="group" aria-label="Filtr oceny CX"></div>
+      <div class="chips" id="subs" role="group" aria-label="Podtyp dealera i serwisu"></div>
       <button type="button" id="discuss" class="primary" title="Przelot kamery po punktach: najpierw niezaopiekowane, potem do poprawy. Kolejność jak w danych (proces, punkt); to kolejność robocza, nie priorytet CX.">Przelot ▶</button>
       <div class="discuss-bar" id="discussBar" hidden>
         <button type="button" id="spotPrev" aria-label="Poprzedni punkt">←</button>
@@ -41,7 +42,8 @@
       <div class="workspace-main">
         <div class="radar-stage" id="stage">
           <div class="radar-stats" id="stats"></div>
-          <svg id="radar" viewBox="-560 -560 1120 1120" role="group" aria-label="Radar punktów styku: pierścienie to macierze, wycinki to procesy"></svg>
+          <div class="ring-key" id="ringKey" aria-hidden="true"></div>
+          <svg id="radar" viewBox="-660 -575 1320 1150" role="group" aria-label="Radar punktów styku: pierścienie to macierze, wycinki to procesy"></svg>
           <p class="radar-legend" id="legend"></p>
         </div>
       </div>
