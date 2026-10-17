@@ -5,7 +5,7 @@
   const { $, esc, data, marks, tpIndex } = mx;
   const R_IN = 175, R_OUT = 510, GAP = 10, LABEL_R = 532, TOP_GAP = 26, NODE_R = 9, STEP = 22, ZOOM = 300, AUTO_MS = 7000;
   const overview = { x: -660, y: -575, w: 1320, h: 1150 };
-  const state = { ratings: new Set(), subs: new Set(), selected: null, queue: null, pos: 0, auto: null };
+  const state = { ratings: new Set(), subs: new Set(), ring: null, selected: null, queue: null, pos: 0, auto: null };
   const pos = new Map();
   const discussHint = $('discuss').title;
   let svg, view = { ...overview }, raf = 0;
@@ -27,7 +27,7 @@
     html += `<g class="sweep"><path d="${sectorPath(0, R_OUT + 20, -40, 0)}" fill="url(#sweepGrad)"/></g>`;
     mx.rings.forEach(ring => {
       const [r0, r1] = bandOf(ring), m = mx.matrixKeys.indexOf(ring.matrix);
-      html += `<circle class="ring-edge m${m}" r="${num(r1)}"/>`;
+      html += `<circle class="ring-edge m${m}" data-r="${esc(ring.key)}" r="${num(r1)}"/>`;
     });
     data.processes.forEach((process, p) => {
       const a0 = start + p * span, a1 = a0 + span, mid = (a0 + a1) / 2;
@@ -37,7 +37,7 @@
     });
     mx.rings.forEach(ring => {
       const [r0, r1] = bandOf(ring), m = mx.matrixKeys.indexOf(ring.matrix);
-      html += `<text class="ring-label m${m}" x="0" y="${num(-(r0 + r1) / 2)}" dy=".35em" text-anchor="middle">${esc(ring.label.toUpperCase())}</text>`;
+      html += `<text class="ring-label m${m}" data-r="${esc(ring.key)}" x="0" y="${num(-(r0 + r1) / 2)}" dy=".35em" text-anchor="middle">${esc(ring.label.toUpperCase())}</text>`;
     });
     html += `<circle class="hub" r="${R_IN - GAP - 8}"/>
       <g class="client" aria-hidden="true"><circle class="client-head" cx="0" cy="-42" r="27"/><path class="client-body" d="M-62 40C-62 -2 -34 -10 0 -10S62 -2 62 40Z"/></g>
@@ -88,8 +88,12 @@
     const queueIds = new Set(state.queue ? state.queue.map(tp => tp.id) : []);
     const spot = state.queue ? state.queue[state.pos].id : null;
     $('stage').classList.toggle('is-discussing', !!state.queue);
+    $('stage').classList.toggle('has-ring', !!state.ring);
+    svg.querySelectorAll('[data-r]').forEach(el => el.classList.toggle('ring-hit', el.dataset.r === state.ring));
+    $('ringPick').querySelectorAll('[data-ring]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ring === state.ring)));
     svg.querySelectorAll('.node').forEach(node => {
       const id = node.dataset.id;
+      node.classList.toggle('ring-dim', !!state.ring && mx.ringKey(tpIndex.get(id)) !== state.ring);
       node.classList.toggle('is-off', !shown.has(id));
       node.setAttribute('tabindex', shown.has(id) ? '0' : '-1');
       node.toggleAttribute('aria-disabled', !shown.has(id));
@@ -100,7 +104,7 @@
     svg.querySelectorAll('.sector').forEach(sector => {
       const items = data.touchpoints.filter(tp => tp.process === data.processes[sector.dataset.p] && mx.ringKey(tp) === sector.dataset.r && shown.has(tp.id));
       const heat = !items.length ? 'none' : items.some(tp => tp.rating === 'niezaopiekowany') ? 'crit' : items.some(tp => tp.rating === 'do_poprawy') ? 'warn' : items.some(tp => tp.rating === 'ok') ? 'ok' : 'none';
-      sector.setAttribute('class', 'sector heat-' + heat);
+      sector.setAttribute('class', 'sector heat-' + heat + (sector.dataset.r === state.ring ? ' ring-hit' : ''));
     });
     showTag(currentTag());
     const empty = !mx.sortQueue(visible()).length;
@@ -211,6 +215,12 @@
   }
 
   function bind() {
+    $('ringPick').addEventListener('click', event => {
+      const button = event.target.closest('[data-ring]');
+      if (!button) return;
+      state.ring = state.ring === button.dataset.ring ? null : button.dataset.ring;
+      refresh();
+    });
     mx.bindToggle($('chips'), 'rating', state.ratings, refilter);
     mx.bindToggle($('subs'), 'sub', state.subs, refilter);
     const activate = node => {
@@ -256,6 +266,7 @@
     state.subs = new Set(mx.subtypeKeys);
     build();
     renderStats();
+    $('ringPick').innerHTML = '<span class="ring-pick-label">Podświetl pierścień</span>' + mx.rings.map(ring => `<button type="button" class="chip ring-btn m${mx.matrixKeys.indexOf(ring.matrix)}" data-ring="${esc(ring.key)}" aria-pressed="false">${esc(ring.label)}</button>`).join('');
     renderChips();
     refresh();
     bind();

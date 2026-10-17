@@ -5,7 +5,7 @@
 .radar-stage .rating-brak_oceny { --rating: var(--r-none); }
 #radar { display: block; width: 100%; height: min(calc(100vh - 120px), 1200px); min-height: 640px; }
 
-.radar-stats { position: absolute; top: 18px; left: 22px; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px 28px; pointer-events: none; }
+.radar-stats { position: absolute; top: 56px; left: 22px; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px 28px; pointer-events: none; }
 .stat { display: grid; gap: 1px; }
 .stat b { color: var(--r-crit); font-size: 54px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; text-shadow: 0 0 24px rgba(255, 90, 99, .55); }
 .stat span { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -29,12 +29,24 @@
 .tag { pointer-events: none; }
 .tag rect { fill: #041428; stroke: #e8eef8; stroke-width: .8px; vector-effect: non-scaling-stroke; }
 .tag text { fill: #fff; font-weight: 700; }
-.ring-key { position: absolute; top: 18px; right: 22px; z-index: 1; display: grid; gap: 8px; max-width: 240px; pointer-events: none; }
+.ring-key { position: absolute; top: 56px; right: 22px; z-index: 1; display: grid; gap: 8px; max-width: 240px; pointer-events: none; }
 .key-group { padding: 6px 10px; border-left: 4px solid; background: rgba(4, 20, 40, .6); font-size: 12px; line-height: 1.35; }
 .key-group b { display: block; letter-spacing: .1em; text-transform: uppercase; }
 .key-group span { color: #b8c7de; }
 .key-group.m0 { border-color: #5fd0ff; }
 .key-group.m1 { border-color: #d6b278; }
+.ring-pick { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px 0; }
+.ring-pick-label { margin-right: 6px; color: #9fb2cc; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.ring-btn { border-color: rgba(160, 190, 230, .35); border-left-width: 4px; background: rgba(4, 20, 40, .7); color: #e8eef8; }
+.ring-btn[aria-pressed="false"] { opacity: 1; text-decoration: none; }
+.ring-btn.m0 { border-left-color: #5fd0ff; }
+.ring-btn.m1 { border-left-color: #d6b278; }
+.ring-btn[aria-pressed="true"] { border-color: #fff; background: #fff; color: #041428; font-weight: 700; }
+.has-ring .sector, .has-ring .ring-edge, .has-ring .ring-label { opacity: .4; }
+.has-ring .sector.ring-hit, .has-ring .ring-edge.ring-hit, .has-ring .ring-label.ring-hit { opacity: 1; }
+.has-ring .sector.ring-hit { stroke: rgba(232, 238, 248, .55); }
+.ring-edge.ring-hit { stroke-width: 4; }
+.node.ring-dim { opacity: .45; }
 .sweep { animation: sweep 12s linear infinite; }
 
 .node { cursor: pointer; outline: none; transition: opacity var(--motion-standard); }
