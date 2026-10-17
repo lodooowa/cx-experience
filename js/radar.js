@@ -4,11 +4,13 @@
   const mx = window.CX_MX;
   const { $, esc, data, marks, tpIndex } = mx;
   const R_IN = 175, R_OUT = 510, GAP = 10, LABEL_R = 532, TOP_GAP = 26, NODE_R = 9, STEP = 22, ZOOM = 300, AUTO_MS = 7000;
-  const overview = { x: -660, y: -575, w: 1320, h: 1150 };
+  const mobileQuery = window.matchMedia('(max-width: 850px)');
+  const isMobile = () => mobileQuery.matches;
+  const overviewBox = () => ({ x: -585, y: -585, w: 1170, h: 1170 });
   const state = { ratings: new Set(), subs: new Set(), ring: null, selected: null, queue: null, pos: 0, auto: null };
   const pos = new Map();
   const discussHint = $('discuss').title;
-  let svg, view = { ...overview }, raf = 0;
+  let svg, view = overviewBox(), raf = 0;
 
   const polar = (r, deg) => [r * Math.cos(deg * Math.PI / 180), r * Math.sin(deg * Math.PI / 180)];
   const num = n => n.toFixed(1);
@@ -32,8 +34,10 @@
     data.processes.forEach((process, p) => {
       const a0 = start + p * span, a1 = a0 + span, mid = (a0 + a1) / 2;
       mx.rings.forEach(ring => { const [r0, r1] = bandOf(ring); html += `<path class="sector" data-p="${p}" data-r="${esc(ring.key)}" d="${sectorPath(r0, r1, a0 + .4, a1 - .4)}"/>`; });
-      const [lx, ly] = polar(LABEL_R, mid), c = Math.cos(mid * Math.PI / 180);
-      html += `<text class="plabel" x="${num(lx)}" y="${num(ly)}" dy=".35em" text-anchor="${c > .25 ? 'start' : c < -.25 ? 'end' : 'middle'}">${esc(process)}</text>`;
+      // Etykieta procesu biegnie łukiem nad pierścieniami; w dolnej połowie łuk jest odwrócony, żeby tekst nie był do góry nogami.
+      const lower = Math.sin(mid * Math.PI / 180) > 0, lr = lower ? LABEL_R + 18 : LABEL_R;
+      const [sx, sy] = polar(lr, lower ? a1 : a0), [ex, ey] = polar(lr, lower ? a0 : a1);
+      html += `<path id="lp${p}" d="M${num(sx)} ${num(sy)}A${lr} ${lr} 0 0 ${lower ? 0 : 1} ${num(ex)} ${num(ey)}" fill="none"/><text class="plabel"><textPath href="#lp${p}" startOffset="50%" text-anchor="middle">${esc(process)}</textPath></text>`;
     });
     mx.rings.forEach(ring => {
       const [r0, r1] = bandOf(ring), m = mx.matrixKeys.indexOf(ring.matrix);
@@ -88,6 +92,7 @@
     const queueIds = new Set(state.queue ? state.queue.map(tp => tp.id) : []);
     const spot = state.queue ? state.queue[state.pos].id : null;
     $('stage').classList.toggle('is-discussing', !!state.queue);
+    document.body.classList.toggle('is-discussing-page', !!state.queue);
     $('stage').classList.toggle('has-ring', !!state.ring);
     svg.querySelectorAll('[data-r]').forEach(el => el.classList.toggle('ring-hit', el.dataset.r === state.ring));
     $('ringPick').querySelectorAll('[data-ring]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ring === state.ring)));
@@ -125,11 +130,11 @@
     raf = requestAnimationFrame(step);
   }
 
-  function select(id) {
+  function select(id, { open = true } = {}) {
     state.selected = id;
     $('detailBody').innerHTML = mx.detailsHtml(tpIndex.get(id));
-    $('detailDrawer').hidden = false;
-    $('workspace').classList.add('has-drawer');
+    $('detailDrawer').hidden = !open;
+    $('workspace').classList.toggle('has-drawer', open && !isMobile());
     refresh();
   }
 
@@ -149,7 +154,7 @@
     const tp = queue[state.pos], [x, y] = pos.get(tp.id);
     $('spotCount').textContent = `${state.pos + 1} / ${queue.length}`;
     $('live').textContent = `${state.pos + 1} z ${queue.length}: ${tp.title}, ${mx.ratingLabel(tp.rating)}`;
-    select(tp.id);
+    select(tp.id, { open: !isMobile() });
     fly({ x: x - ZOOM / 2, y: y - ZOOM / 2, w: ZOOM, h: ZOOM });
   }
 
@@ -166,7 +171,8 @@
     state.queue = queue;
     $('discussBar').hidden = false;
     $('discuss').hidden = true;
-    $('stage').scrollIntoView({ block: 'start', behavior: mx.reducedMotion() ? 'auto' : 'smooth' });
+    closeMenu();
+    if (!isMobile()) $('stage').scrollIntoView({ block: 'start', behavior: mx.reducedMotion() ? 'auto' : 'smooth' });
     spotlight(0);
   }
 
@@ -175,7 +181,7 @@
     state.queue = null;
     $('discussBar').hidden = true;
     $('discuss').hidden = false;
-    fly(overview);
+    fly(overviewBox());
     closeDetails();
   }
 
@@ -190,7 +196,8 @@
     if (state.selected && !visible().some(tp => tp.id === state.selected)) closeDetails();
     renderChips();
     refresh();
-    if (focusId && $(focusId)) $(focusId).focus();
+    if (isMobile()) closeMenu();
+    else if (focusId && $(focusId)) $(focusId).focus();
   }
 
   function renderKey() {
@@ -201,12 +208,36 @@
     }).join('');
   }
 
+  // Na wąskim ekranie filtry są szufladą z boku, zamykaną po zastosowaniu filtra; wybór pierścienia przechodzi do niej.
+  function openMenu() {
+    $('menu').classList.add('is-open');
+    $('scrim').hidden = false;
+    $('menuOpen').setAttribute('aria-expanded', 'true');
+    $('menuClose').focus();
+  }
+
+  function closeMenu(restoreFocus = true) {
+    if (!$('menu').classList.contains('is-open')) return;
+    $('menu').classList.remove('is-open');
+    $('scrim').hidden = true;
+    $('menuOpen').setAttribute('aria-expanded', 'false');
+    if (restoreFocus && isMobile()) setTimeout(() => $('menuOpen').focus(), 0);
+  }
+
+  function layoutForViewport() {
+    (isMobile() ? $('ringSlot') : $('stage')).insertBefore($('ringPick'), isMobile() ? null : $('stage').firstChild);
+    closeMenu(false);
+    if (!state.queue) { cancelAnimationFrame(raf); view = overviewBox(); svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`); showTag(currentTag()); }
+    document.documentElement.style.setProperty('--top-h', document.querySelector('.topbar').offsetHeight + 'px');
+  }
+
   function bind() {
     $('ringPick').addEventListener('click', event => {
       const button = event.target.closest('[data-ring]');
       if (!button) return;
       state.ring = state.ring === button.dataset.ring ? null : button.dataset.ring;
       refresh();
+      if (isMobile()) closeMenu();
     });
     mx.bindToggle($('chips'), 'rating', state.ratings, refilter);
     mx.bindToggle($('subs'), 'sub', state.subs, refilter);
@@ -234,10 +265,21 @@
     $('spotNext').addEventListener('click', () => spotlight(state.pos + 1));
     $('spotAuto').addEventListener('click', () => setAuto(!state.auto));
     $('spotEnd').addEventListener('click', endDiscuss);
-    $('closeDetails').addEventListener('click', () => state.queue ? endDiscuss() : closeDetails());
+    $('closeDetails').addEventListener('click', () => {
+      if (state.queue && isMobile()) $('detailDrawer').hidden = true;
+      else if (state.queue) endDiscuss();
+      else closeDetails();
+    });
+    $('spotDetails').addEventListener('click', () => { $('detailDrawer').hidden = false; });
+    $('menuOpen').addEventListener('click', openMenu);
+    $('menuClose').addEventListener('click', () => closeMenu());
+    $('scrim').addEventListener('click', () => closeMenu());
+    mobileQuery.addEventListener('change', layoutForViewport);
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
-        if (state.queue) endDiscuss();
+        if ($('menu').classList.contains('is-open')) closeMenu();
+        else if (isMobile() && state.queue && !$('detailDrawer').hidden) $('detailDrawer').hidden = true;
+        else if (state.queue) endDiscuss();
         else if (state.selected) closeDetails();
       } else if (state.queue && (event.key === 'ArrowRight' || event.key === 'ArrowLeft')) {
         event.preventDefault();
@@ -257,6 +299,8 @@
     renderChips();
     refresh();
     bind();
+    layoutForViewport();
+    window.addEventListener('resize', () => document.documentElement.style.setProperty('--top-h', document.querySelector('.topbar').offsetHeight + 'px'));
   }
 
   try { init(); } catch (error) { mx.showError(error.message || String(error)); }
