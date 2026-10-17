@@ -141,7 +141,7 @@
     // Pasma kanałów i przesunięcia w korytarzach przydzielane zachłannie, żeby trasy się nie nakładały.
     const STEP = 3.5;
     const half = Math.min(o.gapX, o.subGap) / 2 - 8;
-    // Przesunięcie w korytarzu zależy od węzła (nie od krawędzi): trasy do tego samego celu (lub z tego samego źródła) łączą się w jedną linię.
+    // Przesunięcie w korytarzu zależy od celu (wyjście i wejście): trasy do tego samego celu łączą się w jedną linię.
     const spread = (list, key, nodeOf) => {
       const groups = new Map();
       for (const item of list) {
@@ -160,19 +160,27 @@
       item.gapE = (item.t.sub === 0 ? o.gapX : o.subGap) / 2;
       item.laneTop = Math.min(laneIndex.get(item.s.lane), laneIndex.get(item.t.lane));
     }
-    spread(routed, 'leave', item => item.s);
+    spread(routed, 'leave', item => item.t);
     spread(routed, 'enter', item => item.t);
     const tracks = new Map();
     const usedUntil = new Map();
-    const bySpan = routed.slice().sort((p, q) => Math.min(p.t.x, p.s.x + p.s.w) - Math.min(q.t.x, q.s.x + q.s.w));
-    for (const item of bySpan) {
+    // Trasy do tego samego celu (w tym samym pasie kanału) dzielą jedno pasmo: od miejsca zejścia do celu biegną jedną linią.
+    const groups = new Map();
+    for (const item of routed) {
+      const key = item.t.id + '|' + item.laneTop;
       const x1 = item.t.x - item.gapE + item.enterOff;
       const x2 = item.s.x + item.s.w + item.gapL + item.leaveOff;
-      const ends = usedUntil.get(item.laneTop) || usedUntil.set(item.laneTop, []).get(item.laneTop);
-      let k = ends.findIndex(end => end < Math.min(x1, x2) - 6);
+      const g = groups.get(key) || groups.set(key, { laneTop: item.laneTop, lo: Infinity, hi: -Infinity, items: [] }).get(key);
+      g.lo = Math.min(g.lo, x1, x2);
+      g.hi = Math.max(g.hi, x1, x2);
+      g.items.push(item);
+    }
+    for (const g of [...groups.values()].sort((p, q) => p.lo - q.lo)) {
+      const ends = usedUntil.get(g.laneTop) || usedUntil.set(g.laneTop, []).get(g.laneTop);
+      let k = ends.findIndex(end => end < g.lo - 6);
       if (k < 0) k = ends.length;
-      ends[k] = Math.max(x1, x2);
-      item.track = k;
+      ends[k] = g.hi;
+      for (const item of g.items) item.track = k;
     }
     const maxTrack = Math.floor((o.padY - 6) / STEP);
     for (const item of routed) {
