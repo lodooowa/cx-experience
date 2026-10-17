@@ -84,3 +84,9 @@
   .flow-item .mark { display: inline-grid; width: 18px; height: 18px; flex-shrink: 0; place-items: center; border-radius: 50%; background: var(--rating); color: #fff; font-size: 10px; font-weight: 800; }
 }
 @media (prefers-reduced-motion: reduce) { .flow-node, .flow-edge { transition: none; } }
+.case-stepper { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; }
+.case-stepper p { flex: 1; min-width: 220px; margin: 0; font-size: 12px; line-height: 1.5; }
+.case-line.is-future, .case-casing.is-future { opacity: .25; }
+.case-dot { fill: var(--surface-panel); stroke: #041a5c; stroke-width: 3; pointer-events: none; filter: drop-shadow(0 0 4px #041a5c); }
+.flow-node.is-current .node-card { stroke: var(--selected); stroke-width: 3; }
+.flow-item.is-current { outline: 3px solid var(--selected); outline-offset: -3px; }

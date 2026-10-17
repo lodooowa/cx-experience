@@ -76,7 +76,7 @@ Osobne strony na wspólnym modelu danych, otwierane dwuklikiem (offline):
 - `matrix.html`: heatmapa procesów i tryb omawiania,
 - `priorytety.html`: mapa koszt × zysk akcji naprawczych,
 - `radar.html`: radar podróży klienta,
-- `mapa.html`: mapa przepływu (swimlane: tory = wykonawcy, kolumny = procesy, krawędzie = kolejne kroki). Lista „Przypadek” podświetla trasę klienta z `data/flow.js` (stan kroku: znak i kolor, pominięte punkty przygaszone).
+- `mapa.html`: mapa przepływu (swimlane: tory = wykonawcy, kolumny = procesy, krawędzie = kolejne kroki). Lista „Przypadek” podświetla trasę klienta z `data/flow.js` (stan kroku: znak i kolor, pominięte punkty przygaszone); przyciski Start/Dalej/Wstecz prowadzą krok po kroku (mapa przesuwa się do punktu, kropka jedzie po trasie; bez ruchu przy `prefers-reduced-motion`).
 
 Dane tych widoków nie są edytowane ręcznie: źródłem jest `macierz-demo.xlsx`. Po zmianie zamknij Excela i kliknij `konwertuj-dane.command` (macOS) albo `konwertuj-dane.bat` (Windows); skrypt (Python 3) zapisze `macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js`. Szczegóły zakładek, torów i przypadków: `macierz.md`.
 

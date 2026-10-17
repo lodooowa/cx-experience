@@ -6,7 +6,7 @@
   const NS = 'http://www.w3.org/2000/svg';
   const MIN_K = 0.5, MAX_K = 8;
   const view = { k: 1, x: 0, y: 0 };
-  const state = { lanes: new Set(), selected: null, caseId: '' };
+  const state = { lanes: new Set(), selected: null, caseId: '', step: null };
   const stateMarks = { zadzialal: '✓', czesciowo: '◐', nie_zadzialal: '✕', brakuje: '○' };
   let allLanes = [], layout = null, svg, root, viewport, hoverLayer, nodePos = new Map(), lastBase = 0, dragged = false;
 
@@ -94,8 +94,8 @@
       for (let i = 1; i < activeCase.steps.length; i++) {
         const e = byKey.get(activeCase.steps[i - 1].touchpointId + '>' + activeCase.steps[i].touchpointId);
         if (!e) continue;
-        route.appendChild(el('path', { class: 'case-casing', d: e.d }));
-        route.appendChild(el('path', { class: 'case-line', d: e.d, 'marker-end': 'url(#flow-arrow)' }));
+        route.appendChild(el('path', { class: 'case-casing', d: e.d, 'data-i': i }));
+        route.appendChild(el('path', { class: 'case-line', d: e.d, 'data-i': i, 'marker-end': 'url(#flow-arrow)' }));
       }
       edges.appendChild(route);
     }
@@ -129,6 +129,7 @@
     body.append(bands, heads, edges, nodes, hoverLayer);
     root.appendChild(body);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    applyStep();
     svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
     syncSelected();
   }
@@ -248,6 +249,67 @@
     if (node) node.focus({ preventScroll: true });
   }
 
+  // Warsztat krok po kroku: bieżący krok przypadku, trasa do niego pełna, dalsza przygaszona, kropka jedzie po ostatnim odcinku.
+  const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const compact = () => window.matchMedia && window.matchMedia('(max-width: 850px)').matches;
+  let dotFrame = 0;
+  function applyStep() {
+    const { c } = caseSteps();
+    const step = c && state.step !== null ? c.steps[state.step] : null;
+    if (root) {
+      root.querySelectorAll('.case-line, .case-casing').forEach(path => path.classList.toggle('is-future', !!step && +path.dataset.i > state.step));
+      root.querySelectorAll('.flow-node').forEach(node => node.classList.toggle('is-current', !!step && node.dataset.id === step.touchpointId));
+      const old = root.querySelector('.case-dot');
+      if (old) old.remove();
+    }
+    document.querySelectorAll('.flow-item').forEach(item => item.classList.toggle('is-current', !!step && item.dataset.id === step.touchpointId));
+    const box = $('caseStepper');
+    box.hidden = !c;
+    if (!c) return;
+    $('stepPrev').disabled = state.step === null || state.step <= 0;
+    $('stepNext').disabled = state.step !== null && state.step >= c.steps.length - 1;
+    $('stepNext').textContent = state.step === null ? 'Start ›' : 'Dalej ›';
+    $('stepText').innerHTML = step ? `<strong>Krok ${esc(step.n)} z ${c.steps.length}: ${esc(tpIndex.get(step.touchpointId).title)}</strong> · <span class="case-chip st-${esc(step.state)}"><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> ${esc(stateLabel(step.state))}</span>${step.note ? '<br>' + esc(step.note) : ''}` : 'Przejdź przypadek krok po kroku.';
+  }
+  function runDot(from) {
+    cancelAnimationFrame(dotFrame);
+    if (!root || reducedMotion() || from < 1) return;
+    const path = root.querySelector(`.case-line[data-i="${from}"]`);
+    if (!path) return;
+    const dot = el('circle', { class: 'case-dot', r: 6 });
+    root.querySelector('.case-route').appendChild(dot);
+    const len = path.getTotalLength(), dur = Math.min(1400, Math.max(500, len * 2)), t0 = performance.now();
+    const tick = now => {
+      const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      const point = path.getPointAtLength(len * e);
+      dot.setAttribute('cx', point.x);
+      dot.setAttribute('cy', point.y);
+      if (k < 1) dotFrame = requestAnimationFrame(tick); else dot.remove();
+    };
+    dotFrame = requestAnimationFrame(tick);
+  }
+  function stepTo(index) {
+    const { c } = caseSteps();
+    if (!c) return;
+    state.step = Math.max(0, Math.min(c.steps.length - 1, index));
+    const step = c.steps[state.step];
+    applyStep();
+    if (compact()) {
+      const item = document.querySelector(`.flow-item[data-id="${CSS.escape(step.touchpointId)}"]`);
+      if (item) item.scrollIntoView({ block: 'center' });
+      return;
+    }
+    const n = nodePos.get(step.touchpointId);
+    if (n) {
+      const { rect, base } = metrics();
+      view.x = rect.width / base / 2 - (n.x + n.w / 2) * view.k;
+      view.y = rect.height / base / 2 - (n.y + n.h / 2) * view.k;
+      apply();
+      runDot(state.step);
+    }
+    select(step.touchpointId);
+  }
+
   function renderCase() {
     const { c } = caseSteps();
     const info = $('caseInfo');
@@ -270,6 +332,7 @@
     if (root) highlight(null);
     renderMap();
     renderList();
+    applyStep();
     reset();
   }
 
@@ -283,8 +346,11 @@
       const again = $('lanes').querySelector(`[data-lane="${CSS.escape(id)}"]`);
       if (again) again.focus();
     });
+    $('stepPrev').addEventListener('click', () => stepTo((state.step === null ? 0 : state.step) - 1));
+    $('stepNext').addEventListener('click', () => stepTo(state.step === null ? 0 : state.step + 1));
     $('caseSelect').addEventListener('change', event => {
       state.caseId = event.target.value;
+      state.step = null;
       redraw();
       if (state.selected) select(state.selected);
     });
@@ -361,7 +427,7 @@
     $('caseSelect').innerHTML = '<option value="">Bez przypadku</option>' + cases.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
     svg = $('flowSvg');
     viewport = $('flowViewport');
-    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Kolor linii: tor, z którego wychodzi przejście (kolor przy nazwie toru)</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Przypadek: granatowa trasa klienta; znak na karcie to stan kroku (✓ zadziałał, ◐ częściowo, ✕ nie zadziałał, ○ brakuje), a nie ocena CX</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
+    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Kolor linii: tor, z którego wychodzi przejście (kolor przy nazwie toru)</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Krok po kroku: Start/Dalej/Wstecz przesuwa mapę do kolejnego punktu przypadku, kropka jedzie po trasie (wyłączone przy ograniczeniu ruchu)</span><span>Przypadek: granatowa trasa klienta; znak na karcie to stan kroku (✓ zadziałał, ◐ częściowo, ✕ nie zadziałał, ○ brakuje), a nie ocena CX</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
     bind();
     redraw();
     reset();
