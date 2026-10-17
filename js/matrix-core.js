@@ -124,7 +124,9 @@
     const none = text => `<p class="block-empty">${esc(text)}</p>`;
     const sub = (type, items) => items.length ? `<h4>${esc(data.labels.featureType[type])}</h4>${list(items)}` : '';
     const section = (title, body) => `<section class="detail-section"><h3>${esc(title)}</h3>${body}</section>`;
-    const block = (cls, mark, title, body) => `<section class="detail-block ${cls}"><h3><span aria-hidden="true">${mark}</span>${esc(title)}</h3>${body}</section>`;
+    const icon = path => `<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`;
+    const icons = { '+': icon('M8 3v10M3 8h10'), '−': icon('M3 8h10'), '→': icon('M3 8h10M9 4l4 4-4 4') };
+    const block = (cls, mark, title, body) => `<section class="detail-block ${cls}"><h3><span aria-hidden="true">${icons[mark]}</span>${esc(title)}</h3>${body}</section>`;
     const pros = ft('dobra_praktyka'), cons = [ft('blad_typowy'), ft('blad_diagnozowany')], examples = ft('przyklad'), sources = ft('zrodlo');
     let html = `<div class="detail-kicker">${esc(mx.matrixLabel(tp.matrix))}${tp.subtype ? ' · ' + esc(data.labels.subtype[tp.subtype]) : ''} · ${esc(tp.process)}</div><h2>${esc(tp.title)}</h2>
       <section class="assessment rating-${esc(tp.rating)}"><span class="assessment-label">Ocena obecna</span>

@@ -66,7 +66,8 @@
 .assessment .detail-meta { margin-top: 12px; }
 .detail-block { margin-top: 16px; padding: 14px; border: 1px solid var(--line); border-left-width: 6px; }
 .detail-block h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 15px; letter-spacing: 0; }
-.detail-block h3 span { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 50%; background: var(--block); color: #fff; font-size: 18px; font-weight: 800; line-height: 1; }
+.detail-block h3 span { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 50%; background: var(--block); color: #fff; flex: none; }
+.detail-block h3 span svg { display: block; }
 .detail-block h4 { margin: 12px 0 6px; color: var(--text-muted); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
 .detail-block h3 + h4 { margin-top: 0; }
 .detail-block .detail-list li::before { background: var(--block); }
