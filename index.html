@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>CX Journey Experience — v3</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell" id="app">
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="CX Experience Explorer — strona główna">
+      <span class="brand-icon">CX<span>✳</span></span>
+      <span class="brand-name">EXPERIENCE <b>EXPLORER</b><small>OFFLINE JOURNEY STUDIO</small></span>
+    </a>
+    <div class="selectors">
+      <label class="select-wrap"><span>PERSONA</span><select id="persona" aria-label="Wybierz personę"></select></label>
+      <label class="select-wrap journey-select"><span>ŚCIEŻKA</span><select id="journey" aria-label="Wybierz ścieżkę"></select></label>
+      <label class="select-wrap perspective-select"><span>PERSPEKTYWA OBSERWATORA</span><select id="perspective" aria-label="Perspektywa obserwatora"></select></label>
+    </div>
+    <div class="top-actions"><span class="offline"><i></i> DZIAŁA OFFLINE</span><button class="icon-button" id="fullscreen" type="button" title="Przełącz pełny ekran" aria-label="Przełącz pełny ekran">⛶</button></div>
+  </header>
+
+  <main id="top">
+    <section class="journey-heading" aria-label="Wybrana podróż">
+      <div><span class="eyebrow">MAPA PODRÓŻY KLIENTA</span><h1 id="journeyCaption">CX Journey</h1><p id="journeySubtitle"></p></div>
+      <div class="journey-controls"><span class="current-position" id="currentPosition"></span><button id="prev" type="button" aria-label="Poprzedni punkt">←</button><button id="play" type="button">▶ Odtwarzaj</button><button id="next" type="button" aria-label="Następny punkt">→</button></div>
+    </section>
+
+    <section class="workspace" id="workspace" aria-label="Mapa podróży i szczegóły">
+      <div class="map-panel">
+        <div class="map-panel-heading"><div><span class="eyebrow">ŚCIEŻKA DOŚWIADCZENIA</span><h2>Każdy punkt tworzy podróż</h2></div><span class="map-hint">Wybierz punkt, aby zobaczyć szczegóły</span></div>
+        <div class="graph-scroll"><div class="graph-canvas" id="journeyMap" aria-label="Interaktywna mapa punktów styku"><svg class="graph-edges" id="graphEdges" aria-hidden="true"></svg><div class="graph-nodes" id="graphNodes"></div></div></div>
+        <div class="selected-summary" aria-live="polite"><span class="summary-scene" id="currentScene"></span><span class="type-pill" id="currentType"></span><strong id="currentTitle"></strong><span id="currentDescription"></span><small id="selectedEmotion"></small></div>
+      </div>
+      <aside class="detail-drawer" id="detailDrawer" hidden aria-label="Szczegóły punktu styku">
+        <div class="drawer-heading"><div><span class="eyebrow">SZCZEGÓŁY MOMENTU</span><span class="drawer-perspective">PERSPEKTYWA · <b id="drawerPerspective">KLIENT</b></span></div><button class="icon-button" id="closeDetails" type="button" aria-label="Zamknij szczegóły">×</button></div>
+        <div id="detailBody"></div>
+      </aside>
+    </section>
+
+    <section class="emotion-panel" aria-label="Emocje klienta">
+      <div class="emotion-heading"><div><span class="eyebrow">EMOCJE KLIENTA</span><h2>Przebieg odczuć w podróży</h2><p>Perspektywa emocji pozostaje po stronie klienta.</p></div><button id="toggleEmotions" class="collapse-button" type="button" aria-expanded="true" aria-controls="emotionContent">Zwiń wykres <span>⌃</span></button></div>
+      <div id="emotionContent"><div class="emotion-chart-wrap"><svg id="emotionChart" viewBox="0 0 1100 240" role="group" aria-label="Wykres emocji klienta dla punktów podróży"></svg><p id="emotionEmpty" class="empty-emotions" hidden>Brak danych emocjonalnych dla tej ścieżki.</p></div><div class="chart-legend"><span>Niższa ocena</span><span>Wartości dostarczone w danych · skala 1–5</span><span>Wyższa ocena</span></div></div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>CX EXPERIENCE EXPLORER <b>V3</b></span><span>WIZUALIZACJA TREŚCI EKSPERTA · BRAK POŁĄCZEŃ SIECIOWYCH</span></footer>
+</div>
+<div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić wizualizacji</h1><p id="errorText"></p><small>Sprawdź pliki danych i odśwież stronę.</small></div>
+<script src="data/personas.js"></script>
+<script src="data/journeys.js"></script>
+<script src="js/scenes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
