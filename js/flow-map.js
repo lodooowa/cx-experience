@@ -28,6 +28,11 @@
     svg.textContent = '';
     root = el('g', { class: 'flow-root' });
     svg.appendChild(root);
+    const defs = el('defs');
+    const arrow = el('marker', { id: 'flow-arrow', viewBox: '0 0 8 8', refX: 8, refY: 4, markerWidth: 8, markerHeight: 8, markerUnits: 'userSpaceOnUse', orient: 'auto' });
+    arrow.appendChild(el('path', { d: 'M0.5 0.8 L7.5 4 L0.5 7.2', class: 'flow-arrow' }));
+    defs.appendChild(arrow);
+    root.appendChild(defs);
     const { width, height } = layout;
     const body = el('g');
     const D = window.CX_FLOW_LAYOUT.DEFAULTS;
@@ -48,7 +53,7 @@
       heads.appendChild(head);
     }
     for (const e of layout.edges) {
-      const path = el('path', { class: 'flow-edge' + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'data-from': e.from, 'data-to': e.to });
+      const path = el('path', { class: 'flow-edge' + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'marker-end': 'url(#flow-arrow)', 'data-from': e.from, 'data-to': e.to });
       edges.appendChild(path);
       if (e.label && e.labelX !== undefined) edges.appendChild(el('text', { class: 'edge-label' + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, x: e.labelX, y: e.labelY, 'text-anchor': 'middle' }, e.label));
     }
@@ -155,6 +160,7 @@
   function syncSelected() {
     if (!root) return;
     root.querySelectorAll('.flow-node').forEach(node => node.classList.toggle('is-selected', node.dataset.id === state.selected));
+    highlight(state.selected);
   }
   function highlight(id) {
     svg.classList.toggle('has-hl', !!id);
@@ -249,7 +255,7 @@
       else if (event.key === '0') fit();
     });
     viewport.addEventListener('mouseover', event => { const node = event.target.closest('.flow-node'); if (node) { highlight(node.dataset.id); showFull(node.dataset.id, node.querySelector('.node-text')); } });
-    viewport.addEventListener('mouseout', event => { if (event.target.closest('.flow-node')) { highlight(null); showFull(null); } });
+    viewport.addEventListener('mouseout', event => { if (event.target.closest('.flow-node')) { highlight(state.selected); showFull(null); } });
     if (window.ResizeObserver) new ResizeObserver(keepScreenScale).observe(viewport);
     viewport.addEventListener('focusin', event => {
       const node = event.target.closest('.flow-node');
@@ -261,7 +267,7 @@
       const dy = a.top < b.top ? b.top - a.top + 16 : a.bottom > b.bottom ? b.bottom - a.bottom - 16 : 0;
       if (dx || dy) { const { base } = metrics(); pan(dx / base, dy / base); }
     });
-    viewport.addEventListener('focusout', () => highlight(null));
+    viewport.addEventListener('focusout', () => highlight(state.selected));
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && state.selected && event.target.tagName !== 'SELECT') closeDetails();
     });
@@ -277,7 +283,7 @@
     state.lanes = new Set(allLanes.map(lane => lane.id));
     svg = $('flowSvg');
     viewport = $('flowViewport');
-    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Linia przerywana: krok opcjonalny</span><span>Cieńsza, jaśniejsza linia: powrót do wcześniejszego etapu (wychodzi z prawej, wchodzi z lewej, okrężnie górą pasa)</span>';
+    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
     bind();
     redraw();
     reset();

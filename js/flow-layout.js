@@ -123,18 +123,25 @@
     // Pasma kanałów i przesunięcia w korytarzach przydzielane zachłannie, żeby trasy się nie nakładały.
     const STEP = 3.5;
     const half = o.gapX / 2 - 8;
-    const spread = (list, key) => {
+    // Przesunięcie w korytarzu zależy od węzła (nie od krawędzi): trasy do tego samego celu (lub z tego samego źródła) łączą się w jedną linię.
+    const spread = (list, key, nodeOf) => {
       const groups = new Map();
-      for (const item of list) (groups.get(item[key]) || groups.set(item[key], []).get(item[key])).push(item);
-      for (const group of groups.values()) group.forEach((item, i) => { item[key + 'Off'] = Math.max(-half, Math.min(half, (i - (group.length - 1) / 2) * STEP)); });
+      for (const item of list) {
+        const nodeIds = groups.get(item[key]) || groups.set(item[key], []).get(item[key]);
+        if (!nodeIds.includes(nodeOf(item).id)) nodeIds.push(nodeOf(item).id);
+      }
+      for (const item of list) {
+        const nodeIds = groups.get(item[key]);
+        item[key + 'Off'] = Math.max(-half, Math.min(half, (nodeIds.indexOf(nodeOf(item).id) - (nodeIds.length - 1) / 2) * STEP));
+      }
     };
     for (const item of routed) {
       item.leave = 'r' + item.s.col;                   // korytarz za kolumną źródła
       item.enter = 'l' + item.t.col;                   // korytarz przed kolumną celu
       item.laneTop = Math.min(laneIndex.get(item.s.lane), laneIndex.get(item.t.lane));
     }
-    spread(routed, 'leave');
-    spread(routed, 'enter');
+    spread(routed, 'leave', item => item.s);
+    spread(routed, 'enter', item => item.t);
     const tracks = new Map();
     const usedUntil = new Map();
     const bySpan = routed.slice().sort((p, q) => Math.min(p.t.x, p.s.x + p.s.w) - Math.min(q.t.x, q.s.x + q.s.w));
