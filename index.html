@@ -29,10 +29,16 @@
     </section>
 
     <section class="workspace" id="workspace" aria-label="Mapa podróży i szczegóły">
+      <div class="workspace-main">
       <div class="map-panel">
         <div class="map-panel-heading"><div><span class="eyebrow">ŚCIEŻKA DOŚWIADCZENIA</span><h2>Każdy punkt tworzy podróż</h2></div><span class="map-hint">Wybierz punkt, aby zobaczyć szczegóły</span></div>
         <div class="graph-scroll"><div class="graph-canvas" id="journeyMap" aria-label="Interaktywna mapa punktów styku"><svg class="graph-edges" id="graphEdges" aria-hidden="true"></svg><div class="graph-nodes" id="graphNodes"></div></div></div>
         <div class="selected-summary" aria-live="polite"><span class="summary-scene" id="currentScene"></span><span class="type-pill" id="currentType"></span><strong id="currentTitle"></strong><span id="currentDescription"></span><small id="selectedEmotion"></small></div>
+      </div>
+      <section class="emotion-panel" aria-label="Emocje klienta">
+      <div class="emotion-heading"><div><span class="eyebrow">EMOCJE KLIENTA</span><h2>Przebieg odczuć w podróży</h2><p>Perspektywa emocji pozostaje po stronie klienta.</p></div><button id="toggleEmotions" class="collapse-button" type="button" aria-expanded="true" aria-controls="emotionContent">Zwiń wykres <span>⌃</span></button></div>
+      <div id="emotionContent"><div class="emotion-chart-wrap"><svg id="emotionChart" viewBox="0 0 1100 240" role="group" aria-label="Wykres emocji klienta dla punktów podróży"></svg><p id="emotionEmpty" class="empty-emotions" hidden>Brak danych emocjonalnych dla tej ścieżki.</p></div><div class="chart-legend"><span>Niższa ocena</span><span>Wartości dostarczone w danych · skala 1–5</span><span>Wyższa ocena</span></div></div>
+      </section>
       </div>
       <aside class="detail-drawer" id="detailDrawer" hidden aria-label="Szczegóły punktu styku">
         <div class="drawer-heading"><div><span class="eyebrow">SZCZEGÓŁY MOMENTU</span><span class="drawer-perspective">PERSPEKTYWA · <b id="drawerPerspective">KLIENT</b></span></div><button class="icon-button" id="closeDetails" type="button" aria-label="Zamknij szczegóły">×</button></div>
@@ -40,10 +46,6 @@
       </aside>
     </section>
 
-    <section class="emotion-panel" aria-label="Emocje klienta">
-      <div class="emotion-heading"><div><span class="eyebrow">EMOCJE KLIENTA</span><h2>Przebieg odczuć w podróży</h2><p>Perspektywa emocji pozostaje po stronie klienta.</p></div><button id="toggleEmotions" class="collapse-button" type="button" aria-expanded="true" aria-controls="emotionContent">Zwiń wykres <span>⌃</span></button></div>
-      <div id="emotionContent"><div class="emotion-chart-wrap"><svg id="emotionChart" viewBox="0 0 1100 240" role="group" aria-label="Wykres emocji klienta dla punktów podróży"></svg><p id="emotionEmpty" class="empty-emotions" hidden>Brak danych emocjonalnych dla tej ścieżki.</p></div><div class="chart-legend"><span>Niższa ocena</span><span>Wartości dostarczone w danych · skala 1–5</span><span>Wyższa ocena</span></div></div>
-    </section>
   </main>
   <footer class="site-footer"><span>CX EXPERIENCE EXPLORER <b>V3</b></span><span>WIZUALIZACJA TREŚCI EKSPERTA · BRAK POŁĄCZEŃ SIECIOWYCH</span></footer>
 </div>

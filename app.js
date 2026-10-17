@@ -192,12 +192,23 @@
     layer.innerHTML = `<defs><marker id="edgeArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>${paths}`;
   }
 
+  let lastChartWidth = 0;
+
   function renderChart() {
     const steps = state.journey.steps;
-    const W = 1100, H = 240, left = 48, right = 42, top = 28, bottom = 48;
+    const chart = $('emotionChart');
+    const W = chart.clientWidth || 1100, H = 240, top = 28, bottom = 48;
+    chart.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    lastChartWidth = W;
+    const nodes = $('graphNodes').querySelectorAll('[data-step]');
+    const chartLeft = chart.getBoundingClientRect().left;
     const measured = steps.map((step, index) => ({ step, index, value: Number(step.emotion) }))
       .filter(item => item.step.emotion !== undefined && item.step.emotion !== null && item.step.emotion !== '' && Number.isFinite(item.value) && item.value >= 1 && item.value <= 5);
-    const x = index => steps.length === 1 ? W / 2 : left + (W - left - right) * index / (steps.length - 1);
+    const x = index => {
+      if (!nodes[index]) return W / 2;
+      const box = nodes[index].getBoundingClientRect();
+      return box.left + box.width / 2 - chartLeft;
+    };
     const y = value => top + (5 - value) * (H - top - bottom) / 4;
     const measuredIds = new Set(measured.map(item => item.step.id));
     const byId = new Map(steps.map((step, index) => [step.id, { step, index }]));
@@ -207,7 +218,7 @@
     }).join('');
     const points = measured.map(({ step, index, value }) => `<g class="chart-point ${index === state.index ? 'selected' : ''}" data-chart="${index}" tabindex="0" role="button" aria-label="Punkt ${index + 1}: ${esc(step.title)}, emocja klienta ${value} z 5"><circle cx="${x(index)}" cy="${y(value)}" r="${index === state.index ? 10 : 7}"/><text x="${x(index)}" y="${H - 12}" text-anchor="middle">${String(index + 1).padStart(2, '0')}</text></g>`).join('');
     $('emotionChart').innerHTML = `<defs><linearGradient id="emotionLine"><stop stop-color="var(--brand-primary)"/><stop offset="1" stop-color="var(--brand-accent)"/></linearGradient></defs>
-      ${[1, 2, 3, 4, 5].map(value => `<line class="chart-grid" x1="${left}" x2="${W - right}" y1="${y(value)}" y2="${y(value)}"/><text class="chart-scale" x="${left - 18}" y="${y(value) + 4}">${value}</text>`).join('')}
+      ${[1, 2, 3, 4, 5].map(value => `<line class="chart-grid" x1="0" x2="${W}" y1="${y(value)}" y2="${y(value)}"/><text class="chart-scale" x="14" y="${y(value) + 4}">${value}</text>`).join('')}
       ${lines}${points}`;
     $('emotionEmpty').hidden = measured.length > 0;
     $('emotionChart').querySelectorAll('[data-chart]').forEach(point => {
@@ -268,8 +279,16 @@
       button.innerHTML = expanded ? 'Rozwiń wykres <span>⌄</span>' : 'Zwiń wykres <span>⌃</span>';
     });
     $('fullscreen').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.());
-    window.addEventListener('resize', drawGraphEdges);
-    if (window.ResizeObserver) new ResizeObserver(drawGraphEdges).observe($('journeyMap'));
+    const relayout = () => {
+      drawGraphEdges();
+      if ($('emotionChart').clientWidth && $('emotionChart').clientWidth !== lastChartWidth) renderChart();
+    };
+    window.addEventListener('resize', relayout);
+    if (window.ResizeObserver) {
+      const observer = new ResizeObserver(relayout);
+      observer.observe($('journeyMap'));
+      observer.observe($('emotionChart'));
+    }
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !$('detailDrawer').hidden) { setDrawer(false); return; }
       if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName) || !$('detailDrawer').hidden) return;
