@@ -232,7 +232,7 @@
   function select(id) {
     state.selected = id;
     const cs = caseSteps().map.get(id);
-    const caseHtml = cs ? '<section class="case-detail"><h3>Przypadek</h3>' + cs.steps.map(step => `<p class="st-${esc(step.state)}"><strong><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> Krok ${esc(step.n)}: ${esc(stateLabel(step.state))}</strong>${step.note ? '<br>' + esc(step.note) : ''}</p>`).join('') + '</section>' : '';
+    const caseHtml = !cs && state.caseId ? '<section class="case-detail"><p class="st-brakuje">Punkt pominięty w tym przypadku.</p></section>' : cs ? '<section class="case-detail"><h3>Przypadek</h3>' + cs.steps.map(step => `<p class="st-${esc(step.state)}"><strong><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> Krok ${esc(step.n)}: ${esc(stateLabel(step.state))}</strong>${step.note ? '<br>' + esc(step.note) : ''}</p>`).join('') + '</section>' : '';
     $('detailBody').innerHTML = caseHtml + mx.detailsHtml(tpIndex.get(id));
     $('detailDrawer').hidden = false;
     $('workspace').classList.add('has-drawer');
@@ -254,8 +254,9 @@
     info.hidden = !c;
     if (!c) { info.textContent = ''; return; }
     const count = key => c.steps.filter(step => step.state === key).length;
+    const hidden = c.steps.filter(step => !state.lanes.has(window.CX_FLOW_CORE.laneOf(tpIndex.get(step.touchpointId)))).length;
     const meta = [c.client, c.vehicle, c.caseNumber].filter(Boolean).map(esc).join(' · ');
-    info.innerHTML = `<strong>${esc(c.name)}</strong>${meta ? ' · ' + meta : ''} · ${c.steps.length} kroków: ` + Object.keys(window.CX_FLOW.labels.state).map(key => `<span class="case-chip st-${esc(key)}"><span aria-hidden="true">${esc(stateMarks[key] || '?')}</span> ${esc(stateLabel(key))} ${count(key)}</span>`).join(' ') + ' <span class="case-hint">Punkty bez znaku: pominięte w tym przypadku.</span>';
+    info.innerHTML = `<strong>${esc(c.name)}</strong>${meta ? ' · ' + meta : ''} · ${c.steps.length} kroków: ` + Object.keys(window.CX_FLOW.labels.state).map(key => `<span class="case-chip st-${esc(key)}"><span aria-hidden="true">${esc(stateMarks[key] || '?')}</span> ${esc(stateLabel(key))} ${count(key)}</span>`).join(' ') + ' <span class="case-hint">Punkty bez znaku: pominięte w tym przypadku.' + (hidden ? ' Kroków na ukrytych torach: ' + hidden + '.' : '') + '</span>';
   }
 
   function renderChips() {

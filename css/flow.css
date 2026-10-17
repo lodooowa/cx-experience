@@ -5,7 +5,7 @@
 .case-select + .zoom-tools { margin-left: 0; }
 .case-info { margin: 8px 0 0; padding: 8px 12px; border: 1px solid var(--line); background: var(--surface-panel); color: var(--text-primary); font-size: 12px; line-height: 1.9; }
 .case-hint { color: var(--text-muted); }
-:root { --st-zadzialal: #0d8849; --st-czesciowo: #c98a00; --st-nie_zadzialal: #d22a32; --st-brakuje: #6b7280; }
+:root { --st-zadzialal: #0d8849; --st-czesciowo: #9a6700; --st-nie_zadzialal: #d22a32; --st-brakuje: #6b7280; }
 .st-zadzialal { --st: var(--st-zadzialal); } .st-czesciowo { --st: var(--st-czesciowo); } .st-nie_zadzialal { --st: var(--st-nie_zadzialal); } .st-brakuje { --st: var(--st-brakuje); }
 .case-chip { display: inline-block; margin-right: 4px; padding: 0 7px; border: 1px solid var(--st, var(--line)); border-radius: 10px; font-size: 11px; font-weight: 800; }
 .case-chip > span:first-child { color: var(--st); }
@@ -19,6 +19,7 @@
 .has-case .flow-node:not(.in-case) { opacity: .35; }
 .has-case .flow-node.st-brakuje .node-card { stroke: var(--st); stroke-width: 1.6; stroke-dasharray: 5 3; fill: var(--surface-base); }
 .has-case .flow-node.st-brakuje .node-text { color: var(--text-muted); font-style: italic; }
+.flow-node.in-case .node-text { padding-left: 18px; }
 .case-badge circle { fill: var(--st); stroke: var(--surface-panel); stroke-width: 2; }
 .case-badge text { fill: #fff; font: 800 12px var(--font-ui); pointer-events: none; }
 .flow-node.st-brakuje .case-badge circle { fill: var(--surface-panel); stroke: var(--st); stroke-dasharray: 3 2; }
@@ -83,4 +84,3 @@
   .flow-item .mark { display: inline-grid; width: 18px; height: 18px; flex-shrink: 0; place-items: center; border-radius: 50%; background: var(--rating); color: #fff; font-size: 10px; font-weight: 800; }
 }
 @media (prefers-reduced-motion: reduce) { .flow-node, .flow-edge { transition: none; } }
-.flow-node.in-case .node-text { padding-left: 18px; }
