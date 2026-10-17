@@ -19,6 +19,10 @@
   --media-bg: #041428;
   --critical: #d22a32;
   --success: #0d8849;
+  --attention: #8a5a0c;
+  --critical-soft: rgba(210, 42, 50, .12);
+  --attention-soft: rgba(138, 90, 12, .16);
+  --success-soft: rgba(13, 136, 73, .12);
   --selected: #041428;
   --focus: #041428;
   --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;

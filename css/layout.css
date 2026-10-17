@@ -31,6 +31,7 @@ button:disabled { cursor: not-allowed; opacity: .35; }
 .journey-select { max-width: 290px; }
 .perspective-select { max-width: 205px; }
 .top-actions { display: flex; align-items: center; gap: 13px; }
+.top-link { color: var(--header-text); font-size: 10px; letter-spacing: .12em; text-decoration: underline; text-underline-offset: 4px; white-space: nowrap; }
 .offline { display: flex; align-items: center; gap: 7px; color: var(--header-text); font-size: 9px; font-weight: 700; letter-spacing: .1em; white-space: nowrap; }
 .offline i { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
 .icon-button { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--surface-raised); font-size: 21px; }

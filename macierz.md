@@ -58,7 +58,9 @@ Dane wymyślone, do pracy nad wizualizacją: 30 punktów styku w każdej z dwóc
 - [macierz-demo/cechy.csv](macierz-demo/cechy.csv): wiele cech na punkt (dobre praktyki, błędy typowe i diagnozowane, przykłady, źródła),
 - [macierz-demo/akcje.csv](macierz-demo/akcje.csv): wiele akcji naprawczych na punkt (koszt, ryzyko, zysk, czas, ryzyka wdrożenia).
 
-Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Pliki generuje [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py).
+Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Pliki (razem z `data/matrix.js`) generuje [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py): źródłem jest skrypt, więc nie edytuj wygenerowanych plików ręcznie.
+
+Wizualizacja: [matrix.html](matrix.html), heatmapa punktów styku z trybem omawiania (otwierana dwuklikiem, offline).
 
 ## Do przemyślenia
 
