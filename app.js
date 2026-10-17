@@ -96,9 +96,10 @@
   }
 
   function setDrawer(open) {
+    const wasHidden = $('detailDrawer').hidden;
     $('workspace').classList.toggle('has-drawer', open);
     $('detailDrawer').hidden = !open;
-    if (open) $('closeDetails').focus();
+    if (open) { if (wasHidden) $('closeDetails').focus(); }
     else {
       const selected = $('graphNodes').querySelector(`[data-step="${state.index}"]`);
       if (selected) selected.focus();
@@ -271,8 +272,14 @@
       const index = state.journey.steps.findIndex(candidate => candidate.id === button.dataset.branch);
       if (index >= 0) selectStep(index, true);
     }));
-    $('drawerPrev').addEventListener('click', () => selectStep(state.index - 1, true));
-    $('drawerNext').addEventListener('click', () => selectStep(state.index + 1, true));
+    // przebudowa panelu gubi fokus: wraca na ten sam przycisk, a gdy jest już nieaktywny (koniec ścieżki), na zamknięcie
+    const navigate = (id, delta) => () => {
+      selectStep(state.index + delta, true);
+      const again = $(id);
+      (again && !again.disabled ? again : $('closeDetails')).focus();
+    };
+    $('drawerPrev').addEventListener('click', navigate('drawerPrev', -1));
+    $('drawerNext').addEventListener('click', navigate('drawerNext', 1));
   }
 
   function play() {

@@ -8,10 +8,10 @@
 :root { --st-zadzialal: #0d8849; --st-czesciowo: #9a6700; --st-nie_zadzialal: #d22a32; --st-brakuje: #6b7280; }
 .st-zadzialal { --st: var(--st-zadzialal); } .st-czesciowo { --st: var(--st-czesciowo); } .st-nie_zadzialal { --st: var(--st-nie_zadzialal); } .st-brakuje { --st: var(--st-brakuje); }
 .case-chip { display: inline-block; margin-right: 4px; padding: 0 7px; border: 1px solid var(--st, var(--line)); border-radius: 10px; font-size: 11px; font-weight: 800; }
-.case-chip > span:first-child { color: var(--st); }
+.case-chip > span:first-child { color: var(--st, var(--text-muted)); }
 .case-detail { margin-bottom: 14px; padding: 10px 12px; border: 1px solid var(--line); background: var(--surface-raised); }
 .case-detail h3 { margin: 0 0 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
-.case-detail p { margin: 0 0 6px; padding-left: 8px; border-left: 4px solid var(--st); font-size: 12px; }
+.case-detail p { margin: 0 0 6px; padding-left: 8px; border-left: 4px solid var(--st, var(--text-muted)); font-size: 12px; }
 .case-casing { fill: none; stroke: var(--surface-panel); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .case-line { fill: none; stroke: #041a5c; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .has-case .flow-edge { opacity: .12; }
@@ -20,7 +20,7 @@
 .has-case .flow-node.st-brakuje .node-card { stroke: var(--st); stroke-width: 1.6; stroke-dasharray: 5 3; fill: var(--surface-base); }
 .has-case .flow-node.st-brakuje .node-text { color: var(--text-muted); font-style: italic; }
 .flow-node.in-case .node-text { padding-left: 18px; }
-.case-badge circle { fill: var(--st); stroke: var(--surface-panel); stroke-width: 2; }
+.case-badge circle { fill: var(--st, var(--text-muted)); stroke: var(--surface-panel); stroke-width: 2; }
 .case-badge text { fill: #fff; font: 800 12px var(--font-ui); pointer-events: none; }
 .flow-node.st-brakuje .case-badge circle { fill: var(--surface-panel); stroke: var(--st); stroke-dasharray: 3 2; }
 .flow-node.st-brakuje .case-badge text { fill: var(--st); }
@@ -48,7 +48,7 @@
 .flow-edge { fill: none; stroke: var(--lane, var(--text-muted)); stroke-width: 1.5; stroke-linecap: round; opacity: .75; }
 .flow-edge.optional { stroke-dasharray: 6 5; }
 .flow-edge.backward, .flow-pulse.backward, .edge-label.backward { display: none; }
-.flow-edge.backward.is-hl, .flow-pulse.backward.is-hl, .edge-label.backward.is-hl { display: inline; }
+.flow-edge.backward.is-hl, .edge-label.backward.is-hl { display: inline; }
 .flow-pulse { pointer-events: none; }
 .flow-pulse circle { fill: var(--lane, var(--text-primary)); }
 .has-hl .flow-pulse { opacity: .08; }

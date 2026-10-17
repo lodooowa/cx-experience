@@ -171,6 +171,10 @@ def main():
     expect_error(bad, "stan 'zly' nie istnieje")
     bad = sample(); bad["kroki_przypadku"][1][0] = "P-9"
     expect_error(bad, "przypadek_id 'P-9' nie istnieje")
+    bad = sample(); bad["kroki_przypadku"][1:] = []
+    expect_error(bad, "przypadek 'P-1' nie ma kroków")
+    bad = sample(); bad["kroki_przypadku"][1][1] = None; bad["kroki_przypadku"][2][1] = None
+    expect_error(bad, "'kroki_przypadku', wiersz 2: brak lp")
     bad = sample(); bad["punkty_styku"][1].append("nieznany_tor")
     bad["punkty_styku"][1][11] = None
     bad["punkty_styku"][1][12] = "5"
@@ -180,7 +184,12 @@ def main():
 
     # Plik z repo (inlineStr z openpyxl) odtwarza dokładnie to, co jest w repo.
     n, data, csv_bytes = convert(ROOT / "macierz-demo.xlsx")
-    assert csv_bytes == (ROOT / "macierz-demo" / "punkty_styku.csv").read_bytes(), "punkty_styku.csv z repo różni się od wygenerowanego"
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        x2d.convert(ROOT / "macierz-demo.xlsx", d / "csv", d / "matrix.js")
+        for name in x2d.CSV_SHEETS:
+            assert (d / "csv" / f"{name}.csv").read_bytes() == (ROOT / "macierz-demo" / f"{name}.csv").read_bytes(), f"{name}.csv z repo różni się od wygenerowanego"
+        assert (d / "flow.js").read_bytes() == (ROOT / "data" / "flow.js").read_bytes(), "data/flow.js z repo różni się od wygenerowanego"
     body = (ROOT / "data" / "matrix.js").read_text(encoding="utf-8")
     assert data == json.loads(re.search(r"^window\.CX_MATRIX = (.*);\n$", body, re.S | re.M).group(1)), "data/matrix.js z repo różni się od wygenerowanego"
     print("OK: czytnik (sharedStrings + inlineStr), konwersja, błędy z arkuszem i wierszem, zgodność z plikami w repo")

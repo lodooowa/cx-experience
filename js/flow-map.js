@@ -8,7 +8,7 @@
   const view = { k: 1, x: 0, y: 0 };
   const state = { lanes: new Set(), selected: null, caseId: '', step: null };
   const stateMarks = { zadzialal: '✓', czesciowo: '◐', nie_zadzialal: '✕', brakuje: '○' };
-  let allLanes = [], layout = null, svg, root, viewport, hoverLayer, nodePos = new Map(), lastBase = 0, dragged = false;
+  let allLanes = [], layout = null, svg, root, viewport, hoverLayer, nodePos = new Map(), lastBase = 0, dragged = false, follow = null;
 
   const laneLabel = id => (allLanes.find(lane => lane.id === id) || {}).label || id;
   const nodeLabel = (tp, id) => `${tp.title}. Tor: ${laneLabel(id)}. Proces: ${tp.process}. ${mx.ratingLabel(tp.rating)}.`;
@@ -18,6 +18,8 @@
     if (text !== undefined) node.textContent = text;
     return node;
   };
+  const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const compact = () => window.matchMedia && window.matchMedia('(max-width: 850px)').matches;
   const clip = (text, max) => text.length > max ? text.slice(0, Math.max(1, max - 1)) + '…' : text;
 
   // Krok przypadku po punkcie mapy: numery kroków (punkt może wystąpić kilka razy), stan ostatniego wystąpienia, notatki.
@@ -74,7 +76,7 @@
     for (const e of layout.edges) {
       const path = el('path', { class: 'flow-edge ' + laneClass(nodeLane.get(e.from)) + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'marker-end': 'url(#flow-arrow)', 'data-from': e.from, 'data-to': e.to });
       edges.appendChild(path);
-      // świetlik z ogonem płynie po linii (kierunek przepływu), kolor toru źródła
+      // świetlik z ogonem płynie po linii (kierunek przepływu), kolor toru źródła; bez ruchu przy ograniczeniu animacji
       const pulse = el('g', { class: 'flow-pulse ' + laneClass(nodeLane.get(e.from)) + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, 'aria-hidden': 'true' });
       const dur = Math.max(1.6, path.getTotalLength() / 70);
       const phase = (edgeNo++ * 0.37) % dur;
@@ -83,11 +85,12 @@
         dot.appendChild(el('animateMotion', { path: e.d, dur: dur + 's', begin: (-phase + lag * dur) + 's', repeatCount: 'indefinite' }));
         pulse.appendChild(dot);
       });
-      edges.appendChild(pulse);
+      if (!reducedMotion()) edges.appendChild(pulse);
       if (e.label && e.labelX !== undefined) edges.appendChild(el('text', { class: 'edge-label' + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, x: e.labelX, y: e.labelY, 'text-anchor': 'middle' }, e.label));
     }
     const { c: activeCase, map: caseMap } = caseSteps();
     svg.classList.toggle('has-case', !!activeCase);
+    if (svg.pauseAnimations) svg[activeCase ? 'pauseAnimations' : 'unpauseAnimations']();
     if (activeCase) {
       const route = el('g', { class: 'case-route', 'aria-hidden': 'true' });
       const byKey = new Map(layout.edges.map(e => [e.from + '>' + e.to, e]));
@@ -180,7 +183,7 @@
     if (!root || !lastBase || !(base > 0) || base === lastBase) return;
     const r = lastBase / base;
     view.k *= r; view.x *= r; view.y *= r;
-    apply();
+    if (follow && nodePos.has(follow)) centerOn(nodePos.get(follow)); else apply();
   }
   // Pełny tytuł obciętej karty: nakładka nad resztą węzłów, bez zmiany kolejności DOM.
   function showFull(id, textEl) {
@@ -200,10 +203,18 @@
     g.appendChild(fo);
     hoverLayer.appendChild(g);
   }
-  function fit() { view.k = 1; view.x = 0; view.y = 0; apply(); }
+  // Środek węzła na środku okna; śledzony przy zmianie rozmiaru (szuflada się wysuwa z przejściem), do pierwszej ręcznej zmiany widoku.
+  function centerOn(n) {
+    const { rect, base } = metrics();
+    view.x = rect.width / base / 2 - (n.x + n.w / 2) * view.k;
+    view.y = rect.height / base / 2 - (n.y + n.h / 2) * view.k;
+    apply();
+  }
+  function fit() { follow = null; view.k = 1; view.x = 0; view.y = 0; apply(); }
   // 100% = jednostka SVG to piksel ekranu
-  function reset() { const { base } = metrics(); view.k = base > 0 ? 1 / base : 1; view.x = 0; view.y = 0; apply(); }
+  function reset() { follow = null; const { base } = metrics(); view.k = base > 0 ? 1 / base : 1; view.x = 0; view.y = 0; apply(); }
   function zoom(factor) {
+    follow = null;
     const { rect, base } = metrics();
     const k = Math.min(MAX_K, Math.max(MIN_K, view.k * factor));
     const cx = rect.width / base / 2, cy = rect.height / base / 2;
@@ -212,7 +223,7 @@
     view.k = k;
     apply();
   }
-  function pan(dx, dy) { view.x += dx; view.y += dy; apply(); }
+  function pan(dx, dy) { follow = null; view.x += dx; view.y += dy; apply(); }
 
   function syncSelected() {
     if (!root) return;
@@ -250,8 +261,6 @@
   }
 
   // Warsztat krok po kroku: bieżący krok przypadku, trasa do niego pełna, dalsza przygaszona, kropka jedzie po ostatnim odcinku.
-  const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const compact = () => window.matchMedia && window.matchMedia('(max-width: 850px)').matches;
   let dotFrame = 0;
   function applyStep() {
     const { c } = caseSteps();
@@ -269,7 +278,7 @@
     $('stepPrev').disabled = state.step === null || state.step <= 0;
     $('stepNext').disabled = state.step !== null && state.step >= c.steps.length - 1;
     $('stepNext').textContent = state.step === null ? 'Start ›' : 'Dalej ›';
-    $('stepText').innerHTML = step ? `<strong>Krok ${esc(step.n)} z ${c.steps.length}: ${esc(tpIndex.get(step.touchpointId).title)}</strong> · <span class="case-chip st-${esc(step.state)}"><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> ${esc(stateLabel(step.state))}</span>${step.note ? '<br>' + esc(step.note) : ''}` : 'Przejdź przypadek krok po kroku.';
+    $('stepText').innerHTML = step ? `<strong>Krok ${esc(step.n)} z ${c.steps.length}: ${esc(tpIndex.get(step.touchpointId).title)}</strong> · <span class="case-chip st-${esc(step.state)}"><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> ${esc(stateLabel(step.state))}</span>${state.lanes.has(window.CX_FLOW_CORE.laneOf(tpIndex.get(step.touchpointId))) ? '' : ' <em>(tor ukryty)</em>'}${step.note ? '<br>' + esc(step.note) : ''}` : 'Przejdź przypadek krok po kroku.';
   }
   function runDot(from) {
     cancelAnimationFrame(dotFrame);
@@ -297,17 +306,15 @@
     if (compact()) {
       const item = document.querySelector(`.flow-item[data-id="${CSS.escape(step.touchpointId)}"]`);
       if (item) item.scrollIntoView({ block: 'center' });
+      if (!$('detailDrawer').hidden) select(step.touchpointId);
       return;
     }
     const n = nodePos.get(step.touchpointId);
-    if (n) {
-      const { rect, base } = metrics();
-      view.x = rect.width / base / 2 - (n.x + n.w / 2) * view.k;
-      view.y = rect.height / base / 2 - (n.y + n.h / 2) * view.k;
-      apply();
-      runDot(state.step);
-    }
+    if (!n) return;
     select(step.touchpointId);
+    centerOn(n);
+    follow = step.touchpointId;
+    runDot(state.step);
   }
 
   function renderCase() {
@@ -419,6 +426,7 @@
     const flow = window.CX_FLOW, core = window.CX_FLOW_CORE;
     if (!core || !window.CX_FLOW_LAYOUT) throw Error('Brak js/flow-core.js lub js/flow-layout.js.');
     core.validate(data, flow).forEach(text => console.warn(text));
+    Object.keys(flow.labels.state).filter(key => !stateMarks[key]).forEach(key => console.warn(`Stan kroku '${key}' nie ma znaku w js/flow-map.js (stateMarks): na mapie pokaże się '?'.`));
     $('demoPill').hidden = !(data.status === 'DEMO' || flow.status === 'DEMO');
     allLanes = core.lanes(data, flow);
     state.lanes = new Set(allLanes.map(lane => lane.id));
@@ -427,7 +435,7 @@
     $('caseSelect').innerHTML = '<option value="">Bez przypadku</option>' + cases.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
     svg = $('flowSvg');
     viewport = $('flowViewport');
-    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Kolor linii: tor, z którego wychodzi przejście (kolor przy nazwie toru)</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Krok po kroku: Start/Dalej/Wstecz przesuwa mapę do kolejnego punktu przypadku, kropka jedzie po trasie (wyłączone przy ograniczeniu ruchu)</span><span>Przypadek: granatowa trasa klienta; znak na karcie to stan kroku (✓ zadziałał, ◐ częściowo, ✕ nie zadziałał, ○ brakuje), a nie ocena CX</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
+    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Kolor linii: tor, z którego wychodzi przejście (kolor przy nazwie toru)</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Krok po kroku: Start/Dalej/Wstecz przesuwa mapę do kolejnego punktu przypadku, kropka jedzie po trasie (wyłączone przy ograniczeniu ruchu)</span><span>Przypadek: granatowa trasa klienta; znak na karcie to stan kroku (' + Object.keys(flow.labels.state).map(key => esc(stateMarks[key] || '?') + ' ' + esc(stateLabel(key))).join(', ') + '), a nie ocena CX</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
     bind();
     redraw();
     reset();

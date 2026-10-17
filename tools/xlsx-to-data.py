@@ -206,17 +206,20 @@ def convert(xlsx, csv_dir, js_path):
         case_ids.add(r["przypadek_id"])
     step_seen = set()
     for r in t["kroki_przypadku"]:
+        if r["lp"] is None:
+            raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: brak lp")
         if (r["przypadek_id"], r["lp"]) in step_seen:
             raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: powtórzone lp {r['lp']} w przypadku '{r['przypadek_id']}'")
         step_seen.add((r["przypadek_id"], r["lp"]))
         if r["przypadek_id"] not in case_ids:
             raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: przypadek_id '{r['przypadek_id']}' nie istnieje w 'przypadki'")
-        if r["lp"] is None:
-            raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: brak lp")
         if r["punkt_id"] not in ids:
             raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: punkt_id '{r['punkt_id']}' nie istnieje w 'punkty_styku'")
         if r["stan"] not in state_labels:
             raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: stan '{r['stan']}' nie istnieje w 'slowniki' (grupa 'stan')")
+    for r in t["przypadki"]:
+        if not any(k["przypadek_id"] == r["przypadek_id"] for k in t["kroki_przypadku"]):
+            raise DataError(f"Arkusz 'przypadki', wiersz {r['_row']}: przypadek '{r['przypadek_id']}' nie ma kroków w 'kroki_przypadku'")
 
     csv_dir.mkdir(exist_ok=True)
     for name in CSV_SHEETS:
