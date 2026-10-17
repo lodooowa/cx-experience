@@ -27,7 +27,7 @@
         <span class="act-text">${esc(a.text)}</span>
         <span class="act-meta"><span>ok. ${esc(a.weeks)} tyg.</span>${risk(a.risk)}<span class="act-kind">${esc(data.labels.actionKind[a.kind])}</span></span>
       </button>
-      <button type="button" class="act-add" data-add="${esc(a.id)}" aria-pressed="${inPlan}" aria-label="${inPlan ? 'Usuń z listy: ' : 'Dodaj do listy: '}${esc(tp.title)}" title="${inPlan ? 'Usuń z listy roboczej' : 'Dodaj do listy roboczej'}">${inPlan ? '✓' : '+'}</button></div>`;
+      <button type="button" class="act-add" data-add="${esc(a.id)}" aria-pressed="${inPlan}" aria-label="Lista robocza: ${esc(tp.title)}, ${esc(a.text)}" title="${inPlan ? 'Usuń z listy roboczej' : 'Dodaj do listy roboczej'}">${inPlan ? '✓' : '+'}</button></div>`;
   }
 
   function renderBoard() {
@@ -46,7 +46,7 @@
   }
 
   function renderChips() {
-    const pool = data.touchpoints.filter(tp => state.matrix === 'all' || tp.matrix === state.matrix);
+    const pool = data.actions.map(tpOf).filter(tp => state.matrix === 'all' || tp.matrix === state.matrix);
     $('chips').innerHTML = mx.chipsHtml(state.ratings, pool);
     $('kinds').innerHTML = kindKeys.map(key => `<button type="button" class="chip" data-kind="${esc(key)}" aria-pressed="${state.kinds.has(key)}">${esc(data.labels.actionKind[key])} <b>${data.actions.filter(a => a.kind === key && state.ratings.has(tpOf(a).rating) && (state.matrix === 'all' || tpOf(a).matrix === state.matrix)).length}</b></button>`).join('');
   }
@@ -73,19 +73,25 @@
     }).join('') + '<p class="plan-note">Słupek pokazuje szacowany czas do wdrożenia każdej akcji, liczony od startu. To nie jest harmonogram. Skala słupków jest pierwiastkowa.</p>';
   }
 
+  function syncSelected() {
+    document.querySelectorAll('.act').forEach(el => el.classList.toggle('is-selected', !!state.selected && el.querySelector('.act-open').dataset.open === state.selected));
+  }
+
   function select(id) {
     state.selected = id;
     $('detailBody').innerHTML = mx.detailsHtml(tpIndex.get(id));
     $('detailDrawer').hidden = false;
     $('workspace').classList.add('has-drawer');
-    renderBoard();
+    syncSelected();
   }
 
   function closeDetails() {
+    const card = document.querySelector('.act.is-selected .act-open');
     state.selected = null;
     $('detailDrawer').hidden = true;
     $('workspace').classList.remove('has-drawer');
-    renderBoard();
+    syncSelected();
+    if (card) card.focus({ preventScroll: true });
   }
 
   function refilter() {
@@ -123,7 +129,7 @@
         toggle(state.plan, id);
         renderBoard();
         renderPlan();
-        const again = document.querySelector(`.act-add[data-add="${CSS.escape(id)}"]`);
+        const again = document.querySelector(`.act-add[data-add="${CSS.escape(id)}"]`) || document.querySelector('.plan-remove') || document.querySelector('.chip');
         if (again) again.focus();
         return;
       }
@@ -142,7 +148,7 @@
     kindKeys = Object.keys(data.labels.actionKind);
     state.kinds = new Set(kindKeys);
     $('matrixSelect').innerHTML = `<option value="all">Obie macierze</option>` + mx.matrixKeys.map(key => `<option value="${esc(key)}">${esc(mx.matrixLabel(key))}</option>`).join('');
-    $('legend').innerHTML = '<span>I / D: macierz punktu (importer / dealer i serwis)</span><span>Kolor karty: ocena CX punktu</span><span>Trzy kreski: ryzyko wdrożenia</span><span>Koszt, zysk, ryzyko i czas to szacunki' + (data.status === 'DEMO' ? ' (DEMO)' : '') + '</span>';
+    $('legend').innerHTML = mx.matrixKeys.map(key => `<span>${matrixTag(key)} = ${esc(mx.matrixLabel(key))}</span>`).join('') + '<span>Liczby przy filtrach: akcje naprawcze</span><span>Kolor karty: ocena CX punktu</span><span>Trzy kreski: ryzyko wdrożenia</span><span>Koszt, zysk, ryzyko i czas to szacunki' + (data.status === 'DEMO' ? ' (DEMO)' : '') + '</span>';
     renderChips();
     renderBoard();
     renderPlan();

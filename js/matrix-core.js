@@ -22,6 +22,7 @@
     if (!data || !Array.isArray(data.touchpoints) || !Array.isArray(data.features) || !Array.isArray(data.actions) || !Array.isArray(data.processes) || !data.labels) {
       throw Error('data/matrix.js: brak window.CX_MATRIX z polami labels, processes, touchpoints, features, actions.');
     }
+    if (!data.processes.length || !data.labels.matrix || !Object.keys(data.labels.matrix).length) throw Error('data/matrix.js: processes i labels.matrix nie mogą być puste.');
     for (const group of ['matrix', 'rating', 'monitoring', 'featureType', 'actionKind']) {
       if (!data.labels[group] || typeof data.labels[group] !== 'object') throw Error('data/matrix.js: brak słownika labels.' + group);
     }

@@ -61,6 +61,8 @@
     svg.querySelectorAll('.node').forEach(node => {
       const id = node.dataset.id;
       node.classList.toggle('is-off', !shown.has(id));
+      node.setAttribute('tabindex', shown.has(id) ? '0' : '-1');
+      node.toggleAttribute('aria-disabled', !shown.has(id));
       node.classList.toggle('in-queue', queueIds.has(id));
       node.classList.toggle('is-spot', id === spot);
       node.classList.toggle('is-selected', id === state.selected);
@@ -70,8 +72,6 @@
       const heat = !items.length ? 'none' : items.some(tp => tp.rating === 'niezaopiekowany') ? 'crit' : items.some(tp => tp.rating === 'do_poprawy') ? 'warn' : items.some(tp => tp.rating === 'ok') ? 'ok' : 'none';
       sector.setAttribute('class', 'sector heat-' + heat);
     });
-    const pool = data.touchpoints;
-    $('chips').innerHTML = mx.chipsHtml(state.ratings, pool);
     const empty = !mx.sortQueue(visible()).length;
     $('discuss').disabled = empty && !state.queue;
     $('discuss').title = empty ? 'Brak punktów do przelotu w bieżących filtrach' : discussHint;
@@ -143,10 +143,13 @@
     closeDetails();
   }
 
+  const renderChips = () => { $('chips').innerHTML = mx.chipsHtml(state.ratings, data.touchpoints); };
+
   function refilter() {
     const focusId = document.activeElement && document.activeElement.id;
     if (state.queue) endDiscuss();
     if (state.selected && !visible().some(tp => tp.id === state.selected)) closeDetails();
+    renderChips();
     refresh();
     if (focusId && $(focusId)) $(focusId).focus();
   }
@@ -215,6 +218,7 @@
     state.ratings = new Set(mx.ratingKeys);
     build();
     renderStats();
+    renderChips();
     refresh();
     bind();
   }
