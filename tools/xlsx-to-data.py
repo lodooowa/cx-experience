@@ -1,4 +1,4 @@
-# Źródłem danych jest macierz-demo.xlsx (edytuje ekspert CX). Skrypt czyta go i zapisuje macierz-demo/*.csv oraz data/matrix.js.
+# Źródłem danych jest macierz-demo.xlsx (edytuje ekspert CX). Skrypt czyta go i zapisuje macierz-demo/*.csv, data/matrix.js oraz data/flow.js.
 # Tylko biblioteka standardowa Pythona 3 (xlsx to zip z XML). Użycie: python3 tools/xlsx-to-data.py [plik.xlsx]
 import csv, json, math, sys, zipfile
 import xml.etree.ElementTree as ET
@@ -11,13 +11,17 @@ PKG = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 
 INT = {"emocja_1_5", "zaopiekowanie_1_5", "czas_wdrozenia_tyg", "lp"}
 SHEETS = {
-    "punkty_styku": ["macierz", "id", "punkt_styku", "proces", "emocja", "emocja_1_5", "wplyw_na_emocje", "monitoring", "wlasciciel", "ocena_cx", "status_danych", "podtyp", "zaopiekowanie_1_5"],
+    "punkty_styku": ["macierz", "id", "punkt_styku", "proces", "emocja", "emocja_1_5", "wplyw_na_emocje", "monitoring", "wlasciciel", "ocena_cx", "status_danych", "podtyp", "zaopiekowanie_1_5", "tor_nadpisanie"],
     "cechy": ["id", "punkt_id", "typ", "tresc", "status_danych"],
     "akcje": ["id", "punkt_id", "rodzaj", "opis", "koszt", "ryzyko", "zysk", "czas_wdrozenia_tyg", "ryzyka_wdrozenia", "status_danych"],
     "slowniki": ["grupa", "klucz", "etykieta"],
     "procesy": ["lp", "nazwa"],
+    "nastepne": ["punkt_id", "nastepny_id", "etykieta", "opcjonalny", "status_danych"],
+    "przypadki": ["przypadek_id", "nazwa", "klient", "model_pojazdu", "numer_sprawy", "status_danych"],
+    "kroki_przypadku": ["przypadek_id", "lp", "punkt_id", "stan", "co_sie_stalo", "status_danych"],
 }
-CSV_SHEETS = ["punkty_styku", "cechy", "akcje", "slowniki", "procesy"]
+CSV_SHEETS = list(SHEETS)
+FLOW_GROUPS = ["tor", "stan"]
 LEVELS = ["niski", "średni", "wysoki"]
 LABEL_GROUPS = ["matrix", "subtype", "rating", "monitoring", "featureType", "actionKind"]
 
@@ -48,7 +52,11 @@ def text_of(si):
 
 def read_xlsx(path):
     """Zwraca {nazwa_arkusza: [(numer_wiersza, komórki), ...]}, komórki = lista tekstów (puste = ''). Numer wiersza jak w Excelu."""
-    with zipfile.ZipFile(path) as z:
+    try:
+        z = zipfile.ZipFile(path)
+    except (OSError, zipfile.BadZipFile) as error:
+        raise DataError(f"Nie można odczytać pliku '{path}' ({error}). Czy to xlsx i czy nie jest zablokowany przez inny program?")
+    with z:
         names = set(z.namelist())
         shared = []
         if "xl/sharedStrings.xml" in names:
@@ -96,7 +104,7 @@ def num(sheet, row_no, col, value):
 
 def table(book, name):
     if name not in book:
-        raise DataError(f"Brak arkusza '{name}' w pliku")
+        raise DataError(f"Brak arkusza '{name}' w pliku (to może być xlsx ze starszej wersji: zob. macierz.md)")
     rows = book[name]
     want = SHEETS[name]
     head = rows[0][1] if rows else []
@@ -142,11 +150,12 @@ def convert(xlsx, csv_dir, js_path):
     statuses = {r["status_danych"] for r in t["punkty_styku"]}
     if len(statuses) != 1:
         raise DataError(f"Arkusz 'punkty_styku': kolumna status_danych musi mieć jedną wartość, jest {sorted(statuses)}")
-    labels = {g: {} for g in LABEL_GROUPS}
+    labels = {g: {} for g in LABEL_GROUPS + FLOW_GROUPS}
     for r in t["slowniki"]:
         if r["grupa"] not in labels:
             raise DataError(f"Arkusz 'slowniki', wiersz {r['_row']}: nieznana grupa '{r['grupa']}'")
         labels[r["grupa"]][r["klucz"]] = r["etykieta"]
+    lane_labels, state_labels = labels.pop("tor"), labels.pop("stan")
 
     def known(sheet, r, col, group, value):
         if value not in labels[group]:
@@ -164,6 +173,8 @@ def convert(xlsx, csv_dir, js_path):
             known("punkty_styku", r, "podtyp", "subtype", r["podtyp"])
         scale("punkty_styku", r, "emocja_1_5")
         scale("punkty_styku", r, "zaopiekowanie_1_5")
+        if r["tor_nadpisanie"] and r["tor_nadpisanie"] not in lane_labels:
+            raise DataError(f"Arkusz 'punkty_styku', wiersz {r['_row']}: tor_nadpisanie '{r['tor_nadpisanie']}' nie ma etykiety w 'slowniki' (grupa 'tor')")
     for r in t["cechy"]:
         known("cechy", r, "typ", "featureType", r["typ"])
     for r in t["akcje"]:
@@ -173,6 +184,39 @@ def convert(xlsx, csv_dir, js_path):
         for col in ("koszt", "ryzyko", "zysk"):
             if r[col] not in LEVELS:
                 raise DataError(f"Arkusz 'akcje', wiersz {r['_row']}: {col} musi być jednym z: {', '.join(LEVELS)}, jest '{r[col]}'")
+
+    edge_seen = set()
+    for r in t["nastepne"]:
+        for col in ("punkt_id", "nastepny_id"):
+            if r[col] not in ids:
+                raise DataError(f"Arkusz 'nastepne', wiersz {r['_row']}: {col} '{r[col]}' nie istnieje w 'punkty_styku'")
+        if r["punkt_id"] == r["nastepny_id"]:
+            raise DataError(f"Arkusz 'nastepne', wiersz {r['_row']}: punkt '{r['punkt_id']}' nie może być swoim następnikiem")
+        if (r["punkt_id"], r["nastepny_id"]) in edge_seen:
+            raise DataError(f"Arkusz 'nastepne', wiersz {r['_row']}: powtórzona krawędź {r['punkt_id']} → {r['nastepny_id']}")
+        edge_seen.add((r["punkt_id"], r["nastepny_id"]))
+        if r["opcjonalny"] not in ("", "tak", "nie"):
+            raise DataError(f"Arkusz 'nastepne', wiersz {r['_row']}: opcjonalny musi być 'tak', 'nie' lub puste, jest '{r['opcjonalny']}'")
+    case_ids = set()
+    for r in t["przypadki"]:
+        if not r["nazwa"]:
+            raise DataError(f"Arkusz 'przypadki', wiersz {r['_row']}: brak nazwy przypadku '{r['przypadek_id']}'")
+        if not r["przypadek_id"] or r["przypadek_id"] in case_ids:
+            raise DataError(f"Arkusz 'przypadki', wiersz {r['_row']}: brak lub powtórzone przypadek_id '{r['przypadek_id']}'")
+        case_ids.add(r["przypadek_id"])
+    step_seen = set()
+    for r in t["kroki_przypadku"]:
+        if (r["przypadek_id"], r["lp"]) in step_seen:
+            raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: powtórzone lp {r['lp']} w przypadku '{r['przypadek_id']}'")
+        step_seen.add((r["przypadek_id"], r["lp"]))
+        if r["przypadek_id"] not in case_ids:
+            raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: przypadek_id '{r['przypadek_id']}' nie istnieje w 'przypadki'")
+        if r["lp"] is None:
+            raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: brak lp")
+        if r["punkt_id"] not in ids:
+            raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: punkt_id '{r['punkt_id']}' nie istnieje w 'punkty_styku'")
+        if r["stan"] not in state_labels:
+            raise DataError(f"Arkusz 'kroki_przypadku', wiersz {r['_row']}: stan '{r['stan']}' nie istnieje w 'slowniki' (grupa 'stan')")
 
     csv_dir.mkdir(exist_ok=True)
     for name in CSV_SHEETS:
@@ -188,6 +232,8 @@ def convert(xlsx, csv_dir, js_path):
                     emotionImpact=r["wplyw_na_emocje"], monitoring=r["monitoring"], owner=r["wlasciciel"], rating=r["ocena_cx"], care=r["zaopiekowanie_1_5"])
         if r["podtyp"]:
             item["subtype"] = r["podtyp"]
+        if r["tor_nadpisanie"]:
+            item["lane"] = r["tor_nadpisanie"]
         tp.append(item)
     ft = [dict(id=c["id"], touchpointId=c["punkt_id"], type=c["typ"], text=c["tresc"]) for c in t["cechy"]]
     ac = [dict(id=a["id"], touchpointId=a["punkt_id"], kind=a["rodzaj"], text=a["opis"], cost=a["koszt"], risk=a["ryzyko"], gain=a["zysk"],
@@ -203,12 +249,41 @@ def convert(xlsx, csv_dir, js_path):
             + ",\n  \"features\": " + lines(ft) + ",\n  \"actions\": " + lines(ac) + "\n};\n")
     with open(js_path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(hdr + body)
-    return len(tp), len(ft), len(ac)
+
+    edges = []
+    for r in t["nastepne"]:
+        edge = dict({"from": r["punkt_id"], "to": r["nastepny_id"]}, optional=r["opcjonalny"] == "tak")
+        if r["etykieta"]:
+            edge["label"] = r["etykieta"]
+        edges.append(edge)
+    cases = []
+    for c in t["przypadki"]:
+        case = dict(id=c["przypadek_id"], name=c["nazwa"])
+        for key, col in (("client", "klient"), ("vehicle", "model_pojazdu"), ("caseNumber", "numer_sprawy")):
+            if c[col]:
+                case[key] = c[col]
+        steps = sorted((k for k in t["kroki_przypadku"] if k["przypadek_id"] == c["przypadek_id"]), key=lambda k: k["lp"])
+        case["steps"] = []
+        for k in steps:
+            step = dict(n=k["lp"], touchpointId=k["punkt_id"], state=k["stan"])
+            if k["co_sie_stalo"]:
+                step["note"] = k["co_sie_stalo"]
+            case["steps"].append(step)
+        cases.append(case)
+    flow_status = {r["status_danych"] for name in ("nastepne", "przypadki", "kroki_przypadku") for r in t[name]} | {r["status_danych"] for r in t["punkty_styku"]}
+    fhdr = ("// DANE wygenerowane przez tools/xlsx-to-data.py z macierz-demo.xlsx (arkusze nastepne, przypadki, kroki_przypadku, slowniki). NIE EDYTUJ RĘCZNIE.\n"
+            "// Zostaw window.CX_FLOW = oraz końcowy średnik.\n")
+    fbody = ("window.CX_FLOW = {\n  \"status\": " + json.dumps("DEMO" if flow_status == {"DEMO"} else "/".join(sorted(flow_status)), ensure_ascii=False)
+             + ",\n  \"labels\": " + json.dumps({"lane": lane_labels, "state": state_labels}, ensure_ascii=False)
+             + ",\n  \"edges\": " + lines(edges) + ",\n  \"cases\": " + lines(cases) + "\n};\n")
+    with open(js_path.parent / "flow.js", "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(fhdr + fbody)
+    return len(tp), len(ft), len(ac), len(edges), len(cases)
 
 
 if __name__ == "__main__":
     xlsx = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "macierz-demo.xlsx"
     try:
-        print("punkty, cechy, akcje:", *convert(xlsx, ROOT / "macierz-demo", ROOT / "data" / "matrix.js"))
+        print("Gotowe. punkty, cechy, akcje, krawędzie, przypadki:", *convert(xlsx, ROOT / "macierz-demo", ROOT / "data" / "matrix.js"))
     except DataError as error:
         sys.exit(f"BŁĄD DANYCH: {error}")

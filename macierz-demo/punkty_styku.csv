@@ -1,61 +1,61 @@
-﻿macierz;id;punkt_styku;proces;emocja;emocja_1_5;wplyw_na_emocje;monitoring;wlasciciel;ocena_cx;status_danych;podtyp;zaopiekowanie_1_5
-importer;imp-01;Reklama TV i radio;Pozyskanie;Zainteresowanie;4;Buduje pierwsze skojarzenia z marką;tak;Marketing importera;ok;DEMO;;4
-importer;imp-02;Media społecznościowe;Pozyskanie;Ciekawość;4;Daje poczucie bliskości marki;częściowo;Marketing importera;do_poprawy;DEMO;;3
-importer;imp-03;Targi i wydarzenia;Pozyskanie;Ekscytacja;5;Bezpośredni kontakt z autem i ludźmi;nie;Marketing importera;niezaopiekowany;DEMO;;1
-importer;imp-04;Strona www marki;Pozyskanie;Ciekawość;4;Pierwsze wrażenie o marce i ofercie;tak;E-commerce importera;do_poprawy;DEMO;;3
-importer;imp-05;Konfigurator online;Zakup;Zaangażowanie;4;Daje poczucie kontroli i personalizacji;częściowo;E-commerce importera;do_poprawy;DEMO;;3
-importer;imp-06;Wyszukiwarka dealerów;Zakup;Irytacja;2;Błędne dane utrudniają pierwszy kontakt;nie;Sprzedaż importera;niezaopiekowany;DEMO;;2
-importer;imp-07;Infolinia sprzedażowa;Zakup;Niepewność;3;Rozmowa daje lub odbiera pewność wyboru;tak;Obsługa klienta importera;do_poprawy;DEMO;;3
-importer;imp-08;Czat i chatbot;Zakup;Frustracja;2;Brak zrozumienia pytań obniża nastrój;tak;Obsługa klienta importera;do_poprawy;DEMO;;3
-importer;imp-09;Kalkulator finansowania;Finansowanie;Niepewność;3;Pomaga lub zniechęca do zakupu;częściowo;Finanse importera;do_poprawy;DEMO;;3
-importer;imp-10;Ubezpieczenie w pakiecie;Finansowanie;;;;nie;Finanse importera;brak_oceny;DEMO;;
-importer;imp-11;Wniosek o finansowanie;Finansowanie;Napięcie;2;Czekanie na decyzję budzi stres;tak;Finanse importera;do_poprawy;DEMO;;3
-importer;imp-12;Potwierdzenie zamówienia;Zamówienie;Ulga;4;Daje poczucie bezpieczeństwa;tak;Logistyka importera;ok;DEMO;;5
-importer;imp-13;Status produkcji i dostawy;Zamówienie;Niecierpliwość;2;Brak informacji wydłuża oczekiwanie;nie;Logistyka importera;niezaopiekowany;DEMO;;1
-importer;imp-14;Opóźnienie dostawy;Zamówienie;Złość;1;Zerwanie obietnicy mocno obniża zaufanie;tak;Logistyka importera;do_poprawy;DEMO;;3
-importer;imp-15;Rejestracja i dokumenty;Dostawa;Znużenie;2;Formalności psują radość z zakupu;nie;Sprzedaż importera;niezaopiekowany;DEMO;;2
-importer;imp-16;Pakiet powitalny;Dostawa;Radość;5;Wzmacnia emocje zakupu;częściowo;Marketing importera;ok;DEMO;;4
-importer;imp-17;Aplikacja mobilna;Użytkowanie;Wygoda;4;Ułatwia codzienne korzystanie;tak;Produkt i usługi cyfrowe;do_poprawy;DEMO;;3
-importer;imp-18;Aktualizacje oprogramowania;Użytkowanie;Obojętność;3;Neutralne gdy działają, irytują gdy zawodzą;częściowo;Produkt i usługi cyfrowe;do_poprawy;DEMO;;3
-importer;imp-19;Usługi łączności (Connected);Użytkowanie;Rozczarowanie;2;Niespełnione obietnice cyfrowe;nie;Produkt i usługi cyfrowe;niezaopiekowany;DEMO;;1
-importer;imp-20;Pomoc drogowa;Użytkowanie;Ulga;4;W kryzysie liczy się szybkość i empatia;tak;Obsługa klienta importera;ok;DEMO;;5
-importer;imp-21;Kampania serwisowa;Posprzedaż;Niepokój;2;Komunikat o usterce budzi obawy;częściowo;Jakość importera;niezaopiekowany;DEMO;;2
-importer;imp-22;Przypomnienie o przeglądzie;Posprzedaż;Obojętność;3;Rzadko wzbudza emocje;tak;Posprzedaż importera;ok;DEMO;;4
-importer;imp-23;Gwarancja i roszczenia;Posprzedaż;Napięcie;1;Spór o gwarancję mocno obniża zaufanie;tak;Jakość importera;do_poprawy;DEMO;;3
-importer;imp-24;Reklamacje;Reklamacje;Złość;1;Kontakt w sprawie wady budzi silne emocje;tak;Obsługa klienta importera;niezaopiekowany;DEMO;;1
-importer;imp-25;Ankieta po zakupie;Posprzedaż;Zaangażowanie;3;Pokazuje że opinia się liczy;tak;Badania importera;ok;DEMO;;5
-importer;imp-26;Program lojalnościowy;Lojalność;Docenienie;4;Buduje poczucie bycia wyróżnionym;częściowo;CRM importera;do_poprawy;DEMO;;3
-importer;imp-27;Newsletter;Lojalność;Obojętność;3;Rzadko wzbudza emocje;tak;CRM importera;ok;DEMO;;4
-importer;imp-28;Klub właścicieli;Lojalność;Duma;5;Buduje przynależność do marki;nie;Marketing importera;niezaopiekowany;DEMO;;2
-importer;imp-29;Oferta wymiany i odkupu;Wymiana;Zainteresowanie;3;Ułatwia decyzję o następnym aucie;nie;Sprzedaż importera;niezaopiekowany;DEMO;;1
-importer;imp-30;Zakończenie umowy leasingu;Wymiana;Niepewność;2;Brak jasnych kroków budzi stres;nie;Finanse importera;do_poprawy;DEMO;;3
-dealer;dea-01;Zapytanie przez formularz;Zapytanie;Oczekiwanie;3;Szybka odpowiedź buduje zaufanie;tak;Dealer;do_poprawy;DEMO;dealer;3
-dealer;dea-02;Telefon do salonu;Zapytanie;Irytacja;2;Długie oczekiwanie obniża nastrój;nie;Dealer;niezaopiekowany;DEMO;salon;2
-dealer;dea-03;Czat i WhatsApp salonu;Zapytanie;Wygoda;4;Szybki i wygodny kontakt;częściowo;Dealer;ok;DEMO;salon;5
-dealer;dea-04;Powitanie w salonie;Zakup;Zaciekawienie;4;Atmosfera buduje emocje;nie;Dyrektor salonu;niezaopiekowany;DEMO;salon;1
-dealer;dea-05;Analiza potrzeb;Zakup;Zaangażowanie;4;Poczucie że doradca słucha;tak;Sprzedaż dealera;ok;DEMO;salon;4
-dealer;dea-06;Prezentacja auta;Zakup;Ekscytacja;5;Moment budowania pożądania;tak;Sprzedaż dealera;ok;DEMO;salon;5
-dealer;dea-07;Jazda próbna;Zakup;Ekscytacja;5;Pierwszy realny kontakt z autem;częściowo;Sprzedaż dealera;ok;DEMO;salon;4
-dealer;dea-08;Oferta i wycena;Zakup;Napięcie;2;Niejasne ceny budzą nieufność;nie;Sprzedaż dealera;niezaopiekowany;DEMO;salon;2
-dealer;dea-09;Negocjacje;Zakup;Napięcie;2;Presja obniża komfort;nie;Sprzedaż dealera;niezaopiekowany;DEMO;salon;1
-dealer;dea-10;Wycena auta w rozliczeniu;Zakup;Niepewność;2;Różnica z oczekiwaniami frustruje;częściowo;Sprzedaż dealera;do_poprawy;DEMO;salon;3
-dealer;dea-11;Finansowanie u dealera;Finansowanie;Niepewność;3;Rozmowa o kosztach budzi napięcie;tak;Finanse dealera;do_poprawy;DEMO;dealer;3
-dealer;dea-12;Umowa i formalności;Zakup;Znużenie;2;Papierologia osłabia emocje;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;2
-dealer;dea-13;Przygotowanie auta do wydania;Dostawa;Oczekiwanie;4;Budzi radosne oczekiwanie;tak;Dealer;ok;DEMO;salon;5
-dealer;dea-14;Wydanie auta;Dostawa;Radość;5;Moment ważny emocjonalnie;tak;Dealer;ok;DEMO;salon;4
-dealer;dea-15;Szkolenie z obsługi auta;Dostawa;Pewność;4;Daje poczucie opanowania auta;częściowo;Sprzedaż dealera;do_poprawy;DEMO;salon;3
-dealer;dea-16;Kontakt po 7 dniach od wydania;Dostawa;Docenienie;4;Pokazuje troskę o klienta;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;1
-dealer;dea-17;Rezerwacja serwisu;Serwis;Wygoda;3;Łatwa rezerwacja zmniejsza opór;częściowo;Serwis dealera;do_poprawy;DEMO;serwis;3
-dealer;dea-18;Przyjęcie do serwisu;Serwis;Niepewność;3;Klient nie wie co się stanie z autem;częściowo;Serwis dealera;do_poprawy;DEMO;serwis;3
-dealer;dea-19;Kosztorys napraw;Serwis;Niepokój;2;Wysoka cena budzi obawy;tak;Serwis dealera;do_poprawy;DEMO;serwis;3
-dealer;dea-20;Prace dodatkowe;Serwis;Złość;1;Niespodzianka kosztowa mocno obniża zaufanie;tak;Serwis dealera;niezaopiekowany;DEMO;serwis;2
-dealer;dea-21;Auto zastępcze;Serwis;Wdzięczność;4;Zmniejsza uciążliwość wizyty;tak;Serwis dealera;ok;DEMO;serwis;5
-dealer;dea-22;Poczekalnia;Serwis;Znużenie;3;Komfort wpływa na nastrój;nie;Serwis dealera;do_poprawy;DEMO;serwis;3
-dealer;dea-23;Informowanie o postępie prac;Serwis;Niecierpliwość;2;Brak informacji wydłuża oczekiwanie;nie;Serwis dealera;niezaopiekowany;DEMO;serwis;1
-dealer;dea-24;Odbiór po serwisie;Serwis;;;;nie;Serwis dealera;brak_oceny;DEMO;serwis;
-dealer;dea-25;Rozliczenie i faktura;Serwis;Obojętność;3;Neutralne gdy zgodne z ofertą;tak;Serwis dealera;ok;DEMO;serwis;4
-dealer;dea-26;Kontakt po serwisie;Serwis;Docenienie;4;Pokazuje troskę o klienta;nie;Serwis dealera;niezaopiekowany;DEMO;serwis;2
-dealer;dea-27;Naprawa gwarancyjna;Gwarancja;Napięcie;1;Spór o gwarancję obniża zaufanie;tak;Serwis dealera;do_poprawy;DEMO;serwis;3
-dealer;dea-28;Naprawa blacharska po wypadku;Serwis;Stres;2;Trudna sytuacja życiowa klienta;częściowo;Serwis dealera;do_poprawy;DEMO;serwis;3
-dealer;dea-29;Sprzedaż samochodów używanych;Auta używane;Nieufność;2;Niska pewność co do stanu auta;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;1
-dealer;dea-30;Kontakt przed końcem umowy;Lojalność;Zainteresowanie;3;Szansa na kolejną sprzedaż;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;2
+﻿macierz;id;punkt_styku;proces;emocja;emocja_1_5;wplyw_na_emocje;monitoring;wlasciciel;ocena_cx;status_danych;podtyp;zaopiekowanie_1_5;tor_nadpisanie
+importer;imp-01;Reklama TV i radio;Pozyskanie;Zainteresowanie;4;Buduje pierwsze skojarzenia z marką;tak;Marketing importera;ok;DEMO;;4;
+importer;imp-02;Media społecznościowe;Pozyskanie;Ciekawość;4;Daje poczucie bliskości marki;częściowo;Marketing importera;do_poprawy;DEMO;;3;
+importer;imp-03;Targi i wydarzenia;Pozyskanie;Ekscytacja;5;Bezpośredni kontakt z autem i ludźmi;nie;Marketing importera;niezaopiekowany;DEMO;;1;
+importer;imp-04;Strona www marki;Pozyskanie;Ciekawość;4;Pierwsze wrażenie o marce i ofercie;tak;E-commerce importera;do_poprawy;DEMO;;3;
+importer;imp-05;Konfigurator online;Zakup;Zaangażowanie;4;Daje poczucie kontroli i personalizacji;częściowo;E-commerce importera;do_poprawy;DEMO;;3;
+importer;imp-06;Wyszukiwarka dealerów;Zakup;Irytacja;2;Błędne dane utrudniają pierwszy kontakt;nie;Sprzedaż importera;niezaopiekowany;DEMO;;2;
+importer;imp-07;Infolinia sprzedażowa;Zakup;Niepewność;3;Rozmowa daje lub odbiera pewność wyboru;tak;Obsługa klienta importera;do_poprawy;DEMO;;3;
+importer;imp-08;Czat i chatbot;Zakup;Frustracja;2;Brak zrozumienia pytań obniża nastrój;tak;Obsługa klienta importera;do_poprawy;DEMO;;3;
+importer;imp-09;Kalkulator finansowania;Finansowanie;Niepewność;3;Pomaga lub zniechęca do zakupu;częściowo;Finanse importera;do_poprawy;DEMO;;3;
+importer;imp-10;Ubezpieczenie w pakiecie;Finansowanie;;;;nie;Finanse importera;brak_oceny;DEMO;;;
+importer;imp-11;Wniosek o finansowanie;Finansowanie;Napięcie;2;Czekanie na decyzję budzi stres;tak;Finanse importera;do_poprawy;DEMO;;3;
+importer;imp-12;Potwierdzenie zamówienia;Zamówienie;Ulga;4;Daje poczucie bezpieczeństwa;tak;Logistyka importera;ok;DEMO;;5;
+importer;imp-13;Status produkcji i dostawy;Zamówienie;Niecierpliwość;2;Brak informacji wydłuża oczekiwanie;nie;Logistyka importera;niezaopiekowany;DEMO;;1;
+importer;imp-14;Opóźnienie dostawy;Zamówienie;Złość;1;Zerwanie obietnicy mocno obniża zaufanie;tak;Logistyka importera;do_poprawy;DEMO;;3;
+importer;imp-15;Rejestracja i dokumenty;Dostawa;Znużenie;2;Formalności psują radość z zakupu;nie;Sprzedaż importera;niezaopiekowany;DEMO;;2;
+importer;imp-16;Pakiet powitalny;Dostawa;Radość;5;Wzmacnia emocje zakupu;częściowo;Marketing importera;ok;DEMO;;4;
+importer;imp-17;Aplikacja mobilna;Użytkowanie;Wygoda;4;Ułatwia codzienne korzystanie;tak;Produkt i usługi cyfrowe;do_poprawy;DEMO;;3;
+importer;imp-18;Aktualizacje oprogramowania;Użytkowanie;Obojętność;3;Neutralne gdy działają, irytują gdy zawodzą;częściowo;Produkt i usługi cyfrowe;do_poprawy;DEMO;;3;
+importer;imp-19;Usługi łączności (Connected);Użytkowanie;Rozczarowanie;2;Niespełnione obietnice cyfrowe;nie;Produkt i usługi cyfrowe;niezaopiekowany;DEMO;;1;
+importer;imp-20;Pomoc drogowa;Użytkowanie;Ulga;4;W kryzysie liczy się szybkość i empatia;tak;Obsługa klienta importera;ok;DEMO;;5;
+importer;imp-21;Kampania serwisowa;Posprzedaż;Niepokój;2;Komunikat o usterce budzi obawy;częściowo;Jakość importera;niezaopiekowany;DEMO;;2;
+importer;imp-22;Przypomnienie o przeglądzie;Posprzedaż;Obojętność;3;Rzadko wzbudza emocje;tak;Posprzedaż importera;ok;DEMO;;4;
+importer;imp-23;Gwarancja i roszczenia;Posprzedaż;Napięcie;1;Spór o gwarancję mocno obniża zaufanie;tak;Jakość importera;do_poprawy;DEMO;;3;
+importer;imp-24;Reklamacje;Reklamacje;Złość;1;Kontakt w sprawie wady budzi silne emocje;tak;Obsługa klienta importera;niezaopiekowany;DEMO;;1;
+importer;imp-25;Ankieta po zakupie;Posprzedaż;Zaangażowanie;3;Pokazuje że opinia się liczy;tak;Badania importera;ok;DEMO;;5;
+importer;imp-26;Program lojalnościowy;Lojalność;Docenienie;4;Buduje poczucie bycia wyróżnionym;częściowo;CRM importera;do_poprawy;DEMO;;3;
+importer;imp-27;Newsletter;Lojalność;Obojętność;3;Rzadko wzbudza emocje;tak;CRM importera;ok;DEMO;;4;
+importer;imp-28;Klub właścicieli;Lojalność;Duma;5;Buduje przynależność do marki;nie;Marketing importera;niezaopiekowany;DEMO;;2;
+importer;imp-29;Oferta wymiany i odkupu;Wymiana;Zainteresowanie;3;Ułatwia decyzję o następnym aucie;nie;Sprzedaż importera;niezaopiekowany;DEMO;;1;
+importer;imp-30;Zakończenie umowy leasingu;Wymiana;Niepewność;2;Brak jasnych kroków budzi stres;nie;Finanse importera;do_poprawy;DEMO;;3;
+dealer;dea-01;Zapytanie przez formularz;Zapytanie;Oczekiwanie;3;Szybka odpowiedź buduje zaufanie;tak;Dealer;do_poprawy;DEMO;dealer;3;
+dealer;dea-02;Telefon do salonu;Zapytanie;Irytacja;2;Długie oczekiwanie obniża nastrój;nie;Dealer;niezaopiekowany;DEMO;salon;2;
+dealer;dea-03;Czat i WhatsApp salonu;Zapytanie;Wygoda;4;Szybki i wygodny kontakt;częściowo;Dealer;ok;DEMO;salon;5;
+dealer;dea-04;Powitanie w salonie;Zakup;Zaciekawienie;4;Atmosfera buduje emocje;nie;Dyrektor salonu;niezaopiekowany;DEMO;salon;1;
+dealer;dea-05;Analiza potrzeb;Zakup;Zaangażowanie;4;Poczucie że doradca słucha;tak;Sprzedaż dealera;ok;DEMO;salon;4;
+dealer;dea-06;Prezentacja auta;Zakup;Ekscytacja;5;Moment budowania pożądania;tak;Sprzedaż dealera;ok;DEMO;salon;5;
+dealer;dea-07;Jazda próbna;Zakup;Ekscytacja;5;Pierwszy realny kontakt z autem;częściowo;Sprzedaż dealera;ok;DEMO;salon;4;
+dealer;dea-08;Oferta i wycena;Zakup;Napięcie;2;Niejasne ceny budzą nieufność;nie;Sprzedaż dealera;niezaopiekowany;DEMO;salon;2;
+dealer;dea-09;Negocjacje;Zakup;Napięcie;2;Presja obniża komfort;nie;Sprzedaż dealera;niezaopiekowany;DEMO;salon;1;
+dealer;dea-10;Wycena auta w rozliczeniu;Zakup;Niepewność;2;Różnica z oczekiwaniami frustruje;częściowo;Sprzedaż dealera;do_poprawy;DEMO;salon;3;
+dealer;dea-11;Finansowanie u dealera;Finansowanie;Niepewność;3;Rozmowa o kosztach budzi napięcie;tak;Finanse dealera;do_poprawy;DEMO;dealer;3;
+dealer;dea-12;Umowa i formalności;Zakup;Znużenie;2;Papierologia osłabia emocje;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;2;
+dealer;dea-13;Przygotowanie auta do wydania;Dostawa;Oczekiwanie;4;Budzi radosne oczekiwanie;tak;Dealer;ok;DEMO;salon;5;
+dealer;dea-14;Wydanie auta;Dostawa;Radość;5;Moment ważny emocjonalnie;tak;Dealer;ok;DEMO;salon;4;
+dealer;dea-15;Szkolenie z obsługi auta;Dostawa;Pewność;4;Daje poczucie opanowania auta;częściowo;Sprzedaż dealera;do_poprawy;DEMO;salon;3;
+dealer;dea-16;Kontakt po 7 dniach od wydania;Dostawa;Docenienie;4;Pokazuje troskę o klienta;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;1;
+dealer;dea-17;Rezerwacja serwisu;Serwis;Wygoda;3;Łatwa rezerwacja zmniejsza opór;częściowo;Serwis dealera;do_poprawy;DEMO;serwis;3;
+dealer;dea-18;Przyjęcie do serwisu;Serwis;Niepewność;3;Klient nie wie co się stanie z autem;częściowo;Serwis dealera;do_poprawy;DEMO;serwis;3;
+dealer;dea-19;Kosztorys napraw;Serwis;Niepokój;2;Wysoka cena budzi obawy;tak;Serwis dealera;do_poprawy;DEMO;serwis;3;
+dealer;dea-20;Prace dodatkowe;Serwis;Złość;1;Niespodzianka kosztowa mocno obniża zaufanie;tak;Serwis dealera;niezaopiekowany;DEMO;serwis;2;
+dealer;dea-21;Auto zastępcze;Serwis;Wdzięczność;4;Zmniejsza uciążliwość wizyty;tak;Serwis dealera;ok;DEMO;serwis;5;
+dealer;dea-22;Poczekalnia;Serwis;Znużenie;3;Komfort wpływa na nastrój;nie;Serwis dealera;do_poprawy;DEMO;serwis;3;
+dealer;dea-23;Informowanie o postępie prac;Serwis;Niecierpliwość;2;Brak informacji wydłuża oczekiwanie;nie;Serwis dealera;niezaopiekowany;DEMO;serwis;1;
+dealer;dea-24;Odbiór po serwisie;Serwis;;;;nie;Serwis dealera;brak_oceny;DEMO;serwis;;
+dealer;dea-25;Rozliczenie i faktura;Serwis;Obojętność;3;Neutralne gdy zgodne z ofertą;tak;Serwis dealera;ok;DEMO;serwis;4;
+dealer;dea-26;Kontakt po serwisie;Serwis;Docenienie;4;Pokazuje troskę o klienta;nie;Serwis dealera;niezaopiekowany;DEMO;serwis;2;
+dealer;dea-27;Naprawa gwarancyjna;Gwarancja;Napięcie;1;Spór o gwarancję obniża zaufanie;tak;Serwis dealera;do_poprawy;DEMO;serwis;3;
+dealer;dea-28;Naprawa blacharska po wypadku;Serwis;Stres;2;Trudna sytuacja życiowa klienta;częściowo;Serwis dealera;do_poprawy;DEMO;serwis;3;
+dealer;dea-29;Sprzedaż samochodów używanych;Auta używane;Nieufność;2;Niska pewność co do stanu auta;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;1;
+dealer;dea-30;Kontakt przed końcem umowy;Lojalność;Zainteresowanie;3;Szansa na kolejną sprzedaż;nie;Sprzedaż dealera;niezaopiekowany;DEMO;dealer;2;

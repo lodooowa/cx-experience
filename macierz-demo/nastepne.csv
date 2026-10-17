@@ -1,0 +1,84 @@
+﻿punkt_id;nastepny_id;etykieta;opcjonalny;status_danych
+imp-01;imp-04;;nie;DEMO
+imp-02;imp-04;;nie;DEMO
+imp-03;dea-01;kontakty z targów;nie;DEMO
+imp-04;imp-05;;nie;DEMO
+imp-04;imp-06;;tak;DEMO
+imp-04;imp-07;pytanie o ofertę;tak;DEMO
+imp-04;imp-08;czat;tak;DEMO
+imp-04;imp-09;finansowanie;tak;DEMO
+imp-05;dea-01;zapytanie;nie;DEMO
+imp-05;dea-07;umów jazdę;tak;DEMO
+imp-06;dea-02;;nie;DEMO
+imp-07;dea-01;;nie;DEMO
+imp-08;dea-03;;nie;DEMO
+imp-09;dea-11;;tak;DEMO
+dea-01;dea-04;;nie;DEMO
+dea-02;dea-04;;nie;DEMO
+dea-03;dea-04;;nie;DEMO
+dea-04;dea-05;;nie;DEMO
+dea-05;dea-06;;nie;DEMO
+dea-06;dea-07;;tak;DEMO
+dea-06;dea-08;;nie;DEMO
+dea-07;dea-08;;nie;DEMO
+dea-08;dea-09;;tak;DEMO
+dea-08;dea-10;;tak;DEMO
+dea-08;dea-11;;tak;DEMO
+dea-08;dea-12;;nie;DEMO
+dea-09;dea-12;;nie;DEMO
+dea-10;dea-12;;nie;DEMO
+dea-11;dea-12;;nie;DEMO
+dea-11;imp-10;ubezpieczenie;tak;DEMO
+dea-11;imp-11;wniosek;tak;DEMO
+imp-10;dea-12;;nie;DEMO
+imp-11;dea-12;;nie;DEMO
+dea-12;imp-12;;nie;DEMO
+imp-12;imp-13;;nie;DEMO
+imp-13;imp-14;gdy opóźnienie;tak;DEMO
+imp-13;dea-13;;nie;DEMO
+imp-14;dea-13;;nie;DEMO
+dea-13;dea-14;;nie;DEMO
+dea-14;imp-15;;tak;DEMO
+dea-14;imp-16;;tak;DEMO
+dea-14;dea-15;;nie;DEMO
+dea-15;dea-16;;nie;DEMO
+imp-15;imp-17;;nie;DEMO
+imp-16;imp-17;;nie;DEMO
+dea-16;imp-17;;nie;DEMO
+dea-16;imp-25;;tak;DEMO
+imp-17;imp-18;;tak;DEMO
+imp-17;imp-19;;tak;DEMO
+imp-17;imp-20;awaria;tak;DEMO
+imp-17;imp-21;;tak;DEMO
+imp-17;imp-22;;tak;DEMO
+imp-17;imp-24;wada;tak;DEMO
+imp-21;dea-17;;tak;DEMO
+imp-22;dea-17;;nie;DEMO
+imp-17;dea-17;;nie;DEMO
+dea-17;dea-18;;nie;DEMO
+dea-17;dea-28;po wypadku;tak;DEMO
+dea-18;dea-19;;nie;DEMO
+dea-18;dea-21;;tak;DEMO
+dea-18;dea-22;;tak;DEMO
+dea-18;dea-27;gwarancja;tak;DEMO
+dea-19;dea-20;;tak;DEMO
+dea-19;dea-23;;nie;DEMO
+dea-20;dea-23;;nie;DEMO
+dea-21;dea-23;;nie;DEMO
+dea-22;dea-23;;nie;DEMO
+dea-28;dea-19;;nie;DEMO
+dea-23;dea-24;;nie;DEMO
+dea-24;dea-25;;nie;DEMO
+dea-25;dea-26;;nie;DEMO
+dea-26;imp-22;kolejny przegląd;tak;DEMO
+dea-26;imp-26;;tak;DEMO
+dea-27;imp-23;odwołanie;tak;DEMO
+imp-23;imp-24;;tak;DEMO
+imp-25;imp-26;;nie;DEMO
+imp-26;imp-27;;tak;DEMO
+imp-26;imp-28;;tak;DEMO
+imp-26;dea-30;;tak;DEMO
+dea-30;imp-30;;nie;DEMO
+imp-30;imp-29;;nie;DEMO
+imp-29;dea-29;;tak;DEMO
+imp-29;dea-01;kolejny zakup;tak;DEMO

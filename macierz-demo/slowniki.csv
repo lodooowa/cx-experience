@@ -18,3 +18,7 @@ featureType;przyklad;Przykłady z życia
 featureType;zrodlo;Źródła danych
 actionKind;quick_win;Quick win
 actionKind;docelowa;Usprawnienie docelowe
+stan;zadzialal;Zadziałał
+stan;czesciowo;Częściowo
+stan;nie_zadzialal;Nie zadziałał
+stan;brakuje;Brakuje

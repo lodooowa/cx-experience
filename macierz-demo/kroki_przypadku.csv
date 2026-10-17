@@ -1,0 +1,31 @@
+﻿przypadek_id;lp;punkt_id;stan;co_sie_stalo;status_danych
+P-01;1;imp-01;zadzialal;Klient słyszy spot i zapamiętuje markę.;DEMO
+P-01;2;imp-04;zadzialal;Na stronie znajduje model i orientacyjną cenę.;DEMO
+P-01;3;imp-05;czesciowo;Konfiguruje auto, ale nie widzi jak umówić jazdę.;DEMO
+P-01;4;dea-01;nie_zadzialal;Wysyła zapytanie, odpowiedź przychodzi po trzech dniach.;DEMO
+P-01;5;dea-04;zadzialal;W salonie zostaje powitany po minucie.;DEMO
+P-01;6;dea-05;zadzialal;Doradca pyta o dojazdy i potrzeby rodziny.;DEMO
+P-01;7;dea-06;zadzialal;Prezentacja skupia się na tym, co ważne dla klienta.;DEMO
+P-01;8;dea-07;zadzialal;Jazda po trasie zbliżonej do codziennych dojazdów.;DEMO
+P-01;9;dea-08;czesciowo;Oferta jest czytelna, ale bez wyjaśnienia dodatków.;DEMO
+P-01;10;dea-12;czesciowo;Podpisanie trwa dwie godziny, dane trzeba przepisywać.;DEMO
+P-01;11;imp-12;zadzialal;Potwierdzenie przychodzi od razu, ale bez terminu.;DEMO
+P-01;12;imp-13;nie_zadzialal;Przez kilka miesięcy brak informacji o statusie.;DEMO
+P-01;13;imp-14;nie_zadzialal;O opóźnieniu klient dowiaduje się w dniu dostawy.;DEMO
+P-01;14;dea-13;zadzialal;Auto czeka umyte i kompletne.;DEMO
+P-01;15;dea-14;zadzialal;Uroczyste wydanie kluczyków.;DEMO
+P-01;16;dea-15;czesciowo;Doradca pokazuje tylko kilka funkcji.;DEMO
+P-01;17;dea-16;brakuje;Po wydaniu auta nikt się nie odzywa.;DEMO
+P-02;1;dea-17;czesciowo;Rezerwacja tylko telefoniczna, trzy próby.;DEMO
+P-02;2;dea-18;czesciowo;Przyjęcie bez potwierdzenia kosztu.;DEMO
+P-02;3;dea-19;zadzialal;Kosztorys z opisem prac.;DEMO
+P-02;4;dea-20;nie_zadzialal;Prace dodatkowe wykonane bez zgody klienta.;DEMO
+P-02;5;dea-23;brakuje;Brak informacji o postępie prac.;DEMO
+P-02;6;dea-24;zadzialal;Odbiór bez kolejki.;DEMO
+P-02;7;dea-25;czesciowo;Faktura wyższa od kosztorysu, pytania o pozycje.;DEMO
+P-02;8;dea-26;brakuje;Po odbiorze brak kontaktu z serwisu.;DEMO
+P-03;1;dea-17;zadzialal;Rezerwacja online bez problemu.;DEMO
+P-03;2;dea-18;czesciowo;Doradca przyjmuje auto, nie omawia zasad gwarancji.;DEMO
+P-03;3;dea-27;nie_zadzialal;Odmowa naprawy bez uzasadnienia.;DEMO
+P-03;4;imp-23;nie_zadzialal;Importer odsyła sprawę bez decyzji.;DEMO
+P-03;5;imp-24;nie_zadzialal;Sprawa wędruje między działami.;DEMO

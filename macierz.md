@@ -62,13 +62,20 @@ Punkty w macierzy dealera mają podtyp (kolumna `podtyp`: dealer, salon, serwis)
 
 Kolumna `zaopiekowanie_1_5` to stopień zaopiekowania punktu (1–5, 5 = w pełni zaopiekowany); na kafelkach macierzy pokazują go paski. W danych DEMO wynika z oceny CX (niezaopiekowany 1–2, do poprawy 3, w porządku 4–5, brak oceny = pusto), więc docelowo wpisuje ją ekspert CX.
 
-Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Źródłem danych jest [macierz-demo.xlsx](macierz-demo.xlsx) (zakładki: punkty_styku, cechy, akcje, slowniki, procesy). Po edycji uruchom `python3 tools/xlsx-to-data.py` (Python 3, bez dodatkowych bibliotek): zapisze CSV i `data/matrix.js`, więc nie edytuj ich ręcznie. Skrypt zgłasza błędy z nazwą zakładki i numerem wiersza. Test: `python3 tools/test-xlsx-to-data.py`. [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py) to jednorazowy seed xlsx z danych DEMO i nie nadpisuje istniejącego pliku bez `--force`.
+Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Źródłem danych jest [macierz-demo.xlsx](macierz-demo.xlsx) (zakładki: punkty_styku, cechy, akcje, slowniki, procesy oraz mapa przepływu: nastepne, przypadki, kroki_przypadku). Po edycji zamknij Excela i kliknij dwukrotnie `konwertuj-dane.command` (macOS) albo `konwertuj-dane.bat` (Windows), albo uruchom `python3 tools/xlsx-to-data.py` (Python 3, bez dodatkowych bibliotek): zapisze CSV, `data/matrix.js` i `data/flow.js`, więc nie edytuj ich ręcznie. Plik pobrany z internetu (zip) macOS może zablokować: otwórz go z menu kontekstowego (Otwórz), a Windows (SmartScreen) zapyta o zgodę (Więcej informacji, Uruchom mimo to). Skrypt zgłasza błędy z nazwą zakładki i numerem wiersza. Test: `python3 tools/test-xlsx-to-data.py`. [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py) to jednorazowy seed xlsx z danych DEMO i nie nadpisuje istniejącego pliku bez `--force`.
 
 Wizualizacje (otwierane dwuklikiem, offline, na tych samych danych):
 
 - [matrix.html](matrix.html): **A, heatmapa** procesów z trybem omawiania, do szukania czerwonych punktów,
 - [priorytety.html](priorytety.html): **B, priorytety działań**: mapa koszt × zysk akcji naprawczych i robocza lista na najbliższe tygodnie (niezapisywana),
 - [radar.html](radar.html): **C, radar** podróży klienta z przelotem kamery po punktach do omówienia.
+
+### Mapa przepływu i przypadki (DEMO)
+
+- `nastepne`: krawędzie mapy (`punkt_id` → `nastepny_id`, opcjonalna `etykieta`, `opcjonalny` tak/nie). Kilka wierszy z tym samym `punkt_id` to rozwidlenie. Pętle (powrót do wcześniejszego punktu) są dozwolone.
+- `przypadki` i `kroki_przypadku`: przebieg prawdziwego klienta. `stan` kroku bierze się ze słownika (`zadzialal`, `czesciowo`, `nie_zadzialal`, `brakuje`). Punkt mapy bez wpisu w przypadku to punkt pominięty. Pola `klient`, `model_pojazdu`, `numer_sprawy` są opcjonalne.
+- Tory: domyślnie macierz i podtyp punktu (importer, dealer, salon, serwis). Nowy tor to wartość w kolumnie `tor_nadpisanie` punktu oraz jego etykieta w `slowniki` (grupa `tor`; kolejność wierszy tej grupy to kolejność torów; ID toru nie może być samą liczbą).
+- Graf i przypadki w danych DEMO są wymyślone, żeby pokazać mechanikę. Docelowo wpisuje je ekspert CX. Test: `node tools/test-flow-core.js`.
 
 ## Do przemyślenia
 

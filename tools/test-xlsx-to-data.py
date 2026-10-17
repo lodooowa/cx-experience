@@ -67,8 +67,12 @@ def sample():
         "akcje": [h["akcje"], ["ak-001", "imp-01", "quick_win", "Opis", "niski", "niski", "wysoki", 4, None, "DEMO"]],
         "slowniki": [h["slowniki"], ["matrix", "importer", "Importer"], ["matrix", "dealer", "Dealer"], ["subtype", "salon", "Salon"],
                      ["rating", "ok", "W porządku"], ["rating", "brak_oceny", "Brak oceny"], ["monitoring", "tak", "Tak"], ["monitoring", "nie", "Nie"],
-                     ["featureType", "blad_typowy", "Błędy typowe"], ["actionKind", "quick_win", "Quick win"]],
+                     ["featureType", "blad_typowy", "Błędy typowe"], ["actionKind", "quick_win", "Quick win"],
+                     ["stan", "zadzialal", "Zadziałał"], ["stan", "brakuje", "Brakuje"], ["tor", "nowy", "Nowy tor"]],
         "procesy": [h["procesy"], [2, "Zapytanie"], [1, "Pozyskanie"]],
+        "nastepne": [h["nastepne"], ["imp-01", "dea-01", "etykieta", "tak", "DEMO"], ["dea-01", "imp-01", None, None, "DEMO"]],
+        "przypadki": [h["przypadki"], ["P-1", "Przypadek", None, "Model", None, "DEMO"]],
+        "kroki_przypadku": [h["kroki_przypadku"], ["P-1", 2, "dea-01", "brakuje", None, "DEMO"], ["P-1", 1, "imp-01", "zadzialal", "Co się stało", "DEMO"]],
     }
 
 
@@ -79,6 +83,16 @@ def convert(book_path):
         text = (d / "matrix.js").read_text(encoding="utf-8")
         data = json.loads(re.search(r"^window\.CX_MATRIX = (.*);\n$", text, re.S | re.M).group(1))
         return n, data, (d / "csv" / "punkty_styku.csv").read_bytes()
+
+
+def convert_flow():
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        path = d / "b.xlsx"
+        build_shared(path, sample())
+        x2d.convert(path, d / "csv", d / "matrix.js")
+        text = (d / "flow.js").read_text(encoding="utf-8")
+        return json.loads(re.search(r"^window\.CX_FLOW = (.*);\n$", text, re.S | re.M).group(1))
 
 
 def expect_error(book, fragment):
@@ -100,7 +114,7 @@ def main():
         raw = x2d.read_xlsx(path)
         assert list(raw) == list(sample()), list(raw)
         n, data, csv_bytes = convert(path)
-    assert n == (2, 1, 1), n
+    assert n == (2, 1, 1, 2, 1), n
     a, b = data["touchpoints"]
     assert a["emotionValue"] == 4 and a["care"] == 5 and "subtype" not in a, a
     assert b["emotionValue"] is None and b["care"] is None and b["subtype"] == "salon" and b["emotion"] == "", b
@@ -108,6 +122,13 @@ def main():
     assert data["features"][0]["text"] == "Zażółć gęślą jaźń", data["features"][0]
     assert data["actions"][0]["weeks"] == 4 and data["actions"][0]["implementationRisks"] == ""
     assert data["labels"]["subtype"] == {"salon": "Salon"} and data["labels"]["actionKind"] == {"quick_win": "Quick win"} and data["status"] == "DEMO"
+    assert data["touchpoints"][1]["id"] == "dea-01" and "lane" not in a
+    flow = convert_flow()
+    assert flow["edges"] == [{"from": "imp-01", "to": "dea-01", "optional": True, "label": "etykieta"}, {"from": "dea-01", "to": "imp-01", "optional": False}], flow["edges"]
+    case = flow["cases"][0]
+    assert case == {"id": "P-1", "name": "Przypadek", "vehicle": "Model", "steps": [
+        {"n": 1, "touchpointId": "imp-01", "state": "zadzialal", "note": "Co się stało"}, {"n": 2, "touchpointId": "dea-01", "state": "brakuje"}]}, case
+    assert flow["labels"]["lane"] == {"nowy": "Nowy tor"} and flow["labels"]["state"]["brakuje"] == "Brakuje"
     assert csv_bytes.startswith(b"\xef\xbb\xbf"), "CSV bez BOM"
 
     bad = sample(); bad["punkty_styku"][1][5] = "4.5"
@@ -134,6 +155,26 @@ def main():
     expect_error(bad, "'procesy', wiersz 2: wymagane lp i nazwa")
     bad = sample(); bad["punkty_styku"][1][5] = "nan"
     expect_error(bad, "'punkty_styku', wiersz 2, kolumna 'emocja_1_5'")
+    bad = sample(); bad["nastepne"][1][1] = "xx-9"
+    expect_error(bad, "'nastepne', wiersz 2: nastepny_id 'xx-9'")
+    bad = sample(); bad["nastepne"][1][1] = bad["nastepne"][1][0]
+    expect_error(bad, "nie może być swoim następnikiem")
+    bad = sample(); bad["nastepne"].append(list(bad["nastepne"][1]))
+    expect_error(bad, "'nastepne', wiersz 4: powtórzona krawędź")
+    bad = sample(); bad["kroki_przypadku"][2][1] = 2
+    expect_error(bad, "powtórzone lp 2 w przypadku 'P-1'")
+    bad = sample(); bad["przypadki"][1][1] = None
+    expect_error(bad, "'przypadki', wiersz 2: brak nazwy")
+    bad = sample(); bad["nastepne"][1][3] = "może"
+    expect_error(bad, "opcjonalny musi być")
+    bad = sample(); bad["kroki_przypadku"][1][3] = "zly"
+    expect_error(bad, "stan 'zly' nie istnieje")
+    bad = sample(); bad["kroki_przypadku"][1][0] = "P-9"
+    expect_error(bad, "przypadek_id 'P-9' nie istnieje")
+    bad = sample(); bad["punkty_styku"][1].append("nieznany_tor")
+    bad["punkty_styku"][1][11] = None
+    bad["punkty_styku"][1][12] = "5"
+    expect_error(bad, "tor_nadpisanie 'nieznany_tor' nie ma etykiety")
     bad = sample(); bad["punkty_styku"][1:1] = [[], [], []]; bad["punkty_styku"][4][1] = ""
     expect_error(bad, "'punkty_styku', wiersz 5: brak id")
 

@@ -1,0 +1,4 @@
+﻿przypadek_id;nazwa;klient;model_pojazdu;numer_sprawy;status_danych
+P-01;Zakup z jazdą próbną;Klient DEMO A;Model DEMO X;DEMO-001;DEMO
+P-02;Serwis z niespodzianką;Klient DEMO B;Model DEMO Y;DEMO-002;DEMO
+P-03;Odmowa naprawy gwarancyjnej;;;;DEMO

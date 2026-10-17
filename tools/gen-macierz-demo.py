@@ -179,8 +179,8 @@ def opieka(r):
     k=r["ocena_cx"]; i=_n[k]=_n.get(k,-1)+1
     return {"niezaopiekowany":[1,2],"do_poprawy":[3,3],"ok":[4,5]}.get(k,["",""])[i%2]
 risks=dict(l.split("|",1) for l in RISKS.split("\n"))
-punkty=[[r["macierz"],r["id"],r["punkt_styku"],r["proces"],r["emocja"],r["emocja_1_5"],r["wplyw_na_emocje"],r["monitoring"],r["wlasciciel"],r["ocena_cx"],"DEMO",podtyp(r),opieka(r)] for r in flat]
-PH=["macierz","id","punkt_styku","proces","emocja","emocja_1_5","wplyw_na_emocje","monitoring","wlasciciel","ocena_cx","status_danych","podtyp","zaopiekowanie_1_5"]
+punkty=[[r["macierz"],r["id"],r["punkt_styku"],r["proces"],r["emocja"],r["emocja_1_5"],r["wplyw_na_emocje"],r["monitoring"],r["wlasciciel"],r["ocena_cx"],"DEMO",podtyp(r),opieka(r),""] for r in flat]
+PH=["macierz","id","punkt_styku","proces","emocja","emocja_1_5","wplyw_na_emocje","monitoring","wlasciciel","ocena_cx","status_danych","podtyp","zaopiekowanie_1_5","tor_nadpisanie"]
 
 cechy=[]
 def addc(pid,typ,tr):
@@ -209,6 +209,124 @@ akcje.sort(key=lambda x:x[0])
 akcje=[[f"ak-{i:03d}"]+a+["DEMO"] for i,a in enumerate(akcje,1)]
 AH=["id","punkt_id","rodzaj","opis","koszt","ryzyko","zysk","czas_wdrozenia_tyg","ryzyka_wdrozenia","status_danych"]
 
+# Mapa przepływu (DEMO, wymyślona na potrzeby pokazania mechaniki; ekspert CX nadpisze własną): punkt|następny|etykieta|opcjonalny
+NASTEPNE="""imp-01|imp-04||nie
+imp-02|imp-04||nie
+imp-03|dea-01|kontakty z targów|nie
+imp-04|imp-05||nie
+imp-04|imp-06||tak
+imp-04|imp-07|pytanie o ofertę|tak
+imp-04|imp-08|czat|tak
+imp-04|imp-09|finansowanie|tak
+imp-05|dea-01|zapytanie|nie
+imp-05|dea-07|umów jazdę|tak
+imp-06|dea-02||nie
+imp-07|dea-01||nie
+imp-08|dea-03||nie
+imp-09|dea-11||tak
+dea-01|dea-04||nie
+dea-02|dea-04||nie
+dea-03|dea-04||nie
+dea-04|dea-05||nie
+dea-05|dea-06||nie
+dea-06|dea-07||tak
+dea-06|dea-08||nie
+dea-07|dea-08||nie
+dea-08|dea-09||tak
+dea-08|dea-10||tak
+dea-08|dea-11||tak
+dea-08|dea-12||nie
+dea-09|dea-12||nie
+dea-10|dea-12||nie
+dea-11|dea-12||nie
+dea-11|imp-10|ubezpieczenie|tak
+dea-11|imp-11|wniosek|tak
+imp-10|dea-12||nie
+imp-11|dea-12||nie
+dea-12|imp-12||nie
+imp-12|imp-13||nie
+imp-13|imp-14|gdy opóźnienie|tak
+imp-13|dea-13||nie
+imp-14|dea-13||nie
+dea-13|dea-14||nie
+dea-14|imp-15||tak
+dea-14|imp-16||tak
+dea-14|dea-15||nie
+dea-15|dea-16||nie
+imp-15|imp-17||nie
+imp-16|imp-17||nie
+dea-16|imp-17||nie
+dea-16|imp-25||tak
+imp-17|imp-18||tak
+imp-17|imp-19||tak
+imp-17|imp-20|awaria|tak
+imp-17|imp-21||tak
+imp-17|imp-22||tak
+imp-17|imp-24|wada|tak
+imp-21|dea-17||tak
+imp-22|dea-17||nie
+imp-17|dea-17||nie
+dea-17|dea-18||nie
+dea-17|dea-28|po wypadku|tak
+dea-18|dea-19||nie
+dea-18|dea-21||tak
+dea-18|dea-22||tak
+dea-18|dea-27|gwarancja|tak
+dea-19|dea-20||tak
+dea-19|dea-23||nie
+dea-20|dea-23||nie
+dea-21|dea-23||nie
+dea-22|dea-23||nie
+dea-28|dea-19||nie
+dea-23|dea-24||nie
+dea-24|dea-25||nie
+dea-25|dea-26||nie
+dea-26|imp-22|kolejny przegląd|tak
+dea-26|imp-26||tak
+dea-27|imp-23|odwołanie|tak
+imp-23|imp-24||tak
+imp-25|imp-26||nie
+imp-26|imp-27||tak
+imp-26|imp-28||tak
+imp-26|dea-30||tak
+dea-30|imp-30||nie
+imp-30|imp-29||nie
+imp-29|dea-29||tak
+imp-29|dea-01|kolejny zakup|tak"""
+PRZYPADKI="""P-01|Zakup z jazdą próbną|Klient DEMO A|Model DEMO X|DEMO-001
+P-02|Serwis z niespodzianką|Klient DEMO B|Model DEMO Y|DEMO-002
+P-03|Odmowa naprawy gwarancyjnej|||"""
+KROKI="""P-01|1|imp-01|zadzialal|Klient słyszy spot i zapamiętuje markę.
+P-01|2|imp-04|zadzialal|Na stronie znajduje model i orientacyjną cenę.
+P-01|3|imp-05|czesciowo|Konfiguruje auto, ale nie widzi jak umówić jazdę.
+P-01|4|dea-01|nie_zadzialal|Wysyła zapytanie, odpowiedź przychodzi po trzech dniach.
+P-01|5|dea-04|zadzialal|W salonie zostaje powitany po minucie.
+P-01|6|dea-05|zadzialal|Doradca pyta o dojazdy i potrzeby rodziny.
+P-01|7|dea-06|zadzialal|Prezentacja skupia się na tym, co ważne dla klienta.
+P-01|8|dea-07|zadzialal|Jazda po trasie zbliżonej do codziennych dojazdów.
+P-01|9|dea-08|czesciowo|Oferta jest czytelna, ale bez wyjaśnienia dodatków.
+P-01|10|dea-12|czesciowo|Podpisanie trwa dwie godziny, dane trzeba przepisywać.
+P-01|11|imp-12|zadzialal|Potwierdzenie przychodzi od razu, ale bez terminu.
+P-01|12|imp-13|nie_zadzialal|Przez kilka miesięcy brak informacji o statusie.
+P-01|13|imp-14|nie_zadzialal|O opóźnieniu klient dowiaduje się w dniu dostawy.
+P-01|14|dea-13|zadzialal|Auto czeka umyte i kompletne.
+P-01|15|dea-14|zadzialal|Uroczyste wydanie kluczyków.
+P-01|16|dea-15|czesciowo|Doradca pokazuje tylko kilka funkcji.
+P-01|17|dea-16|brakuje|Po wydaniu auta nikt się nie odzywa.
+P-02|1|dea-17|czesciowo|Rezerwacja tylko telefoniczna, trzy próby.
+P-02|2|dea-18|czesciowo|Przyjęcie bez potwierdzenia kosztu.
+P-02|3|dea-19|zadzialal|Kosztorys z opisem prac.
+P-02|4|dea-20|nie_zadzialal|Prace dodatkowe wykonane bez zgody klienta.
+P-02|5|dea-23|brakuje|Brak informacji o postępie prac.
+P-02|6|dea-24|zadzialal|Odbiór bez kolejki.
+P-02|7|dea-25|czesciowo|Faktura wyższa od kosztorysu, pytania o pozycje.
+P-02|8|dea-26|brakuje|Po odbiorze brak kontaktu z serwisu.
+P-03|1|dea-17|zadzialal|Rezerwacja online bez problemu.
+P-03|2|dea-18|czesciowo|Doradca przyjmuje auto, nie omawia zasad gwarancji.
+P-03|3|dea-27|nie_zadzialal|Odmowa naprawy bez uzasadnienia.
+P-03|4|imp-23|nie_zadzialal|Importer odsyła sprawę bez decyzji.
+P-03|5|imp-24|nie_zadzialal|Sprawa wędruje między działami."""
+
 import os, sys, json, datetime
 PROCESY=["Pozyskanie","Zapytanie","Zakup","Finansowanie","Zamówienie","Dostawa","Użytkowanie","Serwis","Posprzedaż","Gwarancja","Reklamacje","Auta używane","Lojalność","Wymiana"]
 assert {r[3] for r in punkty}<=set(PROCESY),{r[3] for r in punkty}-set(PROCESY)
@@ -220,7 +338,14 @@ labels={"matrix":{"importer":"Importer","dealer":"Dealer i serwis"},
  "featureType":{"dobra_praktyka":"Dobre praktyki","blad_typowy":"Błędy typowe","blad_diagnozowany":"Błędy diagnozowane","przyklad":"Przykłady z życia","zrodlo":"Źródła danych"},
  "actionKind":{"quick_win":"Quick win","docelowa":"Usprawnienie docelowe"}}
 SH=["grupa","klucz","etykieta"]
+labels["stan"]={"zadzialal":"Zadziałał","czesciowo":"Częściowo","nie_zadzialal":"Nie zadziałał","brakuje":"Brakuje"}
 slowniki=[[g,k,v] for g,d in labels.items() for k,v in d.items()]
+NH=["punkt_id","nastepny_id","etykieta","opcjonalny","status_danych"]
+nastepne=[l.split("|")+["DEMO"] for l in NASTEPNE.split("\n")]
+PCH=["przypadek_id","nazwa","klient","model_pojazdu","numer_sprawy","status_danych"]
+przypadki=[l.split("|")+["DEMO"] for l in PRZYPADKI.split("\n")]
+KH=["przypadek_id","lp","punkt_id","stan","co_sie_stalo","status_danych"]
+kroki=[[a,int(b),c,d,e,"DEMO"] for a,b,c,d,e in (l.split("|") for l in KROKI.split("\n"))]
 PRH=["lp","nazwa"]
 procesy=[[i,n] for i,n in enumerate(PROCESY,1)]
 ids={r[1] for r in punkty}
@@ -228,7 +353,7 @@ assert all(c[1] in ids for c in cechy) and all(a[1] in ids for a in akcje)
 
 if os.path.exists("macierz-demo.xlsx") and "--force" not in sys.argv:
     sys.exit("macierz-demo.xlsx już istnieje i jest źródłem danych: ten skrypt go nie nadpisze (--force wymusza, zmiany eksperta przepadną).")
-tables=[("punkty_styku",PH,punkty),("cechy",CH,cechy),("akcje",AH,akcje),("slowniki",SH,slowniki),("procesy",PRH,procesy)]
+tables=[("punkty_styku",PH,punkty),("cechy",CH,cechy),("akcje",AH,akcje),("slowniki",SH,slowniki),("procesy",PRH,procesy),("nastepne",NH,nastepne),("przypadki",PCH,przypadki),("kroki_przypadku",KH,kroki)]
 from openpyxl import Workbook
 from openpyxl.styles import Font,PatternFill,Alignment
 wb=Workbook(); wb.remove(wb.active)
