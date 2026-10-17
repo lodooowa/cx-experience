@@ -1,0 +1,56 @@
+﻿id;punkt_id;rodzaj;opis;koszt;ryzyko;zysk;czas_wdrozenia_tyg;ryzyka_wdrozenia;status_danych
+ak-001;dea-01;quick_win;Automatyczne potwierdzenie i przypomnienie po 4 h;niski;niski;wysoki;3;Doradcy mogą ignorować przypomnienia;DEMO
+ak-002;dea-02;quick_win;Raport nieodebranych połączeń;niski;niski;średni;2;Wymaga zmiany organizacji dyżurów;DEMO
+ak-003;dea-02;docelowa;Centralny numer z kolejką dla salonu;średni;średni;wysoki;16;Zmiana organizacji pracy;DEMO
+ak-004;dea-04;quick_win;Dyżur powitalny w godzinach szczytu;niski;niski;średni;2;Doradcy mogą odbierać dyżur jako obciążenie;DEMO
+ak-005;dea-08;quick_win;Ujednolicony szablon oferty;niski;niski;wysoki;4;Dealerzy mają własne procedury ofertowania;DEMO
+ak-006;dea-09;quick_win;Zasady rabatowe znane klientowi;niski;średni;średni;6;Rabaty zależą od polityki importera;DEMO
+ak-007;dea-10;quick_win;Raport wyceny z uzasadnieniem;niski;niski;średni;4;Różne standardy wyceny między dealerami;DEMO
+ak-008;dea-11;quick_win;Karta jednej strony z warunkami;niski;średni;wysoki;5;Zmiana szablonu wymaga zgody finansującego;DEMO
+ak-009;dea-12;docelowa;Cyfrowe podpisywanie;średni;niski;średni;12;Integracja z systemem umów;DEMO
+ak-010;dea-15;quick_win;Lista 10 funkcji do pokazania;niski;niski;średni;3;Brak czasu przy wydaniu auta;DEMO
+ak-011;dea-16;quick_win;SMS po 7 dniach od wydania;niski;niski;średni;2;Kontakt wymaga zgód marketingowych;DEMO
+ak-012;dea-17;docelowa;Rezerwacja online z kalendarzem;średni;średni;wysoki;16;Integracja z systemem serwisowym;DEMO
+ak-013;dea-17;quick_win;Przypomnienia o terminie serwisu;niski;niski;średni;3;Wymaga zgód marketingowych;DEMO
+ak-014;dea-18;quick_win;Karta przyjęcia z kosztem i terminem;niski;niski;średni;3;Doradcy muszą zmienić nawyki;DEMO
+ak-015;dea-19;quick_win;Opisy prac prostym językiem;niski;niski;średni;4;Czasochłonne opisywanie prac;DEMO
+ak-016;dea-20;quick_win;Telefon przed każdą pracą dodatkową;niski;średni;wysoki;3;Opór serwisu przed dodatkowym kontaktem;DEMO
+ak-017;dea-20;docelowa;Aplikacja do akceptacji prac przez klienta;wysoki;średni;wysoki;24;Wdrożenie w całej sieci;DEMO
+ak-018;dea-22;docelowa;Odświeżenie poczekalni;średni;niski;niski;10;Remont może kolidować z pracą serwisu;DEMO
+ak-019;dea-23;quick_win;SMS o statusie naprawy;niski;niski;wysoki;4;Wymaga integracji z systemem warsztatowym;DEMO
+ak-020;dea-23;quick_win;Zdjęcia z postępu prac wysyłane SMS-em;niski;niski;średni;2;Czas pracy mechaników;DEMO
+ak-021;dea-24;quick_win;Zebrać dane o emocjach klientów;niski;niski;średni;2;Brak jednego opiekuna sprawy;DEMO
+ak-022;dea-26;quick_win;SMS po 3 dniach;niski;niski;średni;2;Kontakt wymaga zgód marketingowych;DEMO
+ak-023;dea-27;quick_win;Wyjaśnienie zasad gwarancji klientowi;niski;średni;wysoki;6;Ryzyko rozbieżności z polityką importera;DEMO
+ak-024;dea-28;docelowa;Opiekun sprawy dla napraw powypadkowych;średni;niski;wysoki;8;Obciążenie zespołu opiekunów;DEMO
+ak-025;dea-29;docelowa;Raport stanu auta;średni;średni;wysoki;10;Koszt raportów stanu;DEMO
+ak-026;dea-29;docelowa;Certyfikacja aut używanych;wysoki;średni;wysoki;36;Koszt i audyt dealerów;DEMO
+ak-027;dea-30;quick_win;Kontakt 6 miesięcy przed końcem;niski;niski;wysoki;4;Kontakt wymaga zgód marketingowych;DEMO
+ak-028;imp-02;quick_win;Dyżur moderatora w godzinach szczytu;średni;niski;średni;4;Dyżury wymagają obsady poza godzinami pracy;DEMO
+ak-029;imp-03;docelowa;Proces przekazywania kontaktów do dealerów;średni;niski;wysoki;8;Zła jakość danych kontaktowych z wydarzeń;DEMO
+ak-030;imp-03;quick_win;Formularz zbierania kontaktów przez kod QR na stoisku;niski;niski;średni;2;Wymaga obsady stoiska;DEMO
+ak-031;imp-04;docelowa;Test użyteczności i uproszczenie menu;średni;niski;wysoki;10;Wymaga uzgodnienia z działem prawnym i zespołem UX;DEMO
+ak-032;imp-05;quick_win;Przycisk „umów jazdę próbną” w konfiguratorze;niski;niski;wysoki;4;Integracja z systemami dealerów;DEMO
+ak-033;imp-05;docelowa;Integracja konfiguratora z systemem dealerów;wysoki;średni;wysoki;26;Integracja z wieloma systemami;DEMO
+ak-034;imp-06;quick_win;Coroczna weryfikacja danych dealerów;niski;niski;średni;6;Dealerzy muszą aktualizować dane sami;DEMO
+ak-035;imp-07;docelowa;Baza wiedzy o aktualnych ofertach;średni;średni;średni;8;Baza wiedzy szybko się dezaktualizuje;DEMO
+ak-036;imp-08;quick_win;Przekazanie do człowieka po drugim pytaniu;średni;niski;średni;6;Zmiana wymaga prac po stronie dostawcy chatbota;DEMO
+ak-037;imp-09;docelowa;Uwzględnić koszty dodatkowe w kalkulatorze;średni;średni;średni;12;Zmiana wyliczeń wymaga zgody działu prawnego;DEMO
+ak-038;imp-10;quick_win;Zebrać dane o emocjach klientów w tym punkcie;niski;niski;średni;4;Brak kontaktu z klientami w tym punkcie;DEMO
+ak-039;imp-11;quick_win;Powiadomienia SMS o statusie wniosku;niski;niski;wysoki;5;Koszt wysyłki SMS i integracja z systemem wniosków;DEMO
+ak-040;imp-13;docelowa;Automatyczne powiadomienia o etapach;średni;niski;wysoki;12;Dane o produkcji mogą być niepełne;DEMO
+ak-041;imp-13;docelowa;Portal klienta ze statusem zamówienia;wysoki;średni;wysoki;30;Zależność od danych z produkcji;DEMO
+ak-042;imp-14;docelowa;Procedura informowania i rekompensaty;średni;średni;wysoki;10;Rekompensaty zwiększają koszty;DEMO
+ak-043;imp-15;quick_win;Lista kontrolna dokumentów w potwierdzeniu;niski;niski;średni;3;Wymaga uzgodnienia z urzędami;DEMO
+ak-044;imp-17;docelowa;Testy regresji przed wydaniem;średni;średni;wysoki;14;Ryzyko opóźnienia wydań aplikacji;DEMO
+ak-045;imp-18;quick_win;Opis zmian w aplikacji;niski;niski;średni;4;Ryzyko niezgodności z oprogramowaniem auta;DEMO
+ak-046;imp-19;quick_win;Przypomnienia o końcu okresu próbnego;niski;średni;wysoki;6;Zmiana komunikacji wymaga zgody działu prawnego;DEMO
+ak-047;imp-21;quick_win;Nowy list i SMS z linkiem do rezerwacji;niski;średni;wysoki;6;Ryzyko zbyt alarmującego tonu komunikatu;DEMO
+ak-048;imp-23;docelowa;Szablon decyzji z uzasadnieniem i procedurą odwołania;niski;średni;wysoki;8;Potrzebna zgoda działu prawnego i jakości;DEMO
+ak-049;imp-24;docelowa;Jeden opiekun sprawy od początku;średni;średni;wysoki;16;Opiekun musi mieć uprawnienia do decyzji;DEMO
+ak-050;imp-24;docelowa;System jednego rekordu sprawy;wysoki;wysoki;wysoki;40;Duży projekt IT i zmiana procesów;DEMO
+ak-051;imp-26;docelowa;Widoczne saldo punktów w aplikacji;średni;niski;średni;10;Zmiana integracji z aplikacją;DEMO
+ak-052;imp-28;docelowa;Pilotaż klubu w jednym regionie;średni;niski;wysoki;20;Pilotaż może nie wzbudzić zainteresowania;DEMO
+ak-053;imp-28;docelowa;Ogólnopolski klub właścicieli;wysoki;średni;wysoki;52;Wymaga stałego budżetu;DEMO
+ak-054;imp-29;docelowa;Wycena online przed końcem umowy;średni;niski;wysoki;12;Wycena wymaga danych rynkowych;DEMO
+ak-055;imp-30;docelowa;Przewodnik po opcjach i kosztach zwrotu;niski;średni;wysoki;8;Koszty zwrotu zależą od leasingodawcy;DEMO

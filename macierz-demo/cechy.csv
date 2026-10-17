@@ -1,0 +1,360 @@
+﻿id;punkt_id;typ;tresc;status_danych
+ch-001;dea-01;dobra_praktyka;Odpowiedź w 1 dzień roboczy;DEMO
+ch-002;dea-01;blad_typowy;Odpowiedź po kilku dniach;DEMO
+ch-003;dea-01;blad_diagnozowany;Brak odpowiedzi w 24 h;DEMO
+ch-004;dea-01;przyklad;Klient czeka trzy dni na kontakt;DEMO
+ch-005;dea-01;zrodlo;analityka;DEMO
+ch-006;dea-01;zrodlo;obserwacje;DEMO
+ch-007;dea-01;dobra_praktyka;Automatyczne potwierdzenie przyjęcia zgłoszenia;DEMO
+ch-008;dea-02;dobra_praktyka;Odbiór w 5 sygnałów lub oddzwonienie;DEMO
+ch-009;dea-02;blad_typowy;Nikt nie odbiera;DEMO
+ch-010;dea-02;blad_diagnozowany;Nieodebrane połączenia w godzinach pracy;DEMO
+ch-011;dea-02;przyklad;Klient dzwoni trzy razy w ciągu godziny;DEMO
+ch-012;dea-02;zrodlo;opinie Google;DEMO
+ch-013;dea-03;dobra_praktyka;Odpowiedź w 30 minut;DEMO
+ch-014;dea-03;blad_typowy;Brak obsługi poza godzinami;DEMO
+ch-015;dea-03;blad_diagnozowany;Brak monitorowania wiadomości;DEMO
+ch-016;dea-03;przyklad;Doradca odpowiada na zdjęcie auta w 10 minut;DEMO
+ch-017;dea-03;zrodlo;ankiety;DEMO
+ch-018;dea-03;dobra_praktyka;Doradca przedstawia się z imienia;DEMO
+ch-019;dea-04;dobra_praktyka;Powitanie w ciągu 1 minuty;DEMO
+ch-020;dea-04;blad_typowy;Klient czeka bez powitania;DEMO
+ch-021;dea-04;blad_diagnozowany;Brak powitania przy dużym ruchu;DEMO
+ch-022;dea-04;przyklad;Klient chodzi po salonie i nikt się nie odzywa;DEMO
+ch-023;dea-04;zrodlo;obserwacje;DEMO
+ch-024;dea-04;zrodlo;tajemniczy klient;DEMO
+ch-025;dea-04;blad_typowy;Doradca zajęty innym klientem;DEMO
+ch-026;dea-05;dobra_praktyka;Doradca zadaje pytania i notuje potrzeby;DEMO
+ch-027;dea-05;blad_typowy;Pytania zbyt ogólne;DEMO
+ch-028;dea-05;blad_diagnozowany;Doradca od razu prezentuje model;DEMO
+ch-029;dea-05;przyklad;Doradca pyta o codzienne dojazdy;DEMO
+ch-030;dea-05;zrodlo;ankiety;DEMO
+ch-031;dea-05;zrodlo;NPS;DEMO
+ch-032;dea-06;dobra_praktyka;Prezentacja dopasowana do potrzeb;DEMO
+ch-033;dea-06;blad_typowy;Zbyt techniczna prezentacja;DEMO
+ch-034;dea-06;blad_diagnozowany;Prezentacja bez odniesienia do potrzeb;DEMO
+ch-035;dea-06;przyklad;Doradca pokazuje funkcje ważne dla rodziny klienta;DEMO
+ch-036;dea-06;zrodlo;ankiety;DEMO
+ch-037;dea-06;zrodlo;NPS;DEMO
+ch-038;dea-07;dobra_praktyka;Trasa dopasowana i rozmowa po jeździe;DEMO
+ch-039;dea-07;blad_typowy;Trasa niedopasowana do potrzeb;DEMO
+ch-040;dea-07;blad_diagnozowany;Jazda bez rozmowy o wrażeniach;DEMO
+ch-041;dea-07;przyklad;Doradca dopasowuje trasę do dojazdów klienta;DEMO
+ch-042;dea-07;zrodlo;ankiety;DEMO
+ch-043;dea-07;zrodlo;NPS;DEMO
+ch-044;dea-07;dobra_praktyka;Rozmowa po jeździe o wrażeniach;DEMO
+ch-045;dea-07;dobra_praktyka;Trasa wybrana z klientem;DEMO
+ch-046;dea-08;dobra_praktyka;Jedna czytelna oferta;DEMO
+ch-047;dea-08;blad_typowy;Oferta bez wyjaśnienia składników;DEMO
+ch-048;dea-08;blad_diagnozowany;Klient nie rozumie różnic między ofertami;DEMO
+ch-049;dea-08;przyklad;Dwie oferty o różnych cenach bez wyjaśnienia;DEMO
+ch-050;dea-08;zrodlo;opinie Google;DEMO
+ch-051;dea-08;zrodlo;obserwacje;DEMO
+ch-052;dea-08;blad_diagnozowany;Oferta dociera po tygodniu;DEMO
+ch-053;dea-09;dobra_praktyka;Spokojna rozmowa o wartości;DEMO
+ch-054;dea-09;blad_typowy;Presja czasu i zmiana warunków;DEMO
+ch-055;dea-09;blad_diagnozowany;Zmiana warunków w trakcie rozmowy;DEMO
+ch-056;dea-09;przyklad;Doradca zmienia rabat po konsultacji z szefem;DEMO
+ch-057;dea-09;zrodlo;opinie Google;DEMO
+ch-058;dea-10;dobra_praktyka;Wycena z uzasadnieniem;DEMO
+ch-059;dea-10;blad_typowy;Wycena bez uzasadnienia;DEMO
+ch-060;dea-10;blad_diagnozowany;Klienci porównują wycenę z internetem;DEMO
+ch-061;dea-10;przyklad;Klient dostaje niższą wycenę niż online;DEMO
+ch-062;dea-10;zrodlo;opinie Google;DEMO
+ch-063;dea-10;zrodlo;ankiety;DEMO
+ch-064;dea-11;dobra_praktyka;Przejrzyste warunki;DEMO
+ch-065;dea-11;blad_typowy;Za mało czasu na wyjaśnienia;DEMO
+ch-066;dea-11;blad_diagnozowany;Klient podpisuje bez zrozumienia;DEMO
+ch-067;dea-11;przyklad;Doradca omija koszty dodatkowe;DEMO
+ch-068;dea-11;zrodlo;ankiety;DEMO
+ch-069;dea-11;zrodlo;NPS;DEMO
+ch-070;dea-12;dobra_praktyka;Podpisanie w 30 minut;DEMO
+ch-071;dea-12;blad_typowy;Długi czas i wiele dokumentów;DEMO
+ch-072;dea-12;blad_diagnozowany;Powtarzanie tych samych danych;DEMO
+ch-073;dea-12;przyklad;Klient przepisuje dane na pięciu formularzach;DEMO
+ch-074;dea-12;zrodlo;obserwacje;DEMO
+ch-075;dea-13;dobra_praktyka;Auto czyste i kompletne;DEMO
+ch-076;dea-13;blad_typowy;Auto brudne lub z brakami;DEMO
+ch-077;dea-13;blad_diagnozowany;Rzadkie braki w wyposażeniu;DEMO
+ch-078;dea-13;przyklad;Auto czeka umyte i z dopiętymi dodatkami;DEMO
+ch-079;dea-13;zrodlo;ankiety;DEMO
+ch-080;dea-14;dobra_praktyka;Uroczyste wydanie;DEMO
+ch-081;dea-14;blad_typowy;Pośpiech i formalności;DEMO
+ch-082;dea-14;blad_diagnozowany;Brak czasu na omówienie;DEMO
+ch-083;dea-14;przyklad;Klient dostaje kluczyki i zdjęcie;DEMO
+ch-084;dea-14;zrodlo;ankiety;DEMO
+ch-085;dea-14;zrodlo;NPS;DEMO
+ch-086;dea-14;dobra_praktyka;Zdjęcie pamiątkowe z kluczykami;DEMO
+ch-087;dea-14;dobra_praktyka;Omówienie najważniejszych funkcji;DEMO
+ch-088;dea-15;dobra_praktyka;Pokazanie 10 najważniejszych funkcji;DEMO
+ch-089;dea-15;blad_typowy;Brak pokazania funkcji;DEMO
+ch-090;dea-15;blad_diagnozowany;Klient nie umie obsłużyć systemu;DEMO
+ch-091;dea-15;przyklad;Nikt nie pokazuje jak sparować telefon;DEMO
+ch-092;dea-15;zrodlo;ankiety;DEMO
+ch-093;dea-16;dobra_praktyka;Telefon lub SMS po 7 dniach;DEMO
+ch-094;dea-16;blad_typowy;Brak jakiegokolwiek kontaktu;DEMO
+ch-095;dea-16;blad_diagnozowany;Brak działań po wydaniu;DEMO
+ch-096;dea-16;przyklad;Klient nie słyszy od dealera po odbiorze;DEMO
+ch-097;dea-16;zrodlo;obserwacje;DEMO
+ch-098;dea-17;dobra_praktyka;Rezerwacja online w 2 minuty;DEMO
+ch-099;dea-17;blad_typowy;Rezerwacja tylko telefoniczna;DEMO
+ch-100;dea-17;blad_diagnozowany;Brak wolnych terminów online;DEMO
+ch-101;dea-17;przyklad;Klient dzwoni trzy razy;DEMO
+ch-102;dea-17;zrodlo;analityka;DEMO
+ch-103;dea-17;zrodlo;opinie Google;DEMO
+ch-104;dea-17;blad_diagnozowany;Brak wolnych terminów w ciągu 2 tygodni;DEMO
+ch-105;dea-18;dobra_praktyka;Doradca potwierdza zakres, koszt i termin;DEMO
+ch-106;dea-18;blad_typowy;Brak omówienia zakresu i kosztu;DEMO
+ch-107;dea-18;blad_diagnozowany;Brak potwierdzenia kosztu;DEMO
+ch-108;dea-18;przyklad;Klient zostawia auto i nie wie kiedy będzie informacja;DEMO
+ch-109;dea-18;zrodlo;ankiety;DEMO
+ch-110;dea-18;zrodlo;NPS;DEMO
+ch-111;dea-19;dobra_praktyka;Wyjaśnienie każdej pozycji;DEMO
+ch-112;dea-19;blad_typowy;Brak wyjaśnienia pozycji;DEMO
+ch-113;dea-19;blad_diagnozowany;Klient nie rozumie kosztów;DEMO
+ch-114;dea-19;przyklad;Kosztorys bez opisu prac;DEMO
+ch-115;dea-19;zrodlo;opinie Google;DEMO
+ch-116;dea-19;blad_typowy;Opisy prac w żargonie;DEMO
+ch-117;dea-20;dobra_praktyka;Zgoda klienta przed każdą pracą dodatkową;DEMO
+ch-118;dea-20;blad_typowy;Wykonanie prac bez zgody klienta;DEMO
+ch-119;dea-20;blad_diagnozowany;Faktura wyższa niż kosztorys;DEMO
+ch-120;dea-20;przyklad;Faktura wyższa o 30 procent bez telefonu;DEMO
+ch-121;dea-20;zrodlo;NPS;DEMO
+ch-122;dea-20;zrodlo;opinie Google;DEMO
+ch-123;dea-20;blad_diagnozowany;Klienci zgłaszają prace bez zgody;DEMO
+ch-124;dea-21;dobra_praktyka;Auto dostępne bez kaucji;DEMO
+ch-125;dea-21;blad_typowy;Brak dostępności;DEMO
+ch-126;dea-21;blad_diagnozowany;Brak aut zastępczych w szczycie;DEMO
+ch-127;dea-21;przyklad;Klient dostaje auto na czas naprawy;DEMO
+ch-128;dea-21;zrodlo;ankiety;DEMO
+ch-129;dea-21;zrodlo;NPS;DEMO
+ch-130;dea-21;dobra_praktyka;Auto zastępcze bez kaucji;DEMO
+ch-131;dea-21;blad_typowy;Brak dostępności w szczycie sezonu;DEMO
+ch-132;dea-22;dobra_praktyka;Komfortowa poczekalnia;DEMO
+ch-133;dea-22;blad_typowy;Brak kawy i internetu;DEMO
+ch-134;dea-22;blad_diagnozowany;Skargi na komfort;DEMO
+ch-135;dea-22;przyklad;Klient czeka dwie godziny bez wody;DEMO
+ch-136;dea-22;zrodlo;opinie Google;DEMO
+ch-137;dea-23;dobra_praktyka;SMS o postępie prac;DEMO
+ch-138;dea-23;blad_typowy;Brak aktualizacji o statusie;DEMO
+ch-139;dea-23;blad_diagnozowany;Klienci dzwonią z pytaniem o status;DEMO
+ch-140;dea-23;przyklad;Klient dzwoni cztery razy;DEMO
+ch-141;dea-23;zrodlo;opinie Google;DEMO
+ch-142;dea-24;dobra_praktyka;Pełne wyjaśnienie prac;DEMO
+ch-143;dea-24;blad_typowy;Brak wyjaśnienia prac;DEMO
+ch-144;dea-24;dobra_praktyka;Doradca omawia prace przy aucie;DEMO
+ch-145;dea-25;dobra_praktyka;Przejrzysta faktura;DEMO
+ch-146;dea-25;blad_typowy;Zbyt skomplikowana faktura;DEMO
+ch-147;dea-25;blad_diagnozowany;Pytania o pozycje faktury;DEMO
+ch-148;dea-25;przyklad;Klient prosi o wyjaśnienie faktury;DEMO
+ch-149;dea-25;zrodlo;ankiety;DEMO
+ch-150;dea-26;dobra_praktyka;SMS po 3 dniach;DEMO
+ch-151;dea-26;blad_typowy;Brak jakiegokolwiek kontaktu;DEMO
+ch-152;dea-26;blad_diagnozowany;Brak działań po wizycie;DEMO
+ch-153;dea-26;przyklad;Klient nigdy nie słyszy od serwisu po odbiorze;DEMO
+ch-154;dea-26;zrodlo;obserwacje;DEMO
+ch-155;dea-27;dobra_praktyka;Jasne zasady i szybka decyzja;DEMO
+ch-156;dea-27;blad_typowy;Odmowa bez wyjaśnienia;DEMO
+ch-157;dea-27;blad_diagnozowany;Odmowy bez uzasadnienia;DEMO
+ch-158;dea-27;przyklad;Serwis odmawia naprawy i odsyła do importera;DEMO
+ch-159;dea-27;zrodlo;NPS;DEMO
+ch-160;dea-27;zrodlo;opinie Google;DEMO
+ch-161;dea-27;dobra_praktyka;Wyjaśnienie zasad gwarancji przed naprawą;DEMO
+ch-162;dea-28;dobra_praktyka;Opiekun sprawy i terminy;DEMO
+ch-163;dea-28;blad_typowy;Brak empatii i informacji;DEMO
+ch-164;dea-28;blad_diagnozowany;Brak opiekuna sprawy;DEMO
+ch-165;dea-28;przyklad;Klient po wypadku sam kontaktuje się z ubezpieczycielem;DEMO
+ch-166;dea-28;zrodlo;opinie Google;DEMO
+ch-167;dea-28;dobra_praktyka;Pomoc w kontakcie z ubezpieczycielem;DEMO
+ch-168;dea-29;dobra_praktyka;Pełna historia i gwarancja;DEMO
+ch-169;dea-29;blad_typowy;Brak historii auta;DEMO
+ch-170;dea-29;blad_diagnozowany;Skargi na stan auta;DEMO
+ch-171;dea-29;przyklad;Klient odkrywa wadę po tygodniu;DEMO
+ch-172;dea-29;zrodlo;opinie Google;DEMO
+ch-173;dea-29;blad_typowy;Brak pełnej historii serwisowej;DEMO
+ch-174;dea-29;dobra_praktyka;Gwarancja dealera na auto używane;DEMO
+ch-175;dea-30;dobra_praktyka;Kontakt 6 miesięcy przed końcem;DEMO
+ch-176;dea-30;blad_typowy;Brak kontaktu przed końcem;DEMO
+ch-177;dea-30;blad_diagnozowany;Klient dowiaduje się z listu;DEMO
+ch-178;dea-30;przyklad;Klient nie zna opcji na koniec umowy;DEMO
+ch-179;dea-30;zrodlo;obserwacje;DEMO
+ch-180;imp-01;dobra_praktyka;Spójny przekaz i jasny następny krok;DEMO
+ch-181;imp-01;blad_typowy;Obietnice nieprzystające do oferty;DEMO
+ch-182;imp-01;blad_diagnozowany;Brak adresu lub kodu do kontaktu;DEMO
+ch-183;imp-01;przyklad;Spot zachęca do wizyty, ale nie podaje salonu;DEMO
+ch-184;imp-01;zrodlo;ankiety;DEMO
+ch-185;imp-01;zrodlo;NPS;DEMO
+ch-186;imp-01;dobra_praktyka;Kreacje spójne we wszystkich kanałach;DEMO
+ch-187;imp-01;blad_typowy;Zbyt wiele obietnic w jednym spocie;DEMO
+ch-188;imp-02;dobra_praktyka;Odpowiedź w ciągu 2 godzin;DEMO
+ch-189;imp-02;blad_typowy;Brak odpowiedzi na komentarze;DEMO
+ch-190;imp-02;blad_diagnozowany;Komentarze bez reakcji przez dni;DEMO
+ch-191;imp-02;przyklad;Pytanie o cenę pod postem zostaje bez odpowiedzi;DEMO
+ch-192;imp-02;zrodlo;obserwacje;DEMO
+ch-193;imp-02;zrodlo;analityka;DEMO
+ch-194;imp-03;dobra_praktyka;Zebrane kontakty trafiają do dealera w 48 h;DEMO
+ch-195;imp-03;blad_typowy;Brak kontynuacji po wydarzeniu;DEMO
+ch-196;imp-03;blad_diagnozowany;Kontakty z targów nie trafiają do dealerów;DEMO
+ch-197;imp-03;przyklad;Klient zostawia dane na targach i nikt się nie odzywa;DEMO
+ch-198;imp-03;zrodlo;obserwacje;DEMO
+ch-199;imp-03;dobra_praktyka;Dane kontaktowe zbierane na miejscu przez skan kodu;DEMO
+ch-200;imp-04;dobra_praktyka;Klient w 3 kliknięciach znajduje model i cenę;DEMO
+ch-201;imp-04;blad_typowy;Nieaktualne ceny, trudna nawigacja;DEMO
+ch-202;imp-04;blad_diagnozowany;Wysoki odsetek wyjść ze strony ofertowej;DEMO
+ch-203;imp-04;przyklad;Cena na stronie różni się od ceny w salonie;DEMO
+ch-204;imp-04;zrodlo;analityka;DEMO
+ch-205;imp-04;zrodlo;opinie Google;DEMO
+ch-206;imp-05;dobra_praktyka;Z konfiguracji jednym kliknięciem umawiasz jazdę;DEMO
+ch-207;imp-05;blad_typowy;Brak przejścia do kontaktu z dealerem;DEMO
+ch-208;imp-05;blad_diagnozowany;Brak propozycji jazdy po konfiguracji;DEMO
+ch-209;imp-05;przyklad;Klient kończy konfigurację i nie wie co dalej;DEMO
+ch-210;imp-05;zrodlo;analityka;DEMO
+ch-211;imp-05;zrodlo;obserwacje;DEMO
+ch-212;imp-05;dobra_praktyka;Zapisywanie konfiguracji na koncie klienta;DEMO
+ch-213;imp-05;blad_typowy;Brak podglądu ceny końcowej;DEMO
+ch-214;imp-05;blad_diagnozowany;Wysoki odsetek porzuceń na ostatnim kroku;DEMO
+ch-215;imp-06;dobra_praktyka;Aktualne dane z potwierdzeniem godzin pracy;DEMO
+ch-216;imp-06;blad_typowy;Nieaktualne godziny i telefony;DEMO
+ch-217;imp-06;blad_diagnozowany;Klienci trafiają pod zły numer;DEMO
+ch-218;imp-06;przyklad;Klient dzwoni na numer, który nie istnieje;DEMO
+ch-219;imp-06;zrodlo;opinie Google;DEMO
+ch-220;imp-07;dobra_praktyka;Konsultant zna ofertę i kieruje do dealera;DEMO
+ch-221;imp-07;blad_typowy;Brak wiedzy o promocjach dealerów;DEMO
+ch-222;imp-07;blad_diagnozowany;Sprzeczne informacje o promocjach;DEMO
+ch-223;imp-07;przyklad;Konsultant podaje cenę inną niż na stronie;DEMO
+ch-224;imp-07;zrodlo;ankiety;DEMO
+ch-225;imp-07;zrodlo;nagrania rozmów;DEMO
+ch-226;imp-07;dobra_praktyka;Konsultant widzi historię kontaktów klienta;DEMO
+ch-227;imp-08;dobra_praktyka;Szybkie przekazanie do konsultanta;DEMO
+ch-228;imp-08;blad_typowy;Pętla odpowiedzi bez przekazania człowiekowi;DEMO
+ch-229;imp-08;blad_diagnozowany;Wysoki odsetek rozmów porzuconych;DEMO
+ch-230;imp-08;przyklad;Bot powtarza te same trzy odpowiedzi;DEMO
+ch-231;imp-08;zrodlo;analityka;DEMO
+ch-232;imp-08;zrodlo;opinie;DEMO
+ch-233;imp-09;dobra_praktyka;Czytelna rata z podanym całkowitym kosztem;DEMO
+ch-234;imp-09;blad_typowy;Wyniki bez uwzględnienia kosztów dodatkowych;DEMO
+ch-235;imp-09;blad_diagnozowany;Rata różni się od oferty dealera;DEMO
+ch-236;imp-09;przyklad;Klient widzi ratę, której dealer nie potwierdza;DEMO
+ch-237;imp-09;zrodlo;opinie Google;DEMO
+ch-238;imp-10;blad_typowy;Brak jasnej oferty;DEMO
+ch-239;imp-10;blad_diagnozowany;Brak danych o odbiorze oferty;DEMO
+ch-240;imp-11;dobra_praktyka;Decyzja w 24 h z informacją o statusie;DEMO
+ch-241;imp-11;blad_typowy;Długi czas decyzji bez informacji o statusie;DEMO
+ch-242;imp-11;blad_diagnozowany;Brak informacji o statusie wniosku;DEMO
+ch-243;imp-11;przyklad;Klient czeka trzy dni i nie wie czy jest decyzja;DEMO
+ch-244;imp-11;zrodlo;NPS;DEMO
+ch-245;imp-11;zrodlo;ankiety;DEMO
+ch-246;imp-12;dobra_praktyka;Potwierdzenie z terminem i opiekunem;DEMO
+ch-247;imp-12;blad_typowy;Brak szczegółów o terminie;DEMO
+ch-248;imp-12;blad_diagnozowany;Brak daty dostawy w potwierdzeniu;DEMO
+ch-249;imp-12;przyklad;Klient dostaje potwierdzenie bez terminu;DEMO
+ch-250;imp-12;zrodlo;ankiety;DEMO
+ch-251;imp-13;dobra_praktyka;Informacja o statusie co dwa tygodnie;DEMO
+ch-252;imp-13;blad_typowy;Brak aktualizacji statusu;DEMO
+ch-253;imp-13;blad_diagnozowany;Klienci dzwonią z pytaniem o termin;DEMO
+ch-254;imp-13;przyklad;Klient czeka pół roku bez żadnej informacji;DEMO
+ch-255;imp-13;zrodlo;opinie Google;DEMO
+ch-256;imp-13;zrodlo;obserwacje;DEMO
+ch-257;imp-13;blad_typowy;Status zmienia się bez komunikatu do klienta;DEMO
+ch-258;imp-14;dobra_praktyka;Wcześniejsza informacja, przeprosiny i rekompensata;DEMO
+ch-259;imp-14;blad_typowy;Informacja o opóźnieniu po fakcie;DEMO
+ch-260;imp-14;blad_diagnozowany;Klient dowiaduje się w dniu dostawy;DEMO
+ch-261;imp-14;przyklad;Auto miało być w marcu, klient dowiaduje się w kwietniu;DEMO
+ch-262;imp-14;zrodlo;NPS;DEMO
+ch-263;imp-14;zrodlo;opinie Google;DEMO
+ch-264;imp-14;dobra_praktyka;Przeprosiny i konkretna rekompensata;DEMO
+ch-265;imp-15;dobra_praktyka;Jedna lista kroków i dokumentów;DEMO
+ch-266;imp-15;blad_typowy;Brak jasnej listy dokumentów;DEMO
+ch-267;imp-15;blad_diagnozowany;Klient wraca po brakujące dokumenty;DEMO
+ch-268;imp-15;przyklad;Klient jedzie do urzędu dwa razy;DEMO
+ch-269;imp-15;zrodlo;obserwacje;DEMO
+ch-270;imp-16;dobra_praktyka;Spójny pakiet z podziękowaniem od marki;DEMO
+ch-271;imp-16;blad_typowy;Brak spójności między dealerami;DEMO
+ch-272;imp-16;blad_diagnozowany;Pakiet nie dociera do części klientów;DEMO
+ch-273;imp-16;przyklad;Klient dostaje list od marki z kluczem do aplikacji;DEMO
+ch-274;imp-16;zrodlo;ankiety;DEMO
+ch-275;imp-17;dobra_praktyka;Stabilna aplikacja z pełną funkcją;DEMO
+ch-276;imp-17;blad_typowy;Błędy po aktualizacji;DEMO
+ch-277;imp-17;blad_diagnozowany;Niska ocena w sklepie po aktualizacji;DEMO
+ch-278;imp-17;przyklad;Aplikacja nie łączy się z autem po aktualizacji;DEMO
+ch-279;imp-17;zrodlo;opinie w sklepach;DEMO
+ch-280;imp-17;zrodlo;analityka;DEMO
+ch-281;imp-17;blad_typowy;Niezrozumiałe komunikaty błędów;DEMO
+ch-282;imp-18;dobra_praktyka;Czytelny opis zmian i prosty proces;DEMO
+ch-283;imp-18;blad_typowy;Brak informacji o zmianach;DEMO
+ch-284;imp-18;blad_diagnozowany;Klienci nie wiedzą co zmieniła aktualizacja;DEMO
+ch-285;imp-18;przyklad;Aktualizacja zmienia ustawienia bez informacji;DEMO
+ch-286;imp-18;zrodlo;opinie;DEMO
+ch-287;imp-18;zrodlo;ankiety;DEMO
+ch-288;imp-19;dobra_praktyka;Jasne warunki i ceny po okresie próbnym;DEMO
+ch-289;imp-19;blad_typowy;Funkcje niedostępne po okresie próbnym;DEMO
+ch-290;imp-19;blad_diagnozowany;Klienci nie wiedzą kiedy kończy się okres próbny;DEMO
+ch-291;imp-19;przyklad;Funkcja przestaje działać po roku bez ostrzeżenia;DEMO
+ch-292;imp-19;zrodlo;opinie Google;DEMO
+ch-293;imp-19;dobra_praktyka;Jasna tabela funkcji i okresów próbnych;DEMO
+ch-294;imp-20;dobra_praktyka;Holownik w 60 minut, kontakt na bieżąco;DEMO
+ch-295;imp-20;blad_typowy;Długi czas oczekiwania na holownik;DEMO
+ch-296;imp-20;blad_diagnozowany;Rzadkie przypadki oczekiwania powyżej 2 godzin;DEMO
+ch-297;imp-20;przyklad;Konsultant dzwoni co 15 minut z informacją;DEMO
+ch-298;imp-20;zrodlo;ankiety;DEMO
+ch-299;imp-20;zrodlo;NPS;DEMO
+ch-300;imp-20;dobra_praktyka;Konsultant podaje czas dojazdu na bieżąco;DEMO
+ch-301;imp-21;dobra_praktyka;Jasna informacja, termin u dealera i brak kosztów;DEMO
+ch-302;imp-21;blad_typowy;Suchy list bez wskazania kolejnych kroków;DEMO
+ch-303;imp-21;blad_diagnozowany;Klienci nie reagują na pierwszy kontakt;DEMO
+ch-304;imp-21;przyklad;Klient dostaje list i nie wie czy auto jest bezpieczne;DEMO
+ch-305;imp-21;zrodlo;obserwacje;DEMO
+ch-306;imp-21;zrodlo;opinie Google;DEMO
+ch-307;imp-21;dobra_praktyka;SMS z linkiem do rezerwacji terminu;DEMO
+ch-308;imp-22;dobra_praktyka;Przypomnienie 30 dni wcześniej z możliwością rezerwacji;DEMO
+ch-309;imp-22;blad_typowy;Przypomnienie w złym momencie;DEMO
+ch-310;imp-22;blad_diagnozowany;Przypomnienia wysyłane po terminie;DEMO
+ch-311;imp-22;przyklad;SMS przychodzi tydzień po terminie przeglądu;DEMO
+ch-312;imp-22;zrodlo;analityka;DEMO
+ch-313;imp-23;dobra_praktyka;Decyzja w 14 dni z wyjaśnieniem;DEMO
+ch-314;imp-23;blad_typowy;Odmowa bez uzasadnienia;DEMO
+ch-315;imp-23;blad_diagnozowany;Klienci skarżą się na brak uzasadnienia odmowy;DEMO
+ch-316;imp-23;przyklad;Klient dostaje odmowę bez wyjaśnienia powodu;DEMO
+ch-317;imp-23;zrodlo;NPS;DEMO
+ch-318;imp-23;zrodlo;opinie Google;DEMO
+ch-319;imp-23;dobra_praktyka;Jeden opiekun roszczenia od zgłoszenia do decyzji;DEMO
+ch-320;imp-24;dobra_praktyka;Jeden opiekun sprawy i termin odpowiedzi;DEMO
+ch-321;imp-24;blad_typowy;Przekazywanie sprawy między działami;DEMO
+ch-322;imp-24;blad_diagnozowany;Klient powtarza sprawę wielu osobom;DEMO
+ch-323;imp-24;przyklad;Sprawa wędruje między trzema działami;DEMO
+ch-324;imp-24;zrodlo;opinie Google;DEMO
+ch-325;imp-24;zrodlo;NPS;DEMO
+ch-326;imp-24;blad_typowy;Odpowiedzi szablonowe bez odniesienia do sprawy;DEMO
+ch-327;imp-24;blad_diagnozowany;Czas rozpatrzenia przekracza deklarowany;DEMO
+ch-328;imp-25;dobra_praktyka;Krótka ankieta i informacja o zmianach;DEMO
+ch-329;imp-25;blad_typowy;Brak informacji zwrotnej;DEMO
+ch-330;imp-25;blad_diagnozowany;Klienci nie dostają informacji o wynikach;DEMO
+ch-331;imp-25;przyklad;Klient nie słyszy o wynikach ankiety;DEMO
+ch-332;imp-25;zrodlo;NPS;DEMO
+ch-333;imp-26;dobra_praktyka;Korzyści dopasowane do stażu;DEMO
+ch-334;imp-26;blad_typowy;Mało atrakcyjne korzyści;DEMO
+ch-335;imp-26;blad_diagnozowany;Niski odsetek aktywnych uczestników;DEMO
+ch-336;imp-26;przyklad;Klient nie wie jakie ma punkty;DEMO
+ch-337;imp-26;zrodlo;analityka;DEMO
+ch-338;imp-26;dobra_praktyka;Korzyści widoczne w aplikacji;DEMO
+ch-339;imp-27;dobra_praktyka;Treści dopasowane do modelu klienta;DEMO
+ch-340;imp-27;blad_typowy;Za duża częstotliwość i treści ogólne;DEMO
+ch-341;imp-27;blad_diagnozowany;Wysoki odsetek wypisań;DEMO
+ch-342;imp-27;przyklad;Klient dostaje oferty na model, którego nie ma;DEMO
+ch-343;imp-27;zrodlo;analityka;DEMO
+ch-344;imp-28;dobra_praktyka;Cykl wydarzeń i społeczność;DEMO
+ch-345;imp-28;blad_typowy;Brak oferty dla właścicieli;DEMO
+ch-346;imp-28;blad_diagnozowany;Brak jakiegokolwiek monitoringu;DEMO
+ch-347;imp-28;przyklad;Właściciele organizują się sami na forach;DEMO
+ch-348;imp-28;zrodlo;obserwacje;DEMO
+ch-349;imp-28;dobra_praktyka;Wydarzenia lokalne organizowane z dealerami;DEMO
+ch-350;imp-29;dobra_praktyka;Wstępna wycena online;DEMO
+ch-351;imp-29;blad_typowy;Oferta bez wyceny;DEMO
+ch-352;imp-29;blad_diagnozowany;Brak oferty przed końcem umowy;DEMO
+ch-353;imp-29;przyklad;Klient dostaje ofertę po zakończeniu umowy;DEMO
+ch-354;imp-29;zrodlo;obserwacje;DEMO
+ch-355;imp-30;dobra_praktyka;Jasna informacja o opcjach 6 miesięcy przed końcem;DEMO
+ch-356;imp-30;blad_typowy;Brak informacji o opcjach;DEMO
+ch-357;imp-30;blad_diagnozowany;Klienci nie znają kosztów zwrotu;DEMO
+ch-358;imp-30;przyklad;Klient dostaje wycenę uszkodzeń po zwrocie;DEMO
+ch-359;imp-30;zrodlo;opinie Google;DEMO
