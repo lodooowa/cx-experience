@@ -156,3 +156,4 @@ Najpierw wdrożenie kompozycji czterech sekcji i interakcji, **bez wymiany całe
 - Nie maskuj błędów i nie udawaj, że niewykonane testy przeszły.
 - Nie twórz zbędnych plików ani rozbudowanej infrastruktury. Każdy nowy plik/moduł musi usuwać konkretny problem z utrzymaniem lub pozwalać na wymagane zachowanie.
 - Gdy istniejący kod v2 wymusza większy refactoring, podziel go na małe samodzielne kroki ze sprawdzeniem po każdym.
+- W tym repo pracujemy bezpośrednio na `main`: commit i push na `main` bez brancha i PR (decyzja użytkownika, wyjątek od globalnej reguły).
