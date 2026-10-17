@@ -1,6 +1,11 @@
 .zoom-tools { display: flex; gap: 6px; margin-left: auto; }
 .zoom-tools + .legend-tip { margin-left: 0; }
-.chip-lane[aria-pressed="true"] { border-color: var(--text-primary); }
+:root { --lane-0: #2f6fdd; --lane-1: #8a4fd6; --lane-2: #0e9aa7; --lane-3: #d1478f; --lane-4: #7a5a2e; --lane-5: #4a5568; }
+.lc-0 { --lane: var(--lane-0); } .lc-1 { --lane: var(--lane-1); } .lc-2 { --lane: var(--lane-2); }
+.lc-3 { --lane: var(--lane-3); } .lc-4 { --lane: var(--lane-4); } .lc-5 { --lane: var(--lane-5); }
+.lane-swatch { fill: var(--lane); }
+.chip-lane { border-left: 4px solid var(--lane); }
+.chip-lane[aria-pressed="true"] { border-color: var(--text-primary); border-left-color: var(--lane); }
 
 .flow-panel { position: relative; }
 .flow-viewport { height: calc(100vh - var(--toolbar-h, 0px)); min-height: 420px; overflow: hidden; background: var(--surface-base); cursor: grab; touch-action: none; }
@@ -14,7 +19,7 @@
 .lane-label { fill: var(--text-primary); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .col-head { fill: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 
-.flow-edge { fill: none; stroke: var(--text-muted); stroke-width: 1.5; stroke-linecap: round; opacity: .7; }
+.flow-edge { fill: none; stroke: var(--lane, var(--text-muted)); stroke-width: 1.5; stroke-linecap: round; opacity: .75; }
 .flow-edge.optional { stroke-dasharray: 6 5; }
 .flow-edge.backward, .flow-pulse.backward, .edge-label.backward { display: none; }
 .flow-edge.backward.is-hl, .flow-pulse.backward.is-hl, .edge-label.backward.is-hl { display: inline; }
@@ -26,7 +31,7 @@
 .flow-arrow { fill: context-stroke; stroke: none; }
 .edge-label { fill: var(--text-muted); font-size: 10px; paint-order: stroke; stroke: var(--surface-panel); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
 .has-hl .flow-edge { opacity: .15; }
-.has-hl .flow-edge.is-hl { stroke: var(--text-primary); stroke-width: 2.4; opacity: 1; }
+.has-hl .flow-edge.is-hl { stroke: var(--lane, var(--text-primary)); stroke-width: 2.4; opacity: 1; }
 .has-hl .flow-node { opacity: .45; }
 .has-hl .flow-node.is-linked, .has-hl .flow-node.is-hl { opacity: 1; }
 

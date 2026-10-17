@@ -46,14 +46,17 @@
       for (const word of words) { if (line && (line + ' ' + word).length > 15) flush(); line = line ? line + ' ' + word : word; }
       flush();
       bands.appendChild(label);
+      bands.appendChild(el('rect', { class: 'lane-swatch lc-' + (allLanes.findIndex(l => l.id === lane.id) % 6), x: 0, y: lane.y, width: 5, height: lane.h }));
     });
     for (const col of layout.columns) {
       const head = el('text', { class: 'col-head', x: col.x + col.w / 2, y: D.headerH - 14, 'text-anchor': 'middle' }, clip(col.process, Math.floor(col.w / 6.5)));
       head.appendChild(el('title', {}, col.process));
       heads.appendChild(head);
     }
+    const nodeLane = new Map(layout.nodes.map(n => [n.id, n.lane]));
+    const laneClass = id => 'lc-' + (allLanes.findIndex(lane => lane.id === id) % 6);
     for (const e of layout.edges) {
-      const path = el('path', { class: 'flow-edge' + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'marker-end': 'url(#flow-arrow)', 'data-from': e.from, 'data-to': e.to });
+      const path = el('path', { class: 'flow-edge ' + laneClass(nodeLane.get(e.from)) + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'marker-end': 'url(#flow-arrow)', 'data-from': e.from, 'data-to': e.to });
       edges.appendChild(path);
       // delikatny impuls biegnący po linii pokazuje kierunek przepływu
       edges.appendChild(el('path', { class: 'flow-pulse' + (e.backward ? ' backward' : ''), d: e.d, 'data-from': e.from, 'data-to': e.to, 'aria-hidden': 'true' }));
@@ -193,7 +196,7 @@
   }
 
   function renderChips() {
-    $('lanes').innerHTML = allLanes.map(lane => `<button type="button" class="chip chip-lane" data-lane="${esc(lane.id)}" aria-pressed="${state.lanes.has(lane.id)}">${esc(lane.label)} <b>${data.touchpoints.filter(tp => window.CX_FLOW_CORE.laneOf(tp) === lane.id).length}</b></button>`).join('');
+    $('lanes').innerHTML = allLanes.map(lane => `<button type="button" class="chip chip-lane lc-${allLanes.indexOf(lane) % 6}" data-lane="${esc(lane.id)}" aria-pressed="${state.lanes.has(lane.id)}">${esc(lane.label)} <b>${data.touchpoints.filter(tp => window.CX_FLOW_CORE.laneOf(tp) === lane.id).length}</b></button>`).join('');
   }
   function redraw() {
     if (state.selected && !state.lanes.has(window.CX_FLOW_CORE.laneOf(tpIndex.get(state.selected)))) closeDetails();
@@ -285,7 +288,7 @@
     state.lanes = new Set(allLanes.map(lane => lane.id));
     svg = $('flowSvg');
     viewport = $('flowViewport');
-    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
+    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Kolor linii: tor, z którego wychodzi przejście (kolor przy nazwie toru)</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
     bind();
     redraw();
     reset();
