@@ -35,6 +35,7 @@
       if (tp.subtype !== undefined && !(data.labels.subtype && Object.prototype.hasOwnProperty.call(data.labels.subtype, tp.subtype))) throw Error('data/matrix.js: nieznany podtyp "' + tp.subtype + '" (' + tp.id + ')');
       if (!known('rating', tp.rating)) throw Error('data/matrix.js: nieznana ocena "' + tp.rating + '" (' + tp.id + ')');
       if (!data.processes.includes(tp.process)) throw Error('data/matrix.js: proces "' + tp.process + '" spoza listy processes (' + tp.id + ')');
+      if (tp.care !== null && tp.care !== undefined && !(Number.isInteger(tp.care) && tp.care >= 1 && tp.care <= 5)) throw Error('data/matrix.js: zaopiekowanie musi być 1–5 lub null (' + tp.id + ')');
       if (tp.emotionValue !== null && tp.emotionValue !== undefined && !(Number.isInteger(tp.emotionValue) && tp.emotionValue >= 1 && tp.emotionValue <= 5)) throw Error('data/matrix.js: emocja musi być 1–5 lub null (' + tp.id + ')');
     }
     const itemIds = new Set();
@@ -131,7 +132,7 @@
     let html = `<div class="detail-kicker">${esc(mx.matrixLabel(tp.matrix))}${tp.subtype ? ' · ' + esc(data.labels.subtype[tp.subtype]) : ''} · ${esc(tp.process)}</div><h2>${esc(tp.title)}</h2>
       <section class="assessment rating-${esc(tp.rating)}"><span class="assessment-label">Ocena obecna</span>
         <span class="rating-pill"><span aria-hidden="true">${esc(marks[tp.rating] || '')}</span>${esc(mx.ratingLabel(tp.rating))}</span>
-        <div class="detail-meta"><span>Emocja klienta: <b>${esc(mx.emotionText(tp))}</b></span>${tp.emotionImpact ? `<span>${esc(tp.emotionImpact)}</span>` : ''}<span>Monitoring: <b>${esc(data.labels.monitoring[tp.monitoring] || 'brak danych')}</b></span><span>Właściciel: <b>${esc(tp.owner || 'brak danych')}</b></span></div></section>`;
+        <div class="detail-meta">${tp.care ? `<span>Zaopiekowanie: <b>${tp.care}/5</b></span>` : ''}<span>Emocja klienta: <b>${esc(mx.emotionText(tp))}</b></span>${tp.emotionImpact ? `<span>${esc(tp.emotionImpact)}</span>` : ''}<span>Monitoring: <b>${esc(data.labels.monitoring[tp.monitoring] || 'brak danych')}</b></span><span>Właściciel: <b>${esc(tp.owner || 'brak danych')}</b></span></div></section>`;
     html += block('pros', '+', 'Plusy: co działa', pros.length ? list(pros) : none('Brak opisanych plusów w danych.'));
     html += block('cons', '−', 'Minusy: co nie działa', cons[0].length || cons[1].length ? sub('blad_typowy', cons[0]) + sub('blad_diagnozowany', cons[1]) : none('Brak opisanych minusów w danych.'));
     html += block('reco', '→', 'Rekomendacja: co robić', actions.length ? actions.map(mx.actionCard).join('') : none('Brak akcji naprawczych w danych.'));

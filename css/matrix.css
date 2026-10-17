@@ -44,8 +44,8 @@
 .tile-title { display: -webkit-box; overflow: hidden; font-weight: 700; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .tile-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .emo-bar { display: flex; gap: 2px; }
-.emo-bar i { width: 8px; height: 5px; background: var(--surface-soft); }
-.emo-bar i.on { background: var(--text-primary); }
+.emo-bar i { width: 8px; height: 7px; background: var(--surface-soft); }
+.emo-bar i.on { background: var(--rating, var(--text-primary)); }
 .emo-cap { margin-left: auto; color: var(--text-faint); font-size: 9px; }
 .emo-none { color: var(--text-faint); font-size: 9px; }
 

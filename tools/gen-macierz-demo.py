@@ -173,9 +173,14 @@ def podtyp(r):
     if r["macierz"]!="dealer": return ""
     n=int(r["id"][4:])
     return "salon" if n in SALON else "serwis" if 17<=n<=28 or n==27 else "dealer"
+# Stopień zaopiekowania 1-5 (DEMO): wynika z oceny CX; w obrębie oceny na przemian niższy/wyższy. Brak oceny = brak wartości.
+_n={}
+def opieka(r):
+    k=r["ocena_cx"]; i=_n[k]=_n.get(k,-1)+1
+    return {"niezaopiekowany":[1,2],"do_poprawy":[3,3],"ok":[4,5]}.get(k,["",""])[i%2]
 risks=dict(l.split("|",1) for l in RISKS.split("\n"))
-punkty=[[r["macierz"],r["id"],r["punkt_styku"],r["proces"],r["emocja"],r["emocja_1_5"],r["wplyw_na_emocje"],r["monitoring"],r["wlasciciel"],r["ocena_cx"],"DEMO",podtyp(r)] for r in flat]
-PH=["macierz","id","punkt_styku","proces","emocja","emocja_1_5","wplyw_na_emocje","monitoring","wlasciciel","ocena_cx","status_danych","podtyp"]
+punkty=[[r["macierz"],r["id"],r["punkt_styku"],r["proces"],r["emocja"],r["emocja_1_5"],r["wplyw_na_emocje"],r["monitoring"],r["wlasciciel"],r["ocena_cx"],"DEMO",podtyp(r),opieka(r)] for r in flat]
+PH=["macierz","id","punkt_styku","proces","emocja","emocja_1_5","wplyw_na_emocje","monitoring","wlasciciel","ocena_cx","status_danych","podtyp","zaopiekowanie_1_5"]
 
 cechy=[]
 def addc(pid,typ,tr):
@@ -233,7 +238,7 @@ assert {r[10] for r in punkty}=={"DEMO"}
 def lines(items):
     return "[\n"+",\n".join("    "+json.dumps(i,ensure_ascii=False) for i in items)+"\n  ]"
 emo=lambda v:int(v) if v!="" else None
-tp=[dict(id=r[1],matrix=r[0],title=r[2],process=r[3],emotion=r[4],emotionValue=emo(r[5]),emotionImpact=r[6],monitoring=r[7],owner=r[8],rating=r[9],**({"subtype":r[11]} if r[11] else {})) for r in punkty]
+tp=[dict(id=r[1],matrix=r[0],title=r[2],process=r[3],emotion=r[4],emotionValue=emo(r[5]),emotionImpact=r[6],monitoring=r[7],owner=r[8],rating=r[9],care=emo(r[12]),**({"subtype":r[11]} if r[11] else {})) for r in punkty]
 ft=[dict(id=c[0],touchpointId=c[1],type=c[2],text=c[3]) for c in cechy]
 ac=[dict(id=a[0],touchpointId=a[1],kind=a[2],text=a[3],cost=a[4],risk=a[5],gain=a[6],weeks=a[7],implementationRisks=a[8]) for a in akcje]
 labels={"matrix":{"importer":"Importer","dealer":"Dealer i serwis"},

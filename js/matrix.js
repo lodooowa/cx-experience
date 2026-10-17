@@ -12,9 +12,9 @@
   function visible() { return data.touchpoints.filter(tp => inMatrix(tp) && state.ratings.has(tp.rating) && mx.passSub(tp, state.subs)); }
 
   function tileHtml(tp) {
-    const bar = tp.emotionValue
-      ? `<span class="emo-cap" aria-hidden="true">emocja</span><span class="emo-bar" role="img" title="Emocja klienta: ${tp.emotionValue} z 5" aria-label="Emocja klienta ${tp.emotionValue} z 5">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= tp.emotionValue ? 'on' : ''}"></i>`).join('')}</span>`
-      : '<span class="emo-none">brak emocji</span>';
+    const bar = tp.care
+      ? `<span class="emo-cap" aria-hidden="true">opieka</span><span class="emo-bar" role="img" title="Zaopiekowanie punktu: ${tp.care} z 5" aria-label="Zaopiekowanie punktu ${tp.care} z 5">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= tp.care ? 'on' : ''}"></i>`).join('')}</span>`
+      : '<span class="emo-none">brak oceny</span>';
     const label = `${tp.title}. ${tp.process}. ${ratingLabel(tp.rating)}.`;
     return `<button type="button" class="tile rating-${esc(tp.rating)}" data-id="${esc(tp.id)}" title="${esc(label)}" aria-label="${esc(label)}">
       ${tp.subtype ? `<span class="tile-sub">${esc(data.labels.subtype[tp.subtype])}</span>` : ''}<span class="tile-title">${esc(tp.title)}</span>
@@ -54,7 +54,7 @@
     const pool = data.touchpoints.filter(inMatrix);
     $('chips').innerHTML = mx.chipsHtml(state.ratings, pool);
     $('subs').innerHTML = mx.subChipsHtml(state.subs, pool);
-    $('legend').innerHTML = ratingKeys.map(key => `<span>${esc(marks[key] || '')} ${esc(ratingLabel(key))}</span>`).join('') + '<span>Paski na kafelku: emocja klienta, skala 1–5, tylko gdy podana w danych</span>';
+    $('legend').innerHTML = ratingKeys.map(key => `<span>${esc(marks[key] || '')} ${esc(ratingLabel(key))}</span>`).join('') + '<span>Paski na kafelku: stopień zaopiekowania punktu, 1–5 (5 = w pełni zaopiekowany), ocena eksperta CX</span>';
     refreshDiscussButton();
   }
 
