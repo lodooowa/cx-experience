@@ -55,6 +55,8 @@
     for (const e of layout.edges) {
       const path = el('path', { class: 'flow-edge' + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'marker-end': 'url(#flow-arrow)', 'data-from': e.from, 'data-to': e.to });
       edges.appendChild(path);
+      // delikatny impuls biegnący po linii pokazuje kierunek przepływu
+      edges.appendChild(el('path', { class: 'flow-pulse' + (e.backward ? ' backward' : ''), d: e.d, 'data-from': e.from, 'data-to': e.to, 'aria-hidden': 'true' }));
       if (e.label && e.labelX !== undefined) edges.appendChild(el('text', { class: 'edge-label' + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, x: e.labelX, y: e.labelY, 'text-anchor': 'middle' }, e.label));
     }
     const laneIndex = new Map(layout.lanes.map((lane, i) => [lane.id, i]));
@@ -165,7 +167,7 @@
   function highlight(id) {
     svg.classList.toggle('has-hl', !!id);
     root.querySelectorAll('.flow-node').forEach(node => node.classList.toggle('is-hl', !!id && node.dataset.id === id));
-    root.querySelectorAll('.flow-edge, .edge-label').forEach(edge => edge.classList.toggle('is-hl', !!id && (edge.dataset.from === id || edge.dataset.to === id)));
+    root.querySelectorAll('.flow-edge, .flow-pulse, .edge-label').forEach(edge => edge.classList.toggle('is-hl', !!id && (edge.dataset.from === id || edge.dataset.to === id)));
     if (id) {
       const linked = new Set([id]);
       root.querySelectorAll('.flow-edge.is-hl').forEach(edge => { linked.add(edge.dataset.from); linked.add(edge.dataset.to); });

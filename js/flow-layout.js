@@ -6,7 +6,9 @@
   const DEFAULTS = {
     nodeW: 208,
     nodeH: 30,
-    gapX: 72,      // odstęp poziomy między kartami sąsiednich kolumn
+    gapX: 72,      // odstęp poziomy między kartami sąsiednich kolumn (procesów)
+    maxSub: 3,     // maksymalna liczba podkolumn w procesie (głębsze kroki układają się w ostatniej)
+    subGap: 40,    // odstęp poziomy między podkolumnami w obrębie procesu
     gapY: 8,       // odstęp pionowy kart w jednej komórce (tor x proces)
     padY: 28,      // margines pionowy wewnątrz pasa (kanał dla tras powrotnych)
     padX: 24,      // margines po prawej stronie ostatniej kolumny
@@ -48,13 +50,29 @@
     const used = new Set(visible.map(tp => tp.process));
     const processes = matrix.processes.filter(p => used.has(p));
     const colIndex = new Map(processes.map((p, i) => [p, i]));
-    const colW = o.nodeW + o.gapX;
-    const columns = processes.map((process, i) => ({ process, x: o.labelW + i * colW, w: colW }));
+    const order = new Map(matrix.touchpoints.map((tp, i) => [tp.id, i]));
 
-    // Komórki (tor x proces): stos pionowy w kolejności z matrix.touchpoints.
+    // Podkolumny: kroki jednego procesu połączone krawędziami "do przodu" (wg kolejności danych) idą jeden za drugim
+    // (głębokość = najdłuższa ścieżka), więc przejścia wewnątrz procesu biegną w prawo, a nie w pionie.
+    const visibleIds = new Set(visible.map(tp => tp.id));
+    const sub = new Map();
+    for (const tp of visible.slice().sort((p, q) => order.get(p.id) - order.get(q.id))) sub.set(tp.id, 0);
+    for (const tp of visible.slice().sort((p, q) => order.get(p.id) - order.get(q.id))) {
+      for (const e of flow.edges) {
+        if (e.to !== tp.id || !visibleIds.has(e.from)) continue;
+        const from = matrix.touchpoints[order.get(e.from)];
+        if (from.process === tp.process && order.get(e.from) < order.get(tp.id)) sub.set(tp.id, Math.min(o.maxSub - 1, Math.max(sub.get(tp.id), sub.get(e.from) + 1)));
+      }
+    }
+    const subCount = processes.map(p => 1 + Math.max(0, ...visible.filter(tp => tp.process === p).map(tp => sub.get(tp.id))));
+    const colWidth = i => subCount[i] * o.nodeW + (subCount[i] - 1) * o.subGap + o.gapX;
+    let colX = o.labelW;
+    const columns = processes.map((process, i) => { const col = { process, x: colX, w: colWidth(i) }; colX += col.w; return col; });
+
+    // Komórki (tor x proces x podkolumna): stos pionowy w kolejności z matrix.touchpoints.
     const cells = new Map();
     for (const tp of visible) {
-      const key = laneIndex.get(core.laneOf(tp)) + '|' + colIndex.get(tp.process);
+      const key = laneIndex.get(core.laneOf(tp)) + '|' + colIndex.get(tp.process) + '|' + sub.get(tp.id);
       (cells.get(key) || cells.set(key, []).get(key)).push(tp);
     }
     const stackH = n => n * o.nodeH + (n - 1) * o.gapY;
@@ -62,7 +80,7 @@
     let y = o.headerH;
     laneList.forEach((l, li) => {
       let most = 1;
-      for (let ci = 0; ci < processes.length; ci++) most = Math.max(most, (cells.get(li + '|' + ci) || []).length);
+      for (const [key, list] of cells) if (Number(key.split('|')[0]) === li) most = Math.max(most, list.length);
       const h = stackH(most) + 2 * o.padY;
       lanes.push({ id: l.id, label: l.label, y, h });
       y += h;
@@ -71,18 +89,17 @@
     const nodes = [];
     const byId = new Map();
     for (const [key, list] of cells) {
-      const [li, ci] = key.split('|').map(Number);
+      const [li, ci, si] = key.split('|').map(Number);
       const lane = lanes[li];
       // Stos wyśrodkowany w pasie.
       const top = lane.y + (lane.h - stackH(list.length)) / 2;
       list.forEach((tp, i) => {
-        const n = { id: tp.id, x: columns[ci].x + o.gapX / 2, y: top + i * (o.nodeH + o.gapY), w: o.nodeW, h: o.nodeH, lane: lanes[li].id, col: ci };
+        const n = { id: tp.id, x: columns[ci].x + o.gapX / 2 + si * (o.nodeW + o.subGap), y: top + i * (o.nodeH + o.gapY), w: o.nodeW, h: o.nodeH, lane: lanes[li].id, col: ci, sub: si };
         nodes.push(n);
         byId.set(tp.id, n);
       });
     }
     // Kolejność wyniku: po kolumnach, potem po torach, potem wg danych.
-    const order = new Map(matrix.touchpoints.map((tp, i) => [tp.id, i]));
     nodes.sort((a, b) => a.col - b.col || laneIndex.get(a.lane) - laneIndex.get(b.lane) || order.get(a.id) - order.get(b.id));
 
     const edges = [];
@@ -91,9 +108,9 @@
       const s = byId.get(e.from);
       const t = byId.get(e.to);
       if (!s || !t) continue;
-      const out = { from: e.from, to: e.to, optional: !!e.optional, backward: t.col < s.col };
+      const out = { from: e.from, to: e.to, optional: !!e.optional, backward: t.col < s.col || (t.col === s.col && t.sub < s.sub) };
       if (e.label) out.label = e.label;
-      if (t.col > s.col) {
+      if (t.col > s.col || (t.col === s.col && t.sub > s.sub)) {
         // w przód: z prawego boku źródła do lewego boku celu
         const a = [s.x + s.w, s.y + s.h / 2];
         const b = [t.x, t.y + t.h / 2];
@@ -102,7 +119,7 @@
         const c2 = [b[0] - k, b[1]];
         out.d = cubic(a, c1, c2, b);
         if (e.label) { out.labelX = r(mid(a, c1, c2, b, 0)); out.labelY = r(mid(a, c1, c2, b, 1)); }
-      } else if (t.col === s.col && Math.abs(t.y - s.y) <= o.nodeH + o.gapY + 1) {
+      } else if (t.col === s.col && t.sub === s.sub && Math.abs(t.y - s.y) <= o.nodeH + o.gapY + 1) {
         // sąsiednie karty w jednej komórce: krótki pionowy łącznik
         const down = t.y >= s.y;
         const a = [s.x + s.w / 2, down ? s.y + s.h : s.y];
@@ -122,7 +139,7 @@
     // Trasy prostokątne: pion w korytarzach między kolumnami, poziom w kanale u góry wyższego z dwóch torów.
     // Pasma kanałów i przesunięcia w korytarzach przydzielane zachłannie, żeby trasy się nie nakładały.
     const STEP = 3.5;
-    const half = o.gapX / 2 - 8;
+    const half = Math.min(o.gapX, o.subGap) / 2 - 8;
     // Przesunięcie w korytarzu zależy od węzła (nie od krawędzi): trasy do tego samego celu (lub z tego samego źródła) łączą się w jedną linię.
     const spread = (list, key, nodeOf) => {
       const groups = new Map();
@@ -136,8 +153,10 @@
       }
     };
     for (const item of routed) {
-      item.leave = 'r' + item.s.col;                   // korytarz za kolumną źródła
-      item.enter = 'l' + item.t.col;                   // korytarz przed kolumną celu
+      item.leave = 'r' + item.s.col + '.' + item.s.sub;  // korytarz za kartą źródła
+      item.enter = 'l' + item.t.col + '.' + item.t.sub;  // korytarz przed kartą celu
+      item.gapL = (item.s.sub === subCount[item.s.col] - 1 ? o.gapX : o.subGap) / 2;
+      item.gapE = (item.t.sub === 0 ? o.gapX : o.subGap) / 2;
       item.laneTop = Math.min(laneIndex.get(item.s.lane), laneIndex.get(item.t.lane));
     }
     spread(routed, 'leave', item => item.s);
@@ -146,8 +165,8 @@
     const usedUntil = new Map();
     const bySpan = routed.slice().sort((p, q) => Math.min(p.t.x, p.s.x + p.s.w) - Math.min(q.t.x, q.s.x + q.s.w));
     for (const item of bySpan) {
-      const x1 = item.t.x - o.gapX / 2 + item.enterOff;
-      const x2 = item.s.x + item.s.w + o.gapX / 2 + item.leaveOff;
+      const x1 = item.t.x - item.gapE + item.enterOff;
+      const x2 = item.s.x + item.s.w + item.gapL + item.leaveOff;
       const ends = usedUntil.get(item.laneTop) || usedUntil.set(item.laneTop, []).get(item.laneTop);
       let k = ends.findIndex(end => end < Math.min(x1, x2) - 6);
       if (k < 0) k = ends.length;
@@ -158,14 +177,14 @@
     for (const item of routed) {
       const { out, s, t } = item;
       const yTrack = lanes[item.laneTop].y + 3 + Math.min(item.track, maxTrack) * STEP;
-      const xl = item.s.x + item.s.w + o.gapX / 2 + item.leaveOff;
-      const xe = item.t.x - o.gapX / 2 + item.enterOff;
+      const xl = item.s.x + item.s.w + item.gapL + item.leaveOff;
+      const xe = item.t.x - item.gapE + item.enterOff;
       const pts = [[s.x + s.w, s.y + s.h / 2], [xl, s.y + s.h / 2], [xl, yTrack], [xe, yTrack], [xe, t.y + t.h / 2], [t.x, t.y + t.h / 2]];
       out.d = rounded(pts, 5);
       if (out.label) { out.labelX = r((xl + xe) / 2); out.labelY = r(yTrack - 2); }
     }
 
-    return { width: r(o.labelW + processes.length * colW + o.padX), height: r(y), lanes, columns, nodes, edges };
+    return { width: r(colX + o.padX), height: r(y), lanes, columns, nodes, edges };
   }
 
   window.CX_FLOW_LAYOUT = { compute, DEFAULTS };

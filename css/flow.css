@@ -16,8 +16,13 @@
 
 .flow-edge { fill: none; stroke: var(--text-muted); stroke-width: 1.5; stroke-linecap: round; opacity: .7; }
 .flow-edge.optional { stroke-dasharray: 6 5; }
-.flow-edge.backward, .edge-label.backward { display: none; }
-.flow-edge.backward.is-hl, .edge-label.backward.is-hl { display: inline; }
+.flow-edge.backward, .flow-pulse.backward, .edge-label.backward { display: none; }
+.flow-edge.backward.is-hl, .flow-pulse.backward.is-hl, .edge-label.backward.is-hl { display: inline; }
+.flow-pulse { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 4 38; opacity: .45; pointer-events: none; animation: flow-run 3.2s linear infinite; }
+.has-hl .flow-pulse { opacity: .05; }
+.has-hl .flow-pulse.is-hl { opacity: .8; }
+@keyframes flow-run { to { stroke-dashoffset: -42; } }
+@media (prefers-reduced-motion: reduce) { .flow-pulse { display: none; } }
 .flow-arrow { fill: none; stroke: context-stroke; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
 .edge-label { fill: var(--text-muted); font-size: 10px; paint-order: stroke; stroke: var(--surface-panel); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
 .has-hl .flow-edge { opacity: .15; }

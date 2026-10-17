@@ -38,12 +38,12 @@ const checkLayout = (l, m, f) => {
   }
 };
 
-// Liczba krawędzi wstecz liczona niezależnie od układu: kolumna celu < kolumny źródła wg matrix.processes.
-const backwardCount = (m, f, laneIds) => {
+// Krawędzie wstecz liczone niezależnie od flagi: cel leży na lewo od źródła (geometria węzłów) albo w wcześniejszym procesie wg matrix.processes.
+const backwardCount = (l, m, f) => {
+  const node = new Map(l.nodes.map(n => [n.id, n]));
   const tp = new Map(m.touchpoints.map(t => [t.id, t]));
-  const shown = t => !laneIds || laneIds.includes(core.laneOf(t));
-  return f.edges.filter(e => shown(tp.get(e.from)) && shown(tp.get(e.to)) &&
-    m.processes.indexOf(tp.get(e.to).process) < m.processes.indexOf(tp.get(e.from).process)).length;
+  const byProcess = e => m.processes.indexOf(tp.get(e.to).process) < m.processes.indexOf(tp.get(e.from).process);
+  return f.edges.filter(e => node.has(e.from) && node.has(e.to) && (node.get(e.to).x < node.get(e.from).x || byProcess(e))).length;
 };
 
 // Dane DEMO: wszystkie punkty, tory z danych, wszystkie krawędzie.
@@ -57,7 +57,7 @@ assert.strictEqual(full.edges.length, flow.edges.length);
 assert.strictEqual(full.columns.map(c => c.process).join(), matrix.processes.join());
 const backward = full.edges.filter(e => e.backward).length;
 assert.ok(backward > 0);
-assert.strictEqual(backward, backwardCount(matrix, flow));
+assert.strictEqual(backward, backwardCount(full, matrix, flow));
 assert.strictEqual(full.edges.filter(e => e.optional).length, flow.edges.filter(e => e.optional).length);
 
 // Determinizm.
@@ -74,7 +74,7 @@ assert.deepStrictEqual(layout.compute(matrix, flow), full);
   assert.ok(l.edges.length < flow.edges.length);
   const ids = new Set(l.nodes.map(n => n.id));
   assert.ok(l.edges.every(e => ids.has(e.from) && ids.has(e.to)), 'krawędź do ukrytego węzła');
-  assert.strictEqual(l.edges.filter(e => e.backward).length, backwardCount(matrix, flow, ['importer']));
+  assert.strictEqual(l.edges.filter(e => e.backward).length, backwardCount(l, matrix, flow));
   assert.ok(l.columns.length <= full.columns.length);
 }
 
