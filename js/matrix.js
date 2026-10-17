@@ -121,22 +121,23 @@
     const features = data.features.filter(f => f.touchpointId === tp.id);
     const actions = data.actions.filter(a => a.touchpointId === tp.id);
     const demo = data.status === 'DEMO';
+    const ft = type => features.filter(f => f.type === type);
+    const list = items => `<ul class="detail-list">${items.map(f => `<li>${esc(f.text)}</li>`).join('')}</ul>`;
+    const none = text => `<p class="block-empty">${esc(text)}</p>`;
+    const sub = (type, items) => items.length ? `<h4>${esc(data.labels.featureType[type])}</h4>${list(items)}` : '';
+    const block = (cls, mark, title, body) => `<section class="detail-block ${cls}"><h3><span aria-hidden="true">${mark}</span>${esc(title)}</h3>${body}</section>`;
+    const pros = ft('dobra_praktyka'), cons = [ft('blad_typowy'), ft('blad_diagnozowany')], examples = ft('przyklad'), sources = ft('zrodlo');
     let html = `<div class="detail-kicker">${esc(matrixLabel(tp.matrix))} · ${esc(tp.process)}</div><h2>${esc(tp.title)}</h2>
-      <span class="rating-pill rating-${esc(tp.rating)}"><span aria-hidden="true">${esc(marks[tp.rating] || '')}</span>${esc(ratingLabel(tp.rating))}</span>
-      <div class="detail-meta"><span>Emocja klienta: <b>${esc(emotionText(tp))}</b></span>${tp.emotionImpact ? `<span>${esc(tp.emotionImpact)}</span>` : ''}<span>Właściciel: <b>${esc(tp.owner || 'brak danych')}</b></span><span>Monitoring: <b>${esc(data.labels.monitoring[tp.monitoring] || 'brak danych')}</b></span></div>`;
-    for (const type of Object.keys(data.labels.featureType)) {
-      const items = features.filter(f => f.type === type);
-      if (!items.length) continue;
-      html += section(data.labels.featureType[type], type === 'zrodlo'
-        ? `<div class="detail-tags">${items.map(f => `<span>${esc(f.text)}</span>`).join('')}</div>`
-        : `<ul class="detail-list ${type === 'dobra_praktyka' ? '' : 'avoid'}">${items.map(f => `<li>${esc(f.text)}</li>`).join('')}</ul>`);
-    }
-    if (actions.length) {
-      html += section('Akcje naprawcze', actions.map(a => `<div class="action-card"><strong>${esc(data.labels.actionKind[a.kind])}</strong><p>${esc(a.text)}</p>
+      <section class="assessment rating-${esc(tp.rating)}"><span class="assessment-label">Ocena obecna</span>
+        <span class="rating-pill"><span aria-hidden="true">${esc(marks[tp.rating] || '')}</span>${esc(ratingLabel(tp.rating))}</span>
+        <div class="detail-meta"><span>Emocja klienta: <b>${esc(emotionText(tp))}</b></span>${tp.emotionImpact ? `<span>${esc(tp.emotionImpact)}</span>` : ''}<span>Monitoring: <b>${esc(data.labels.monitoring[tp.monitoring] || 'brak danych')}</b></span><span>Właściciel: <b>${esc(tp.owner || 'brak danych')}</b></span></div></section>`;
+    html += block('pros', '+', 'Plusy: co działa', pros.length ? list(pros) : none('Brak opisanych plusów w danych.'));
+    html += block('cons', '−', 'Minusy: co nie działa', cons[0].length || cons[1].length ? sub('blad_typowy', cons[0]) + sub('blad_diagnozowany', cons[1]) : none('Brak opisanych minusów w danych.'));
+    html += block('reco', '→', 'Rekomendacja: co robić', actions.length ? actions.map(a => `<div class="action-card"><strong>${esc(data.labels.actionKind[a.kind])}</strong><p>${esc(a.text)}</p>
         <div class="detail-tags"><span>Koszt: ${esc(a.cost)}</span><span>Ryzyko: ${esc(a.risk)}</span><span>Zysk: ${esc(a.gain)}</span><span>ok. ${esc(a.weeks)} tyg.${demo ? ' (DEMO)' : ''}</span></div>
-        ${a.implementationRisks ? `<p>Ryzyka wdrożenia: ${esc(a.implementationRisks)}</p>` : ''}</div>`).join(''));
-    }
-    if (!features.length && !actions.length) html += section('Szczegóły', '<p>Brak danych szczegółowych dla tego punktu.</p>');
+        ${a.implementationRisks ? `<p class="impl-risk">Ryzyka wdrożenia: ${esc(a.implementationRisks)}</p>` : ''}</div>`).join('') : none('Brak akcji naprawczych w danych.'));
+    if (examples.length) html += section(data.labels.featureType.przyklad, list(examples));
+    if (sources.length) html += section(data.labels.featureType.zrodlo, `<div class="detail-tags">${sources.map(f => `<span>${esc(f.text)}</span>`).join('')}</div>`);
     $('detailBody').innerHTML = html;
   }
 
