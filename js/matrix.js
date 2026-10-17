@@ -10,6 +10,7 @@
   const levels = ['niski', 'średni', 'wysoki'];
   const queueRatings = ['niezaopiekowany', 'do_poprawy'];
   const state = { matrix: 'all', ratings: new Set(), selected: null, queue: null, pos: 0 };
+  const discussHint = $('discuss').title;
   let maxWeeks = 1, ratingKeys = [], matrixKeys = [], tpIndex = new Map(), order = new Map();
 
   function showError(message) {
@@ -112,7 +113,7 @@
   function refreshDiscussButton() {
     const empty = !buildQueue().length;
     $('discuss').disabled = empty && !state.queue;
-    $('discuss').title = empty ? 'Brak punktów do omówienia w bieżących filtrach' : '';
+    $('discuss').title = empty ? 'Brak punktów do omówienia w bieżących filtrach' : discussHint;
   }
 
   function section(title, body) { return `<section class="detail-section"><h3>${esc(title)}</h3>${body}</section>`; }
@@ -264,6 +265,10 @@
     data.touchpoints.forEach((tp, index) => { tpIndex.set(tp.id, tp); order.set(tp.id, data.processes.indexOf(tp.process) * 100000 + index); });
     $('demoPill').hidden = data.status !== 'DEMO';
     $('matrixSelect').innerHTML = `<option value="all">Obie macierze</option>` + matrixKeys.map(key => `<option value="${esc(key)}">${esc(matrixLabel(key))}</option>`).join('');
+    const toolbar = document.querySelector('.matrix-toolbar');
+    const syncToolbar = () => document.documentElement.style.setProperty('--toolbar-h', toolbar.offsetHeight + 'px');
+    syncToolbar();
+    if (window.ResizeObserver) new ResizeObserver(syncToolbar).observe(toolbar); else window.addEventListener('resize', syncToolbar);
     renderChips();
     renderGrid();
     bind();
