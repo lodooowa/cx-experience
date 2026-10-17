@@ -115,6 +115,7 @@
   .cell-label { display: block; }
   .primary { margin-left: 0; }
   .tile { width: calc(50% - 4px); }
+  .detail-drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 45; width: min(92vw, 440px); max-height: none; margin: 0; box-shadow: -10px 0 40px rgba(0, 0, 0, .5); }
 }
 @media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
 .tile-sub { color: var(--text-faint); font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
