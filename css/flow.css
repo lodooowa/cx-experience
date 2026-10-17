@@ -16,7 +16,11 @@
 
 .flow-edge { fill: none; stroke: var(--text-muted); stroke-width: 1.5; stroke-linecap: round; opacity: .7; }
 .flow-edge.optional { stroke-dasharray: 6 5; }
-.flow-edge.backward { stroke-width: 1; }
+.flow-edge.backward, .edge-label.backward { display: none; }
+.has-hl .flow-edge.backward.is-hl { display: inline; stroke-dasharray: 2 4; }
+.edge-label.backward.is-hl { display: inline; }
+.node-return { fill: var(--text-muted); font-size: 13px; font-weight: 700; pointer-events: none; }
+.node-text.has-return { padding-right: 26px; }
 .edge-label { fill: var(--text-muted); font-size: 10px; paint-order: stroke; stroke: var(--surface-panel); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
 .has-hl .flow-edge { opacity: .15; }
 .has-hl .flow-edge.is-hl { stroke: var(--text-primary); stroke-width: 2.4; opacity: 1; }

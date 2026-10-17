@@ -47,10 +47,11 @@
       head.appendChild(el('title', {}, col.process));
       heads.appendChild(head);
     }
+    const returning = new Set(layout.edges.filter(e => e.backward).map(e => e.from));
     for (const e of layout.edges) {
       const path = el('path', { class: 'flow-edge' + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'data-from': e.from, 'data-to': e.to });
       edges.appendChild(path);
-      if (e.label && e.labelX !== undefined) edges.appendChild(el('text', { class: 'edge-label', x: e.labelX, y: e.labelY, 'text-anchor': 'middle' }, e.label));
+      if (e.label && e.labelX !== undefined) edges.appendChild(el('text', { class: 'edge-label' + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, x: e.labelX, y: e.labelY, 'text-anchor': 'middle' }, e.label));
     }
     const laneIndex = new Map(layout.lanes.map((lane, i) => [lane.id, i]));
     const ordered = layout.nodes.map((n, i) => ({ n, i })).sort((a, b) => a.n.col - b.n.col || laneIndex.get(a.n.lane) - laneIndex.get(b.n.lane) || a.i - b.i);
@@ -58,15 +59,16 @@
     for (const { n } of ordered) {
       const tp = tpIndex.get(n.id);
       const g = el('g', { class: `flow-node rating-${tp.rating}`, transform: `translate(${n.x} ${n.y})`, tabindex: 0, role: 'button', 'data-id': n.id, 'aria-label': nodeLabel(tp, n.lane) });
-      g.appendChild(el('title', {}, nodeLabel(tp, n.lane)));
+      g.appendChild(el('title', {}, nodeLabel(tp, n.lane) + (returning.has(n.id) ? ' Ma powrót do wcześniejszego etapu.' : '')));
       g.appendChild(el('rect', { class: 'node-card', width: n.w, height: n.h }));
       g.appendChild(el('rect', { class: 'node-bar', y: n.h - 4, width: n.w, height: 4 }));
       const fo = el('foreignObject', { x: 0, y: 0, width: n.w, height: n.h - 4, 'pointer-events': 'none' });
       const text = document.createElement('div');
-      text.className = 'node-text';
+      text.className = 'node-text' + (returning.has(n.id) ? ' has-return' : '');
       text.textContent = tp.title;
       fo.appendChild(text);
       g.appendChild(fo);
+      if (returning.has(n.id)) g.appendChild(el('text', { class: 'node-return', x: n.w - 16, y: n.h - 11 }, '↩'));
       nodes.appendChild(g);
     }
     hoverLayer = el('g', { class: 'flow-hover', 'pointer-events': 'none', 'aria-hidden': 'true' });
@@ -97,7 +99,18 @@
     const base = Math.min(rect.width / box.width, rect.height / box.height);
     return { box, rect, base };
   }
+  // Mapa nie wychodzi poza własny obszar: przy większej od okna przewija się tylko do krawędzi, przy mniejszej zostaje w oknie.
+  function clampView() {
+    const { box, rect, base } = metrics();
+    if (!(base > 0)) return;
+    const range = (visible, content) => content <= visible ? [0, visible - content] : [visible - content, 0];
+    const [x0, x1] = range(rect.width / base, box.width * view.k);
+    const [y0, y1] = range(rect.height / base, box.height * view.k);
+    view.x = Math.min(x1, Math.max(x0, view.x));
+    view.y = Math.min(y1, Math.max(y0, view.y));
+  }
   function apply() {
+    clampView();
     root.setAttribute('transform', `translate(${view.x} ${view.y}) scale(${view.k})`);
     lastBase = metrics().base;
   }
@@ -148,7 +161,7 @@
   function highlight(id) {
     svg.classList.toggle('has-hl', !!id);
     root.querySelectorAll('.flow-node').forEach(node => node.classList.toggle('is-hl', !!id && node.dataset.id === id));
-    root.querySelectorAll('.flow-edge').forEach(edge => edge.classList.toggle('is-hl', !!id && (edge.dataset.from === id || edge.dataset.to === id)));
+    root.querySelectorAll('.flow-edge, .edge-label').forEach(edge => edge.classList.toggle('is-hl', !!id && (edge.dataset.from === id || edge.dataset.to === id)));
     if (id) {
       const linked = new Set([id]);
       root.querySelectorAll('.flow-edge.is-hl').forEach(edge => { linked.add(edge.dataset.from); linked.add(edge.dataset.to); });
@@ -266,7 +279,7 @@
     state.lanes = new Set(allLanes.map(lane => lane.id));
     svg = $('flowSvg');
     viewport = $('flowViewport');
-    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Linia przerywana: krok opcjonalny</span><span>Cieńsza linia: powrót do wcześniejszego etapu</span>';
+    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Linia przerywana: krok opcjonalny</span><span>↩ na karcie: punkt ma powrót do wcześniejszego etapu (linia widoczna po najechaniu lub wybraniu)</span>';
     bind();
     redraw();
     reset();
