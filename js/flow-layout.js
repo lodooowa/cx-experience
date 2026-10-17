@@ -8,13 +8,10 @@
     nodeH: 30,
     gapX: 72,      // odstęp poziomy między kartami sąsiednich kolumn
     gapY: 8,       // odstęp pionowy kart w jednej komórce (tor x proces)
-    padY: 32,      // margines pionowy wewnątrz pasa (miejsce na łuki wstecz)
+    padY: 20,      // margines pionowy wewnątrz pasa
     padX: 24,      // margines po prawej stronie ostatniej kolumny
     labelW: 120,   // szerokość kolumny etykiet torów po lewej
-    headerH: 44,   // wysokość nagłówka kolumn (pasy zaczynają się od y = headerH)
-    arcBase: 18,   // minimalne wzniesienie łuku wstecz nad węzłem
-    arcPerCol: 12, // dodatkowe wzniesienie na każdą kolumnę rozpiętości
-    arcMax: 64     // limit wzniesienia łuku
+    headerH: 44    // wysokość nagłówka kolumn (pasy zaczynają się od y = headerH)
   };
 
   const r = n => Math.round(n * 100) / 100;
@@ -89,20 +86,28 @@
         const k = Math.max(24, (b[0] - a[0]) / 2);
         c1 = [a[0] + k, a[1]];
         c2 = [b[0] - k, b[1]];
-      } else if (t.col === s.col) {
+      } else if (t.col === s.col && Math.abs(t.y - s.y) <= o.nodeH + o.gapY + 1) {
+        // sąsiednie karty w jednej komórce: krótki pionowy łącznik
         const down = t.y >= s.y;
         a = [s.x + s.w / 2, down ? s.y + s.h : s.y];
         b = [t.x + t.w / 2, down ? t.y : t.y + t.h];
         const k = Math.max(12, Math.abs(b[1] - a[1]) / 2);
         c1 = [a[0], a[1] + (down ? k : -k)];
         c2 = [b[0], b[1] + (down ? -k : k)];
+      } else if (t.col === s.col) {
+        // ta sama kolumna, inny tor lub odległa karta: pętla przy prawym boku, wejście z boku
+        const bulge = Math.min(o.gapX / 2 - 6, 14 + Math.abs(t.y - s.y) / 40);
+        a = [s.x + s.w, s.y + s.h / 2];
+        b = [t.x + t.w, t.y + t.h / 2];
+        c1 = [a[0] + bulge, a[1]];
+        c2 = [b[0] + bulge, b[1]];
       } else {
-        const lift = Math.min(o.arcMax, o.arcBase + o.arcPerCol * (s.col - t.col));
-        const peak = Math.max(2, Math.min(s.y, t.y) - lift);
-        a = [s.x + s.w / 2, s.y];
-        b = [t.x + t.w / 2, t.y];
-        c1 = [a[0], peak];
-        c2 = [b[0], peak];
+        // powrót do wcześniejszego etapu: z lewego boku źródła do prawego boku celu
+        a = [s.x, s.y + s.h / 2];
+        b = [t.x + t.w, t.y + t.h / 2];
+        const k = Math.max(24, (a[0] - b[0]) / 2);
+        c1 = [a[0] - k, a[1]];
+        c2 = [b[0] + k, b[1]];
       }
       out.d = cubic(a, c1, c2, b);
       if (e.label) {

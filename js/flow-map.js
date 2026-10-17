@@ -266,7 +266,7 @@
     state.lanes = new Set(allLanes.map(lane => lane.id));
     svg = $('flowSvg');
     viewport = $('flowViewport');
-    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Linia przerywana: krok opcjonalny</span><span>Łuk nad kartami: powrót do wcześniejszego etapu</span>';
+    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Linia przerywana: krok opcjonalny</span><span>Cieńsza linia: powrót do wcześniejszego etapu</span>';
     bind();
     redraw();
     reset();
