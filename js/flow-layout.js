@@ -16,6 +16,7 @@
     headerH: 44    // wysokość nagłówka kolumn (pasy zaczynają się od y = headerH)
   };
 
+  const LEAD = 12; // prosty odcinek przed wejściem do karty
   const r = n => Math.round(n * 100) / 100;
   const pt = (x, y) => r(x) + ' ' + r(y);
   const cubic = (a, c1, c2, b) => 'M' + pt(a[0], a[1]) + ' C' + pt(c1[0], c1[1]) + ', ' + pt(c2[0], c2[1]) + ', ' + pt(b[0], b[1]);
@@ -112,22 +113,22 @@
       if (e.label) out.label = e.label;
       if (t.col > s.col || (t.col === s.col && t.sub > s.sub)) {
         // w przód: z prawego boku źródła do lewego boku celu
+        // ostatnie LEAD jednostek poziomo, żeby grot strzałki leżał prosto
         const a = [s.x + s.w, s.y + s.h / 2];
-        const b = [t.x, t.y + t.h / 2];
-        const k = Math.max(24, (b[0] - a[0]) / 2);
+        const end = [t.x, t.y + t.h / 2];
+        const b = [end[0] - LEAD, end[1]];
+        const k = Math.max(16, (b[0] - a[0]) / 2);
         const c1 = [a[0] + k, a[1]];
         const c2 = [b[0] - k, b[1]];
-        out.d = cubic(a, c1, c2, b);
+        out.d = cubic(a, c1, c2, b) + ' L' + pt(end[0], end[1]);
         if (e.label) { out.labelX = r(mid(a, c1, c2, b, 0)); out.labelY = r(mid(a, c1, c2, b, 1)); }
       } else if (t.col === s.col && t.sub === s.sub && Math.abs(t.y - s.y) <= o.nodeH + o.gapY + 1) {
         // sąsiednie karty w jednej komórce: krótki pionowy łącznik
         const down = t.y >= s.y;
         const a = [s.x + s.w / 2, down ? s.y + s.h : s.y];
         const b = [t.x + t.w / 2, down ? t.y : t.y + t.h];
-        const k = Math.max(12, Math.abs(b[1] - a[1]) / 2);
-        const c1 = [a[0], a[1] + (down ? k : -k)];
-        const c2 = [b[0], b[1] + (down ? -k : k)];
-        out.d = cubic(a, c1, c2, b);
+        out.d = 'M' + pt(a[0], a[1]) + ' L' + pt(b[0], b[1]);
+        const c1 = a, c2 = b;
         if (e.label) { out.labelX = r(mid(a, c1, c2, b, 0)); out.labelY = r(mid(a, c1, c2, b, 1)); }
       } else {
         // powrót lub odległa karta w tej samej kolumnie: wyjście z prawej, wejście z lewej, trasa prostokątna

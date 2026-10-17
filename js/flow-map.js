@@ -30,7 +30,7 @@
     svg.appendChild(root);
     const defs = el('defs');
     const arrow = el('marker', { id: 'flow-arrow', viewBox: '0 0 8 8', refX: 8, refY: 4, markerWidth: 8, markerHeight: 8, markerUnits: 'userSpaceOnUse', orient: 'auto' });
-    arrow.appendChild(el('path', { d: 'M0.5 0.8 L7.5 4 L0.5 7.2', class: 'flow-arrow' }));
+    arrow.appendChild(el('path', { d: 'M0 1 L8 4 L0 7 Z', class: 'flow-arrow' }));
     defs.appendChild(arrow);
     root.appendChild(defs);
     const { width, height } = layout;
