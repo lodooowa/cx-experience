@@ -262,7 +262,7 @@
     svg.addEventListener('pointermove', event => {
       if (sweepBtn.getAttribute('aria-pressed') !== 'true' || event.pointerType === 'touch') return;
       const box = svg.getBoundingClientRect(), s = scale();
-      const to = Math.atan2(event.clientY - (box.top + box.height / 2 - (view.y + view.h / 2) * s), event.clientX - (box.left + box.width / 2 - (view.x + view.w / 2) * s)) * 180 / Math.PI;
+      const to = Math.atan2(event.clientY - (box.top + box.height / 2 - (view.y + view.h / 2) * s), event.clientX - (box.left + box.width / 2 - (view.x + view.w / 2) * s)) * 180 / Math.PI + 20;
       angle += ((to - angle + 540) % 360) - 180;
       sweep().style.transform = `rotate(${angle.toFixed(1)}deg)`;
     });
