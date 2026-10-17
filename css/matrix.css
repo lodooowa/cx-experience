@@ -44,14 +44,15 @@
 .tile-title { display: -webkit-box; overflow: hidden; font-weight: 700; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .tile-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .emo-bar { display: flex; gap: 2px; }
-.emo-bar i { width: 9px; height: 5px; background: var(--surface-soft); }
+.emo-bar i { width: 8px; height: 5px; background: var(--surface-soft); }
 .emo-bar i.on { background: var(--text-primary); }
+.emo-cap { margin-left: auto; color: var(--text-faint); font-size: 9px; }
 .emo-none { color: var(--text-faint); font-size: 9px; }
 
 .is-discussing .tile { opacity: .2; }
 .is-discussing .tile.in-queue { opacity: .55; }
 .is-discussing .tile.is-spot { opacity: 1; transform: scale(1.06); z-index: 1; box-shadow: 0 0 0 3px var(--rating), 0 10px 26px rgba(4, 20, 40, .3); }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 10px 16px; border-top: 1px solid var(--line); color: var(--text-faint); font-size: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 10px 16px; border-bottom: 1px solid var(--line); color: var(--text-faint); font-size: 10px; }
 
 .detail-drawer { font-size: 14px; }
 .detail-drawer h2 { font-size: 26px; }
