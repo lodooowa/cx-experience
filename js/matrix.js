@@ -10,7 +10,7 @@
   const levels = ['niski', 'średni', 'wysoki'];
   const queueRatings = ['niezaopiekowany', 'do_poprawy'];
   const state = { matrix: 'all', ratings: new Set(), selected: null, queue: null, pos: 0 };
-  let ratingKeys = [], matrixKeys = [], tpIndex = new Map(), order = new Map();
+  let maxWeeks = 1, ratingKeys = [], matrixKeys = [], tpIndex = new Map(), order = new Map();
 
   function showError(message) {
     $('app').hidden = true;
@@ -117,6 +117,20 @@
 
   function section(title, body) { return `<section class="detail-section"><h3>${esc(title)}</h3>${body}</section>`; }
 
+  function meter(label, value, tone) {
+    const level = levels.indexOf(value) + 1;
+    return `<div class="metric"><span class="metric-label">${esc(label)}</span><span class="meter ${tone} lvl-${level}" role="img" aria-label="${esc(label)}: ${esc(value)}">${[1, 2, 3].map(n => `<i class="${n <= level ? 'on' : ''}"></i>`).join('')}</span><b>${esc(value)}</b></div>`;
+  }
+
+  function actionCard(a) {
+    const demo = data.status === 'DEMO' ? ' (DEMO)' : '';
+    const width = Math.max(4, Math.round(a.weeks / maxWeeks * 100));
+    return `<div class="action-card kind-${esc(a.kind)}"><span class="action-kind">${esc(data.labels.actionKind[a.kind])}</span><p class="action-text">${esc(a.text)}</p>
+      <div class="metrics">${meter('Koszt', a.cost, 'bad-high')}${meter('Ryzyko', a.risk, 'bad-high')}${meter('Zysk', a.gain, 'good-high')}
+      <div class="metric"><span class="metric-label">Czas wdrożenia</span><span class="timebar" role="img" aria-label="Około ${esc(a.weeks)} tygodni"><i style="width:${width}%"></i></span><b>ok. ${esc(a.weeks)} tyg.${demo}</b></div></div>
+      ${a.implementationRisks ? `<p class="impl-risk"><b>Ryzyka wdrożenia:</b> ${esc(a.implementationRisks)}</p>` : ''}</div>`;
+  }
+
   function renderDetails(tp) {
     const features = data.features.filter(f => f.touchpointId === tp.id);
     const actions = data.actions.filter(a => a.touchpointId === tp.id);
@@ -133,9 +147,7 @@
         <div class="detail-meta"><span>Emocja klienta: <b>${esc(emotionText(tp))}</b></span>${tp.emotionImpact ? `<span>${esc(tp.emotionImpact)}</span>` : ''}<span>Monitoring: <b>${esc(data.labels.monitoring[tp.monitoring] || 'brak danych')}</b></span><span>Właściciel: <b>${esc(tp.owner || 'brak danych')}</b></span></div></section>`;
     html += block('pros', '+', 'Plusy: co działa', pros.length ? list(pros) : none('Brak opisanych plusów w danych.'));
     html += block('cons', '−', 'Minusy: co nie działa', cons[0].length || cons[1].length ? sub('blad_typowy', cons[0]) + sub('blad_diagnozowany', cons[1]) : none('Brak opisanych minusów w danych.'));
-    html += block('reco', '→', 'Rekomendacja: co robić', actions.length ? actions.map(a => `<div class="action-card"><strong>${esc(data.labels.actionKind[a.kind])}</strong><p>${esc(a.text)}</p>
-        <div class="detail-tags"><span>Koszt: ${esc(a.cost)}</span><span>Ryzyko: ${esc(a.risk)}</span><span>Zysk: ${esc(a.gain)}</span><span>ok. ${esc(a.weeks)} tyg.${demo ? ' (DEMO)' : ''}</span></div>
-        ${a.implementationRisks ? `<p class="impl-risk">Ryzyka wdrożenia: ${esc(a.implementationRisks)}</p>` : ''}</div>`).join('') : none('Brak akcji naprawczych w danych.'));
+    html += block('reco', '→', 'Rekomendacja: co robić', actions.length ? actions.map(actionCard).join('') : none('Brak akcji naprawczych w danych.'));
     if (examples.length) html += section(data.labels.featureType.przyklad, list(examples));
     if (sources.length) html += section(data.labels.featureType.zrodlo, `<div class="detail-tags">${sources.map(f => `<span>${esc(f.text)}</span>`).join('')}</div>`);
     $('detailBody').innerHTML = html;
@@ -248,6 +260,7 @@
     ratingKeys = Object.keys(data.labels.rating);
     matrixKeys = Object.keys(data.labels.matrix);
     state.ratings = new Set(ratingKeys);
+    maxWeeks = Math.max(1, ...data.actions.map(a => a.weeks));
     data.touchpoints.forEach((tp, index) => { tpIndex.set(tp.id, tp); order.set(tp.id, data.processes.indexOf(tp.process) * 100000 + index); });
     $('demoPill').hidden = data.status !== 'DEMO';
     $('matrixSelect').innerHTML = `<option value="all">Obie macierze</option>` + matrixKeys.map(key => `<option value="${esc(key)}">${esc(matrixLabel(key))}</option>`).join('');
