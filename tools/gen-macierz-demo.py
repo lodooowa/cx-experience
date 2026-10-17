@@ -353,6 +353,8 @@ assert all(c[1] in ids for c in cechy) and all(a[1] in ids for a in akcje)
 
 if os.path.exists("macierz-demo.xlsx") and "--force" not in sys.argv:
     sys.exit("macierz-demo.xlsx już istnieje i jest źródłem danych: ten skrypt go nie nadpisze (--force wymusza, zmiany eksperta przepadną).")
+ie=PH.index("emocja_1_5")
+punkty=[[int(v) if i==ie and str(v).isdigit() else v for i,v in enumerate(r)] for r in punkty]
 tables=[("punkty_styku",PH,punkty),("cechy",CH,cechy),("akcje",AH,akcje),("slowniki",SH,slowniki),("procesy",PRH,procesy),("nastepne",NH,nastepne),("przypadki",PCH,przypadki),("kroki_przypadku",KH,kroki)]
 from openpyxl import Workbook
 from openpyxl.styles import Font,PatternFill,Alignment
@@ -366,6 +368,63 @@ for n,h,rows in tables:
         ws.column_dimensions[col[0].column_letter].width=min(60,max(10,max(len(str(c.value or "")) for c in col)+2))
     for row in ws.iter_rows(min_row=2):
         for c in row: c.alignment=Alignment(wrap_text=True,vertical="top")
+# Listy rozwijane (błąd wyświetla Excel, zanim zadziała konwerter) i zakładka czytaj_mnie. Konwerter ignoruje zakładki spoza SHEETS.
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.utils import get_column_letter
+def dv(sheet,header,col,formula,title,msg,kind="list"):
+    ws=wb[sheet]; letter=get_column_letter(header.index(col)+1)
+    v=DataValidation(type=kind,formula1=formula,allow_blank=True,showErrorMessage=True,errorTitle=title,error=msg)
+    if kind=="whole": v.operator="between"; v.formula2="5" if formula=="1" else "1000"
+    ws.add_data_validation(v); v.add(f"{letter}2:{letter}1000")
+def group(g):
+    rows=[i for i,r in enumerate(slowniki,2) if r[0]==g]
+    return f"=slowniki!$B${rows[0]}:$B${rows[-1]}"
+ID_PUNKTU="=punkty_styku!$B$2:$B$1000"
+dv("punkty_styku",PH,"macierz",group("matrix"),"Macierz","Wybierz wartość z listy (słownik).")
+dv("punkty_styku",PH,"podtyp",group("subtype"),"Podtyp","Wybierz wartość z listy (słownik) albo zostaw puste.")
+dv("punkty_styku",PH,"ocena_cx",group("rating"),"Ocena CX","Wybierz wartość z listy (słownik).")
+dv("punkty_styku",PH,"monitoring",group("monitoring"),"Monitoring","Wybierz wartość z listy (słownik).")
+dv("punkty_styku",PH,"proces","=procesy!$B$2:$B$1000","Proces","Wybierz proces z zakładki procesy.")
+for c in ("emocja_1_5","zaopiekowanie_1_5"): dv("punkty_styku",PH,c,"1","Skala 1-5","Wpisz liczbę całkowitą od 1 do 5.","whole")
+dv("cechy",CH,"punkt_id",ID_PUNKTU,"Punkt","Wybierz ID z zakładki punkty_styku.")
+dv("cechy",CH,"typ",group("featureType"),"Typ cechy","Wybierz wartość z listy (słownik).")
+dv("akcje",AH,"punkt_id",ID_PUNKTU,"Punkt","Wybierz ID z zakładki punkty_styku.")
+dv("akcje",AH,"rodzaj",group("actionKind"),"Rodzaj akcji","Wybierz wartość z listy (słownik).")
+for c in ("koszt","ryzyko","zysk"): dv("akcje",AH,c,'"niski,średni,wysoki"',c.capitalize(),"Wybierz: niski, średni albo wysoki.")
+dv("akcje",AH,"czas_wdrozenia_tyg","0","Czas","Wpisz liczbę całkowitą tygodni.","whole")
+dv("nastepne",NH,"punkt_id",ID_PUNKTU,"Punkt","Wybierz ID z zakładki punkty_styku.")
+dv("nastepne",NH,"nastepny_id",ID_PUNKTU,"Punkt","Wybierz ID z zakładki punkty_styku.")
+dv("nastepne",NH,"opcjonalny",'"tak,nie"',"Opcjonalny","Wybierz: tak albo nie (puste = nie).")
+dv("kroki_przypadku",KH,"przypadek_id","=przypadki!$A$2:$A$1000","Przypadek","Wybierz ID z zakładki przypadki.")
+dv("kroki_przypadku",KH,"punkt_id",ID_PUNKTU,"Punkt","Wybierz ID z zakładki punkty_styku.")
+dv("kroki_przypadku",KH,"stan",group("stan"),"Stan","Wybierz wartość z listy (słownik).")
+dv("kroki_przypadku",KH,"lp","1","Numer kroku","Wpisz liczbę całkowitą od 1 w górę.","whole")
+for ws in (wb["punkty_styku"],wb["cechy"],wb["akcje"],wb["nastepne"],wb["przypadki"],wb["kroki_przypadku"]): ws.sheet_properties.tabColor="2E7D32"
+for n in ("slowniki","procesy"): wb[n].sheet_properties.tabColor="9E9E9E"
+README=[
+("CZYTAJ MNIE: jak uzupełniać ten plik",""),
+("","Ten plik jest źródłem danych dla wizualizacji (macierz, priorytety, radar, mapa przepływu). Zielone zakładki wypełniasz Ty, szare (slowniki, procesy) zmieniasz tylko przy nowym torze, stanie albo procesie."),
+("Kolejność pracy",""),
+("1","punkty_styku: jeden wiersz na punkt styku. Nadaj unikalne ID (np. imp-01). Proces, ocenę, monitoring i macierz wybierz z listy."),
+("2","cechy i akcje: wiele wierszy na punkt. W kolumnie punkt_id wybierz ID z listy."),
+("3","nastepne: mapa przepływu. Jeden wiersz = krok z punktu (punkt_id) do kolejnego (nastepny_id). Kilka wierszy z tym samym punkt_id to rozwidlenie. Opcjonalny = tak, jeśli krok można pominąć. Powroty do wcześniejszego punktu są dozwolone."),
+("4","przypadki: prawdziwy przebieg klienta (nazwa wymagana; klient, model_pojazdu i numer_sprawy opcjonalne). Nadaj unikalne przypadek_id (np. P-04)."),
+("5","kroki_przypadku: kroki przypadku w kolejności lp (1, 2, 3...). Wybierz punkt i stan. W co_sie_stalo opisz, co zadziałało lub nie. Punkt, którego przypadek nie dotknął, po prostu pomiń."),
+("Stany kroku (stan)","zadzialal, czesciowo, nie_zadzialal, brakuje (punkt, który powinien wystąpić, a go nie było). Etykiety są w zakładce slowniki."),
+("Tory mapy","Domyślnie wynikają z macierzy i podtypu punktu (importer, dealer, salon, serwis). Nowy tor: wpisz jego nazwę w kolumnie tor_nadpisanie punktu i dodaj etykietę w slowniki (grupa tor; kolejność wierszy to kolejność torów; ID toru nie może być samą liczbą)."),
+("status_danych","Wartość DEMO oznacza dane przykładowe. Wiersze własne oznacz inaczej albo zostaw puste; nie zostawiaj DEMO przy danych prawdziwych."),
+("Po edycji","Zapisz plik i zamknij Excela. Kliknij dwukrotnie konwertuj-dane.command (macOS) albo konwertuj-dane.bat (Windows). Jeśli pojawi się błąd, zawiera nazwę zakładki i numer wiersza do poprawy."),
+("Zasady","Nie zmieniaj nazw zakładek ani nagłówków kolumn, nie wstawiaj kolumn ani pustych wierszy w środku tabeli. Teksty wpisuj zwykłym tekstem."),
+]
+rm=wb.create_sheet("czytaj_mnie",0)
+for a,b in README: rm.append([a,b])
+rm.column_dimensions["A"].width=24; rm.column_dimensions["B"].width=110
+for row in rm.iter_rows():
+    for c in row: c.alignment=Alignment(wrap_text=True,vertical="top")
+    if row[0].value and not row[1].value or row[0].row==1: row[0].font=Font(bold=True,size=13 if row[0].row==1 else 11)
+    elif row[0].value: row[0].font=Font(bold=True)
+rm.sheet_properties.tabColor="041428"
+wb.active=0
 wb.properties.created=wb.properties.modified=datetime.datetime(2026,1,1)
 wb.save("macierz-demo.xlsx")
 print("macierz-demo.xlsx:",len(punkty),len(cechy),len(akcje),"- teraz uruchom tools/xlsx-to-data.py")
