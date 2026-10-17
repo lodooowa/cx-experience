@@ -52,7 +52,11 @@
 .is-discussing .tile { opacity: .2; }
 .is-discussing .tile.in-queue { opacity: .55; }
 .is-discussing .tile.is-spot { opacity: 1; transform: scale(1.06); z-index: 1; box-shadow: 0 0 0 3px var(--rating), 0 10px 26px rgba(4, 20, 40, .3); }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 10px 16px; border-bottom: 1px solid var(--line); color: var(--text-faint); font-size: 10px; }
+.legend-tip { position: relative; margin-left: auto; }
+.legend-tip + .primary { margin-left: 0; }
+.legend-btn { width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-panel); color: var(--text-muted); font-weight: 700; }
+.legend { position: absolute; top: calc(100% + 8px); right: 0; z-index: 20; display: none; flex-direction: column; gap: 6px; width: 290px; margin: 0; padding: 12px 14px; border: 1px solid var(--line); background: var(--surface-panel); box-shadow: 0 10px 28px rgba(4, 20, 40, .22); color: var(--text-primary); font-size: 12px; }
+.legend-tip:hover .legend, .legend-tip:focus-within .legend { display: flex; }
 
 .detail-drawer { font-size: 14px; }
 .detail-drawer h2 { font-size: 26px; }
