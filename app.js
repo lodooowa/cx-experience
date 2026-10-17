@@ -132,6 +132,15 @@
     renderGraph();
     renderChart();
     renderDetails();
+    centerSelected();
+  }
+
+  function centerSelected() {
+    const node = $('graphNodes').querySelector(`[data-step="${state.index}"]`);
+    const scroller = document.querySelector('.graph-scroll');
+    if (!node || !scroller) return;
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    scroller.scrollTo({ left: node.offsetLeft + node.offsetWidth / 2 - scroller.clientWidth / 2, behavior: reduced ? 'auto' : 'smooth' });
   }
 
   function graphEdges(steps) {
@@ -194,20 +203,26 @@
 
   let lastChartWidth = 0;
 
+  function chartWidth() {
+    return Math.max($('emotionChart').parentElement.clientWidth, $('graphNodes').scrollWidth + 24);
+  }
+
   function renderChart() {
     const steps = state.journey.steps;
     const chart = $('emotionChart');
-    const W = chart.clientWidth || 1100, H = 240, top = 28, bottom = 48;
+    const W = chartWidth() || 1100, H = 240, top = 28, bottom = 48;
     chart.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    chart.style.width = `${W}px`;
     lastChartWidth = W;
     const nodes = $('graphNodes').querySelectorAll('[data-step]');
-    const chartLeft = chart.getBoundingClientRect().left;
+    const canvasLeft = $('journeyMap').getBoundingClientRect().left;
+    const shift = document.querySelector('.graph-scroll').getBoundingClientRect().left - chart.parentElement.getBoundingClientRect().left;
     const measured = steps.map((step, index) => ({ step, index, value: Number(step.emotion) }))
       .filter(item => item.step.emotion !== undefined && item.step.emotion !== null && item.step.emotion !== '' && Number.isFinite(item.value) && item.value >= 1 && item.value <= 5);
     const x = index => {
       if (!nodes[index]) return W / 2;
       const box = nodes[index].getBoundingClientRect();
-      return box.left + box.width / 2 - chartLeft;
+      return box.left + box.width / 2 - canvasLeft + shift;
     };
     const y = value => top + (5 - value) * (H - top - bottom) / 4;
     const measuredIds = new Set(measured.map(item => item.step.id));
@@ -229,6 +244,11 @@
     });
   }
 
+  function detailList(title, value, tone = '') {
+    const items = (Array.isArray(value) ? value : value ? [value] : []).filter(item => typeof item === 'string' && item.trim());
+    return items.length ? `<div class="detail-section"><h3>${title}</h3><ul class="detail-list ${tone}">${items.map(item => `<li>${esc(item)}</li>`).join('')}</ul></div>` : '';
+  }
+
   function renderDetails() {
     const step = state.journey.steps[state.index];
     const copy = currentCopy(step);
@@ -239,6 +259,10 @@
       <h2 id="detailTitle">${esc(copy.title || step.title)}</h2><p class="detail-lead">${esc(copy.description || '')}</p>
       ${fields.quote ? `<div class="detail-section"><h3>${state.perspective === 'customer' ? 'Głos klienta · DEMO' : 'Cytat · DEMO'}</h3><blockquote>„${esc(fields.quote)}”</blockquote></div>` : ''}
       ${fields.insight ? `<div class="detail-section"><h3>Kontekst / opis</h3><p>${esc(fields.insight)}</p></div>` : ''}
+      ${detailList('Na co zwrócić uwagę', fields.attention)}
+      ${fields.emotionImpact ? `<div class="detail-section"><h3>Wpływ na emocje klienta</h3><p>${esc(fields.emotionImpact)}</p></div>` : ''}
+      ${detailList('Jakich błędów unikać', fields.avoid, 'avoid')}
+      ${detailList('Potencjalne ryzyka', fields.risks, 'risk')}
       ${fields.action ? `<div class="detail-section"><h3>Kierunek działania</h3><p>${esc(fields.action)}</p></div>` : ''}
       <div class="detail-section"><h3>Obszary odpowiedzialności</h3><div class="detail-tags">${(fields.owner || []).map(owner => `<span>${esc(owner)}</span>`).join('') || '<span>Nie określono</span>'}</div></div>
       ${step.branches && step.branches.length ? `<div class="detail-section"><h3>Wybierz wariant</h3><div class="detail-branches">${step.branches.map(branch => `<button type="button" data-branch="${esc(branch.target)}">${esc(branch.label)} →</button>`).join('')}</div></div>` : ''}
@@ -281,13 +305,15 @@
     $('fullscreen').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.());
     const relayout = () => {
       drawGraphEdges();
-      if ($('emotionChart').clientWidth && $('emotionChart').clientWidth !== lastChartWidth) renderChart();
+      if ($('emotionChart').parentElement.clientWidth && chartWidth() !== lastChartWidth) renderChart();
     };
     window.addEventListener('resize', relayout);
+    document.querySelector('.graph-scroll').addEventListener('scroll', event => { $('emotionChart').parentElement.scrollLeft = event.currentTarget.scrollLeft; });
     if (window.ResizeObserver) {
       const observer = new ResizeObserver(relayout);
       observer.observe($('journeyMap'));
-      observer.observe($('emotionChart'));
+      observer.observe($('emotionChart').parentElement);
+      observer.observe($('graphNodes'));
     }
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !$('detailDrawer').hidden) { setDrawer(false); return; }

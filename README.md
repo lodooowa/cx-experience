@@ -43,7 +43,7 @@ Zachowaj przypisanie i końcowy średnik. `file://` nie korzysta z `fetch()` ani
 ### Pola ścieżki i punktu
 
 - Ścieżka: `id`, `personaId`, `title`, opcjonalne `subtitle` i lista `steps`.
-- Punkt styku: unikalne `id`, `title`, opcjonalne `description`, `short`, `type`, `scene`, `emotion`, `owner`, `quote`, `insight`, `action` i `branches`.
+- Punkt styku: unikalne `id`, `title`, opcjonalne `description`, `short`, `type`, `scene`, `emotion`, `owner`, `quote`, `insight`, `action`, `branches` oraz opisy w panelu szczegółów: `attention` (na co zwrócić uwagę, lista), `emotionImpact` (wpływ na emocje klienta, tekst), `avoid` (jakich błędów unikać, lista) i `risks` (potencjalne ryzyka, lista).
 - `type`: `standard`, `critical`, `success` lub `choice`.
 - `scene`: `audio`, `web`, `configurator`, `alert`, `dealer`, `drive`, `message`, `calendar`, `options` lub `document`. Pominięta scena ma neutralny fallback.
 - `emotion`: opcjonalna liczba 1–5. Brak wartości oznacza brak markera emocji — aplikacja nie uzupełnia jej automatycznie.

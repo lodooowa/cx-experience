@@ -95,6 +95,11 @@ button:disabled { cursor: not-allowed; opacity: .35; }
 .detail-section h3 { margin: 0 0 8px; color: var(--text-faint); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; }
 .detail-section p { margin: 0; color: #c6d2df; font-size: 11px; line-height: 1.55; }
 .detail-section blockquote { margin: 0; padding-left: 11px; border-left: 2px solid var(--brand-accent); color: #f2d7c3; font-size: 12px; line-height: 1.55; }
+.detail-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.detail-list li { position: relative; padding-left: 15px; color: #c6d2df; font-size: 11px; line-height: 1.5; }
+.detail-list li::before { content: ""; position: absolute; top: .55em; left: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--brand-primary); }
+.detail-list.avoid li::before { background: var(--critical); }
+.detail-list.risk li::before { background: var(--brand-accent); }
 .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .detail-tags span { padding: 5px 8px; border: 1px solid var(--line); border-radius: 999px; color: #c5d1dd; font-size: 9px; }
 .detail-branches { display: grid; gap: 7px; }
@@ -109,7 +114,7 @@ button:disabled { cursor: not-allowed; opacity: .35; }
 .emotion-heading p { margin: 4px 0 0; color: var(--text-muted); font-size: 10px; }
 .collapse-button { min-height: 35px; padding: 0 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-raised); color: var(--text-primary); font-size: 10px; }
 .collapse-button span { margin-left: 7px; color: var(--brand-primary); }
-.emotion-chart-wrap { position: relative; min-height: 180px; margin-top: 5px; }
+.emotion-chart-wrap { position: relative; min-height: 180px; margin-top: 5px; overflow-x: hidden; }
 .emotion-chart-wrap svg { display: block; width: 100%; height: auto; overflow: visible; }
 .chart-grid { stroke: #7891aa; stroke-opacity: .17; stroke-dasharray: 4 8; }
 .chart-scale { fill: var(--text-faint); font-size: 10px; text-anchor: middle; }
