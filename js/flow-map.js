@@ -6,7 +6,8 @@
   const NS = 'http://www.w3.org/2000/svg';
   const MIN_K = 0.5, MAX_K = 8;
   const view = { k: 1, x: 0, y: 0 };
-  const state = { lanes: new Set(), selected: null };
+  const state = { lanes: new Set(), selected: null, caseId: '' };
+  const stateMarks = { zadzialal: '✓', czesciowo: '◐', nie_zadzialal: '✕', brakuje: '○' };
   let allLanes = [], layout = null, svg, root, viewport, hoverLayer, nodePos = new Map(), lastBase = 0, dragged = false;
 
   const laneLabel = id => (allLanes.find(lane => lane.id === id) || {}).label || id;
@@ -18,6 +19,20 @@
     return node;
   };
   const clip = (text, max) => text.length > max ? text.slice(0, Math.max(1, max - 1)) + '…' : text;
+
+  // Krok przypadku po punkcie mapy: numery kroków (punkt może wystąpić kilka razy), stan ostatniego wystąpienia, notatki.
+  function caseSteps() {
+    const map = new Map();
+    const c = (window.CX_FLOW.cases || []).find(item => item.id === state.caseId);
+    if (!c) return { c: null, map };
+    for (const step of c.steps) {
+      const item = map.get(step.touchpointId) || map.set(step.touchpointId, { steps: [] }).get(step.touchpointId);
+      item.steps.push(step);
+      item.state = step.state;
+    }
+    return { c, map };
+  }
+  const stateLabel = key => window.CX_FLOW.labels.state[key] || key;
 
   function compute() {
     const lanes = allLanes.map(lane => lane.id).filter(id => state.lanes.has(id));
@@ -71,12 +86,26 @@
       edges.appendChild(pulse);
       if (e.label && e.labelX !== undefined) edges.appendChild(el('text', { class: 'edge-label' + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, x: e.labelX, y: e.labelY, 'text-anchor': 'middle' }, e.label));
     }
+    const { c: activeCase, map: caseMap } = caseSteps();
+    svg.classList.toggle('has-case', !!activeCase);
+    if (activeCase) {
+      const route = el('g', { class: 'case-route', 'aria-hidden': 'true' });
+      const byKey = new Map(layout.edges.map(e => [e.from + '>' + e.to, e]));
+      for (let i = 1; i < activeCase.steps.length; i++) {
+        const e = byKey.get(activeCase.steps[i - 1].touchpointId + '>' + activeCase.steps[i].touchpointId);
+        if (!e) continue;
+        route.appendChild(el('path', { class: 'case-casing', d: e.d }));
+        route.appendChild(el('path', { class: 'case-line', d: e.d, 'marker-end': 'url(#flow-arrow)' }));
+      }
+      edges.appendChild(route);
+    }
     const laneIndex = new Map(layout.lanes.map((lane, i) => [lane.id, i]));
     const ordered = layout.nodes.map((n, i) => ({ n, i })).sort((a, b) => a.n.col - b.n.col || laneIndex.get(a.n.lane) - laneIndex.get(b.n.lane) || a.i - b.i);
     nodePos = new Map(layout.nodes.map(n => [n.id, n]));
     for (const { n } of ordered) {
       const tp = tpIndex.get(n.id);
-      const g = el('g', { class: `flow-node rating-${tp.rating}`, transform: `translate(${n.x} ${n.y})`, tabindex: 0, role: 'button', 'data-id': n.id, 'aria-label': nodeLabel(tp, n.lane) });
+      const cs = caseMap.get(n.id);
+      const g = el('g', { class: `flow-node rating-${tp.rating}` + (cs ? ` in-case st-${cs.state}` : ''), transform: `translate(${n.x} ${n.y})`, tabindex: 0, role: 'button', 'data-id': n.id, 'aria-label': nodeLabel(tp, n.lane) });
       g.appendChild(el('title', {}, nodeLabel(tp, n.lane)));
       g.appendChild(el('rect', { class: 'node-card', width: n.w, height: n.h }));
       g.appendChild(el('rect', { class: 'node-bar', y: n.h - 4, width: n.w, height: 4 }));
@@ -86,6 +115,14 @@
       text.textContent = tp.title;
       fo.appendChild(text);
       g.appendChild(fo);
+      if (cs) {
+        const badge = el('g', { class: 'case-badge', transform: `translate(0 ${n.h / 2})` });
+        badge.appendChild(el('circle', { r: 10 }));
+        badge.appendChild(el('text', { y: 4, 'text-anchor': 'middle' }, stateMarks[cs.state] || '?'));
+        g.appendChild(badge);
+        g.appendChild(el('text', { class: 'case-num', x: n.w - 4, y: -3, 'text-anchor': 'end' }, cs.steps.map(step => step.n).join(', ')));
+        g.setAttribute('aria-label', g.getAttribute('aria-label') + ' Krok ' + cs.steps.map(step => step.n + ': ' + stateLabel(step.state)).join('; ') + '.');
+      }
       nodes.appendChild(g);
     }
     hoverLayer = el('g', { class: 'flow-hover', 'pointer-events': 'none', 'aria-hidden': 'true' });
@@ -98,13 +135,18 @@
 
   function renderList() {
     const shown = data.touchpoints.filter(tp => state.lanes.has(window.CX_FLOW_CORE.laneOf(tp)));
+    const { map: caseMap } = caseSteps();
     let html = '';
     for (const lane of allLanes.filter(l => state.lanes.has(l.id))) {
       html += `<h2 class="list-lane">${esc(lane.label)}</h2>`;
       for (const process of data.processes) {
         const items = shown.filter(tp => tp.process === process && window.CX_FLOW_CORE.laneOf(tp) === lane.id);
         if (!items.length) continue;
-        html += `<h3 class="list-process">${esc(process)}</h3>` + items.map(tp => `<button type="button" class="flow-item rating-${esc(tp.rating)}" data-id="${esc(tp.id)}" aria-label="${esc(nodeLabel(tp, lane.id))}"><span class="mark" aria-hidden="true">${esc(marks[tp.rating] || '')}</span>${esc(tp.title)}</button>`).join('');
+        html += `<h3 class="list-process">${esc(process)}</h3>` + items.map(tp => {
+          const cs = caseMap.get(tp.id);
+          const caseText = cs ? cs.steps.map(step => 'Krok ' + step.n + ': ' + stateLabel(step.state)).join('; ') : '';
+          return `<button type="button" class="flow-item rating-${esc(tp.rating)}${cs ? ' in-case st-' + esc(cs.state) : ''}" data-id="${esc(tp.id)}" aria-label="${esc(nodeLabel(tp, lane.id) + (cs ? ' ' + caseText + '.' : ''))}"><span class="mark" aria-hidden="true">${esc(marks[tp.rating] || '')}</span>${esc(tp.title)}${cs ? `<span class="case-chip"><span aria-hidden="true">${esc(stateMarks[cs.state] || '?')}</span> ${esc(caseText)}</span>` : ''}</button>`;
+        }).join('');
       }
     }
     $('flowList').innerHTML = html;
@@ -189,7 +231,9 @@
 
   function select(id) {
     state.selected = id;
-    $('detailBody').innerHTML = mx.detailsHtml(tpIndex.get(id));
+    const cs = caseSteps().map.get(id);
+    const caseHtml = cs ? '<section class="case-detail"><h3>Przypadek</h3>' + cs.steps.map(step => `<p class="st-${esc(step.state)}"><strong><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> Krok ${esc(step.n)}: ${esc(stateLabel(step.state))}</strong>${step.note ? '<br>' + esc(step.note) : ''}</p>`).join('') + '</section>' : '';
+    $('detailBody').innerHTML = caseHtml + mx.detailsHtml(tpIndex.get(id));
     $('detailDrawer').hidden = false;
     $('workspace').classList.add('has-drawer');
     syncSelected();
@@ -204,12 +248,23 @@
     if (node) node.focus({ preventScroll: true });
   }
 
+  function renderCase() {
+    const { c } = caseSteps();
+    const info = $('caseInfo');
+    info.hidden = !c;
+    if (!c) { info.textContent = ''; return; }
+    const count = key => c.steps.filter(step => step.state === key).length;
+    const meta = [c.client, c.vehicle, c.caseNumber].filter(Boolean).map(esc).join(' · ');
+    info.innerHTML = `<strong>${esc(c.name)}</strong>${meta ? ' · ' + meta : ''} · ${c.steps.length} kroków: ` + Object.keys(window.CX_FLOW.labels.state).map(key => `<span class="case-chip st-${esc(key)}"><span aria-hidden="true">${esc(stateMarks[key] || '?')}</span> ${esc(stateLabel(key))} ${count(key)}</span>`).join(' ') + ' <span class="case-hint">Punkty bez znaku: pominięte w tym przypadku.</span>';
+  }
+
   function renderChips() {
     $('lanes').innerHTML = allLanes.map(lane => `<button type="button" class="chip chip-lane lc-${allLanes.indexOf(lane) % 6}" data-lane="${esc(lane.id)}" aria-pressed="${state.lanes.has(lane.id)}">${esc(lane.label)} <b>${data.touchpoints.filter(tp => window.CX_FLOW_CORE.laneOf(tp) === lane.id).length}</b></button>`).join('');
   }
   function redraw() {
     if (state.selected && !state.lanes.has(window.CX_FLOW_CORE.laneOf(tpIndex.get(state.selected)))) closeDetails();
     renderChips();
+    renderCase();
     compute();
     if (root) highlight(null);
     renderMap();
@@ -226,6 +281,11 @@
       redraw();
       const again = $('lanes').querySelector(`[data-lane="${CSS.escape(id)}"]`);
       if (again) again.focus();
+    });
+    $('caseSelect').addEventListener('change', event => {
+      state.caseId = event.target.value;
+      redraw();
+      if (state.selected) select(state.selected);
     });
     $('zoomIn').addEventListener('click', () => zoom(1.25));
     $('zoomOut').addEventListener('click', () => zoom(0.8));
@@ -295,9 +355,12 @@
     $('demoPill').hidden = !(data.status === 'DEMO' || flow.status === 'DEMO');
     allLanes = core.lanes(data, flow);
     state.lanes = new Set(allLanes.map(lane => lane.id));
+    const cases = flow.cases || [];
+    $('caseWrap').hidden = !cases.length;
+    $('caseSelect').innerHTML = '<option value="">Bez przypadku</option>' + cases.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
     svg = $('flowSvg');
     viewport = $('flowViewport');
-    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Kolor linii: tor, z którego wychodzi przejście (kolor przy nazwie toru)</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
+    $('legend').innerHTML = '<span>Kolor paska na dole karty: ocena CX (' + mx.ratingKeys.map(key => esc(marks[key] || '') + ' ' + esc(mx.ratingLabel(key))).join(', ') + ')</span><span>Kolor linii: tor, z którego wychodzi przejście (kolor przy nazwie toru)</span><span>Linia przerywana: krok opcjonalny</span><span>Strzałka: kierunek przepływu</span><span>Przypadek: granatowa trasa klienta; znak na karcie to stan kroku (✓ zadziałał, ◐ częściowo, ✕ nie zadziałał, ○ brakuje), a nie ocena CX</span><span>Powroty do wcześniejszego etapu (okrężnie górą pasa) widać po najechaniu lub wybraniu punktu</span>';
     bind();
     redraw();
     reset();

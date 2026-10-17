@@ -1,5 +1,30 @@
 .zoom-tools { display: flex; gap: 6px; margin-left: auto; }
 .zoom-tools + .legend-tip { margin-left: 0; }
+.case-select { display: flex; align-items: center; gap: 8px; margin-left: auto; color: var(--text-muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.case-select select { min-height: 36px; padding: 0 8px; border: 1px solid var(--line); background: var(--surface-panel); color: var(--text-primary); font-size: 12px; letter-spacing: 0; text-transform: none; }
+.case-select + .zoom-tools { margin-left: 0; }
+.case-info { margin: 8px 0 0; padding: 8px 12px; border: 1px solid var(--line); background: var(--surface-panel); color: var(--text-primary); font-size: 12px; line-height: 1.9; }
+.case-hint { color: var(--text-muted); }
+:root { --st-zadzialal: #0d8849; --st-czesciowo: #c98a00; --st-nie_zadzialal: #d22a32; --st-brakuje: #6b7280; }
+.st-zadzialal { --st: var(--st-zadzialal); } .st-czesciowo { --st: var(--st-czesciowo); } .st-nie_zadzialal { --st: var(--st-nie_zadzialal); } .st-brakuje { --st: var(--st-brakuje); }
+.case-chip { display: inline-block; margin-right: 4px; padding: 0 7px; border: 1px solid var(--st, var(--line)); border-radius: 10px; font-size: 11px; font-weight: 800; }
+.case-chip > span:first-child { color: var(--st); }
+.case-detail { margin-bottom: 14px; padding: 10px 12px; border: 1px solid var(--line); background: var(--surface-raised); }
+.case-detail h3 { margin: 0 0 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.case-detail p { margin: 0 0 6px; padding-left: 8px; border-left: 4px solid var(--st); font-size: 12px; }
+.case-casing { fill: none; stroke: var(--surface-panel); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.case-line { fill: none; stroke: #041a5c; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.has-case .flow-edge { opacity: .12; }
+.has-case .flow-pulse { display: none; }
+.has-case .flow-node:not(.in-case) { opacity: .35; }
+.has-case .flow-node.st-brakuje .node-card { stroke: var(--st); stroke-width: 1.6; stroke-dasharray: 5 3; fill: var(--surface-base); }
+.has-case .flow-node.st-brakuje .node-text { color: var(--text-muted); font-style: italic; }
+.case-badge circle { fill: var(--st); stroke: var(--surface-panel); stroke-width: 2; }
+.case-badge text { fill: #fff; font: 800 12px var(--font-ui); pointer-events: none; }
+.flow-node.st-brakuje .case-badge circle { fill: var(--surface-panel); stroke: var(--st); stroke-dasharray: 3 2; }
+.flow-node.st-brakuje .case-badge text { fill: var(--st); }
+.case-num { fill: var(--text-muted); font: 800 10px var(--font-ui); paint-order: stroke; stroke: var(--surface-base); stroke-width: 3px; pointer-events: none; }
+
 :root { --lane-0: #2f6fdd; --lane-1: #232a36; --lane-2: #e8731a; --lane-3: #d1478f; --lane-4: #7a5a2e; --lane-5: #8a4fd6; }
 .lc-0 { --lane: var(--lane-0); } .lc-1 { --lane: var(--lane-1); } .lc-2 { --lane: var(--lane-2); }
 .lc-3 { --lane: var(--lane-3); } .lc-4 { --lane: var(--lane-4); } .lc-5 { --lane: var(--lane-5); }
@@ -53,6 +78,9 @@
   .list-lane { margin: 18px 0 4px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
   .list-process { margin: 12px 0 6px; color: var(--text-muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
   .flow-item { display: flex; width: 100%; align-items: center; gap: 8px; min-height: 44px; margin-bottom: 6px; padding: 8px 10px; border: 1px solid var(--line); border-left: 4px solid var(--rating); background: var(--surface-panel); color: var(--text-primary); font-size: 13px; font-weight: 700; text-align: left; }
+  .flow-item.in-case { border-left-color: var(--rating); }
+  .flow-item .case-chip { margin: 0 0 0 auto; }
   .flow-item .mark { display: inline-grid; width: 18px; height: 18px; flex-shrink: 0; place-items: center; border-radius: 50%; background: var(--rating); color: #fff; font-size: 10px; font-weight: 800; }
 }
 @media (prefers-reduced-motion: reduce) { .flow-node, .flow-edge { transition: none; } }
+.flow-node.in-case .node-text { padding-left: 18px; }
