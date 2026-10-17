@@ -193,20 +193,7 @@
     if (focusId && $(focusId)) $(focusId).focus();
   }
 
-  function countUp(el, to) {
-    if (mx.reducedMotion() || !to) { el.textContent = to; return; }
-    const t0 = performance.now();
-    const step = now => { const k = Math.min(1, (now - t0) / 1100); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
-    requestAnimationFrame(step);
-  }
-
-  function renderStats() {
-    const key = mx.queueRatings[0];
-    $('stats').innerHTML = mx.matrixKeys.map(m => {
-      const all = data.touchpoints.filter(tp => tp.matrix === m);
-      return `<div class="stat"><b data-to="${all.filter(tp => tp.rating === key).length}">0</b><span>${esc(mx.matrixLabel(m))}</span><small>${esc(mx.ratingLabel(key).toLowerCase())} z ${all.length} punktów</small></div>`;
-    }).join('');
-    $('stats').querySelectorAll('b').forEach(el => countUp(el, +el.dataset.to));
+  function renderKey() {
     $('legend').textContent = 'Pierścienie od zewnątrz: ' + mx.rings.map(r => r.label).join(', ') + '. Wycinek to proces, jego barwa wskazuje najgorszą ocenę w wybranych filtrach.' + (data.status === 'DEMO' ? ' Dane DEMO.' : '');
     $('ringKey').innerHTML = mx.matrixKeys.map((m, i) => {
       const rings = mx.rings.filter(r => r.matrix === m);
@@ -265,7 +252,7 @@
     state.ratings = new Set(mx.ratingKeys);
     state.subs = new Set(mx.subtypeKeys);
     build();
-    renderStats();
+    renderKey();
     $('ringPick').innerHTML = '<span class="ring-pick-label">Podświetl pierścień</span>' + mx.rings.map(ring => `<button type="button" class="chip ring-btn m${mx.matrixKeys.indexOf(ring.matrix)}" data-ring="${esc(ring.key)}" aria-pressed="false">${esc(ring.label)}</button>`).join('');
     renderChips();
     refresh();
