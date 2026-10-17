@@ -1,0 +1,20 @@
+﻿grupa;klucz;etykieta
+matrix;importer;Importer
+matrix;dealer;Dealer i serwis
+subtype;dealer;Dealer
+subtype;salon;Salon
+subtype;serwis;Serwis
+rating;niezaopiekowany;Niezaopiekowany
+rating;do_poprawy;Do poprawy
+rating;ok;W porządku
+rating;brak_oceny;Brak oceny
+monitoring;tak;Monitorowany
+monitoring;częściowo;Monitorowany częściowo
+monitoring;nie;Niemonitorowany
+featureType;dobra_praktyka;Dobre praktyki
+featureType;blad_typowy;Błędy typowe
+featureType;blad_diagnozowany;Błędy diagnozowane
+featureType;przyklad;Przykłady z życia
+featureType;zrodlo;Źródła danych
+actionKind;quick_win;Quick win
+actionKind;docelowa;Usprawnienie docelowe

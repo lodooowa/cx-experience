@@ -1,5 +1,5 @@
-# Generuje macierz-demo/*.csv, macierz-demo.xlsx i data/matrix.js z danych DEMO (treści wymyślone, do pracy nad wizualizacją).
-# Struktura 1:wiele: punkty_styku <- cechy, punkty_styku <- akcje.
+# JEDNORAZOWY SEED: tworzy macierz-demo.xlsx z danych DEMO (treści wymyślone, do pracy nad wizualizacją). Źródłem danych jest odtąd xlsx, który edytuje ekspert.
+# Z xlsx powstają CSV i data/matrix.js przez tools/xlsx-to-data.py. Struktura 1:wiele: punkty_styku <- cechy, punkty_styku <- akcje; słowniki i procesy w osobnych zakładkach.
 import csv
 FLAT=["macierz","id","punkt_styku","proces","emocja","emocja_1_5","wplyw_na_emocje","typowe_bledy","wzorzec_i_wynik","bledy_diagnozowane","monitoring","przyklad","wlasciciel","ocena_cx","akcja_naprawcza","koszt","ryzyko","zysk","czas_wdrozenia_tyg","zrodla","status_danych"]
 # punkt|proces|emocja|1-5|wplyw|bledy|wzorzec|diagnozowane|monitoring|przyklad|wlasciciel|ocena|akcja|koszt|ryzyko|zysk|czas|zrodla
@@ -209,12 +209,26 @@ akcje.sort(key=lambda x:x[0])
 akcje=[[f"ak-{i:03d}"]+a+["DEMO"] for i,a in enumerate(akcje,1)]
 AH=["id","punkt_id","rodzaj","opis","koszt","ryzyko","zysk","czas_wdrozenia_tyg","ryzyka_wdrozenia","status_danych"]
 
-import os, json
-os.makedirs("macierz-demo",exist_ok=True)
-tables=[("punkty_styku",PH,punkty),("cechy",CH,cechy),("akcje",AH,akcje)]
-for n,h,rows in tables:
-    with open(f"macierz-demo/{n}.csv","w",newline="",encoding="utf-8-sig") as fh:
-        w=csv.writer(fh,delimiter=";"); w.writerow(h); w.writerows(rows)
+import os, sys, json, datetime
+PROCESY=["Pozyskanie","Zapytanie","Zakup","Finansowanie","Zamówienie","Dostawa","Użytkowanie","Serwis","Posprzedaż","Gwarancja","Reklamacje","Auta używane","Lojalność","Wymiana"]
+assert {r[3] for r in punkty}<=set(PROCESY),{r[3] for r in punkty}-set(PROCESY)
+assert {r[10] for r in punkty}=={"DEMO"}
+labels={"matrix":{"importer":"Importer","dealer":"Dealer i serwis"},
+ "subtype":{"dealer":"Dealer","salon":"Salon","serwis":"Serwis"},
+ "rating":{"niezaopiekowany":"Niezaopiekowany","do_poprawy":"Do poprawy","ok":"W porządku","brak_oceny":"Brak oceny"},
+ "monitoring":{"tak":"Monitorowany","częściowo":"Monitorowany częściowo","nie":"Niemonitorowany"},
+ "featureType":{"dobra_praktyka":"Dobre praktyki","blad_typowy":"Błędy typowe","blad_diagnozowany":"Błędy diagnozowane","przyklad":"Przykłady z życia","zrodlo":"Źródła danych"},
+ "actionKind":{"quick_win":"Quick win","docelowa":"Usprawnienie docelowe"}}
+SH=["grupa","klucz","etykieta"]
+slowniki=[[g,k,v] for g,d in labels.items() for k,v in d.items()]
+PRH=["lp","nazwa"]
+procesy=[[i,n] for i,n in enumerate(PROCESY,1)]
+ids={r[1] for r in punkty}
+assert all(c[1] in ids for c in cechy) and all(a[1] in ids for a in akcje)
+
+if os.path.exists("macierz-demo.xlsx") and "--force" not in sys.argv:
+    sys.exit("macierz-demo.xlsx już istnieje i jest źródłem danych: ten skrypt go nie nadpisze (--force wymusza, zmiany eksperta przepadną).")
+tables=[("punkty_styku",PH,punkty),("cechy",CH,cechy),("akcje",AH,akcje),("slowniki",SH,slowniki),("procesy",PRH,procesy)]
 from openpyxl import Workbook
 from openpyxl.styles import Font,PatternFill,Alignment
 wb=Workbook(); wb.remove(wb.active)
@@ -227,29 +241,6 @@ for n,h,rows in tables:
         ws.column_dimensions[col[0].column_letter].width=min(60,max(10,max(len(str(c.value or "")) for c in col)+2))
     for row in ws.iter_rows(min_row=2):
         for c in row: c.alignment=Alignment(wrap_text=True,vertical="top")
-import datetime
 wb.properties.created=wb.properties.modified=datetime.datetime(2026,1,1)
 wb.save("macierz-demo.xlsx")
-
-# data/matrix.js: ten sam zestaw danych w formacie ładowanym z file:// (JSON w pojedynczym przypisaniu).
-PROCESY=["Pozyskanie","Zapytanie","Zakup","Finansowanie","Zamówienie","Dostawa","Użytkowanie","Serwis","Posprzedaż","Gwarancja","Reklamacje","Auta używane","Lojalność","Wymiana"]
-assert {r[3] for r in punkty}<=set(PROCESY),{r[3] for r in punkty}-set(PROCESY)
-assert {r[10] for r in punkty}=={"DEMO"}
-def lines(items):
-    return "[\n"+",\n".join("    "+json.dumps(i,ensure_ascii=False) for i in items)+"\n  ]"
-emo=lambda v:int(v) if v!="" else None
-tp=[dict(id=r[1],matrix=r[0],title=r[2],process=r[3],emotion=r[4],emotionValue=emo(r[5]),emotionImpact=r[6],monitoring=r[7],owner=r[8],rating=r[9],care=emo(r[12]),**({"subtype":r[11]} if r[11] else {})) for r in punkty]
-ft=[dict(id=c[0],touchpointId=c[1],type=c[2],text=c[3]) for c in cechy]
-ac=[dict(id=a[0],touchpointId=a[1],kind=a[2],text=a[3],cost=a[4],risk=a[5],gain=a[6],weeks=a[7],implementationRisks=a[8]) for a in akcje]
-labels={"matrix":{"importer":"Importer","dealer":"Dealer i serwis"},
- "subtype":{"dealer":"Dealer","salon":"Salon","serwis":"Serwis"},
- "rating":{"niezaopiekowany":"Niezaopiekowany","do_poprawy":"Do poprawy","ok":"W porządku","brak_oceny":"Brak oceny"},
- "monitoring":{"tak":"Monitorowany","częściowo":"Monitorowany częściowo","nie":"Niemonitorowany"},
- "featureType":{"dobra_praktyka":"Dobre praktyki","blad_typowy":"Błędy typowe","blad_diagnozowany":"Błędy diagnozowane","przyklad":"Przykłady z życia","zrodlo":"Źródła danych"},
- "actionKind":{"quick_win":"Quick win","docelowa":"Usprawnienie docelowe"}}
-hdr="// DANE DEMONSTRACYJNE, wygenerowane przez tools/gen-macierz-demo.py z macierz-demo/*.csv. NIE EDYTUJ RĘCZNIE:\n// źródłem jest skrypt (po zmianach uruchom go ponownie; nadpisuje CSV, xlsx i ten plik). Zostaw window.CX_MATRIX = oraz końcowy średnik. Treści DEMO, wymyślone.\n"
-body="window.CX_MATRIX = {\n  \"status\": \"DEMO\",\n  \"labels\": "+json.dumps(labels,ensure_ascii=False)+",\n  \"processes\": "+json.dumps(PROCESY,ensure_ascii=False)+",\n  \"touchpoints\": "+lines(tp)+",\n  \"features\": "+lines(ft)+",\n  \"actions\": "+lines(ac)+"\n};\n"
-open("data/matrix.js","w",encoding="utf-8",newline="\n").write(hdr+body)
-ids={r[1] for r in punkty}
-assert all(c[1] in ids for c in cechy) and all(a[1] in ids for a in akcje)
-print(len(punkty),len(cechy),len(akcje))
+print("macierz-demo.xlsx:",len(punkty),len(cechy),len(akcje),"- teraz uruchom tools/xlsx-to-data.py")

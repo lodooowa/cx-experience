@@ -62,7 +62,7 @@ Punkty w macierzy dealera mają podtyp (kolumna `podtyp`: dealer, salon, serwis)
 
 Kolumna `zaopiekowanie_1_5` to stopień zaopiekowania punktu (1–5, 5 = w pełni zaopiekowany); na kafelkach macierzy pokazują go paski. W danych DEMO wynika z oceny CX (niezaopiekowany 1–2, do poprawy 3, w porządku 4–5, brak oceny = pusto), więc docelowo wpisuje ją ekspert CX.
 
-Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Pliki (razem z `data/matrix.js`) generuje [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py): źródłem jest skrypt, więc nie edytuj wygenerowanych plików ręcznie.
+Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Źródłem danych jest [macierz-demo.xlsx](macierz-demo.xlsx) (zakładki: punkty_styku, cechy, akcje, slowniki, procesy). Po edycji uruchom `python3 tools/xlsx-to-data.py` (Python 3, bez dodatkowych bibliotek): zapisze CSV i `data/matrix.js`, więc nie edytuj ich ręcznie. Skrypt zgłasza błędy z nazwą zakładki i numerem wiersza. Test: `python3 tools/test-xlsx-to-data.py`. [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py) to jednorazowy seed xlsx z danych DEMO i nie nadpisuje istniejącego pliku bez `--force`.
 
 Wizualizacje (otwierane dwuklikiem, offline, na tych samych danych):
 

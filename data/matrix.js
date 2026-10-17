@@ -1,5 +1,5 @@
-// DANE DEMONSTRACYJNE, wygenerowane przez tools/gen-macierz-demo.py z macierz-demo/*.csv. NIE EDYTUJ RĘCZNIE:
-// źródłem jest skrypt (po zmianach uruchom go ponownie; nadpisuje CSV, xlsx i ten plik). Zostaw window.CX_MATRIX = oraz końcowy średnik. Treści DEMO, wymyślone.
+// DANE wygenerowane przez tools/xlsx-to-data.py z macierz-demo.xlsx. NIE EDYTUJ RĘCZNIE:
+// źródłem jest xlsx (po zmianach uruchom skrypt ponownie; nadpisuje CSV i ten plik). Zostaw window.CX_MATRIX = oraz końcowy średnik.
 window.CX_MATRIX = {
   "status": "DEMO",
   "labels": {"matrix": {"importer": "Importer", "dealer": "Dealer i serwis"}, "subtype": {"dealer": "Dealer", "salon": "Salon", "serwis": "Serwis"}, "rating": {"niezaopiekowany": "Niezaopiekowany", "do_poprawy": "Do poprawy", "ok": "W porządku", "brak_oceny": "Brak oceny"}, "monitoring": {"tak": "Monitorowany", "częściowo": "Monitorowany częściowo", "nie": "Niemonitorowany"}, "featureType": {"dobra_praktyka": "Dobre praktyki", "blad_typowy": "Błędy typowe", "blad_diagnozowany": "Błędy diagnozowane", "przyklad": "Przykłady z życia", "zrodlo": "Źródła danych"}, "actionKind": {"quick_win": "Quick win", "docelowa": "Usprawnienie docelowe"}},
