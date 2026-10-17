@@ -20,7 +20,7 @@
 
 ```
 index.html           układ i kolejność lokalnych skryptów
-style.css            lokalne wejście do arkuszy CSS
+style.css            lokalne wejście do arkuszy CSS (tokens, layout)
 css/tokens.css       tokeny wyglądu
 css/layout.css       układ, komponenty i responsywność
 app.js               walidacja, stan i interakcje
@@ -28,7 +28,17 @@ js/scenes.js         lokalne szablony scen SVG
 data/personas.js     wyłącznie dane person
 data/journeys.js     wyłącznie dane ścieżek i touchpointów
 COPILOT.md           instrukcje edycji danych
-matrix.html, priorytety.html, radar.html, mapa.html   widoki macierzy (dane z xlsx, patrz macierz.md)
+
+Widoki macierzy (dane z xlsx, patrz macierz.md):
+matrix.html, priorytety.html, radar.html, mapa.html   strony widoków
+css/matrix.css       wspólne style widoków; osobno priorities.css, radar.css, flow.css
+js/matrix-core.js    wspólny model danych (CX_MX)
+js/matrix.js, priorities.js, radar.js   logika poszczególnych widoków
+js/flow-core.js, flow-layout.js, flow-map.js   graf, układ i rysowanie mapy przepływu
+data/matrix.js, data/flow.js   GENEROWANE z macierz-demo.xlsx, nie edytować ręcznie
+macierz-demo.xlsx, macierz-demo/*.csv   źródło danych i eksport CSV
+tools/               konwerter xlsx, seed xlsx i testy
+konwertuj-dane.bat, konwertuj-dane.command   dwuklik: uruchamia konwerter
 ```
 
 ## Zmiana danych

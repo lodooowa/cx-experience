@@ -179,8 +179,8 @@ def opieka(r):
     k=r["ocena_cx"]; i=_n[k]=_n.get(k,-1)+1
     return {"niezaopiekowany":[1,2],"do_poprawy":[3,3],"ok":[4,5]}.get(k,["",""])[i%2]
 risks=dict(l.split("|",1) for l in RISKS.split("\n"))
-punkty=[[r["macierz"],r["id"],r["punkt_styku"],r["proces"],r["emocja"],r["emocja_1_5"],r["wplyw_na_emocje"],r["monitoring"],r["wlasciciel"],r["ocena_cx"],"DEMO",podtyp(r),opieka(r),""] for r in flat]
-PH=["macierz","id","punkt_styku","proces","emocja","emocja_1_5","wplyw_na_emocje","monitoring","wlasciciel","ocena_cx","status_danych","podtyp","zaopiekowanie_1_5","tor_nadpisanie"]
+punkty=[[r["macierz"],podtyp(r),r["id"],r["punkt_styku"],r["proces"],r["emocja"],r["emocja_1_5"],r["wplyw_na_emocje"],r["monitoring"],r["wlasciciel"],r["ocena_cx"],"DEMO",opieka(r),""] for r in flat]
+PH=["macierz","podtyp","id","punkt_styku","proces","emocja","emocja_1_5","wplyw_na_emocje","monitoring","wlasciciel","ocena_cx","status_danych","zaopiekowanie_1_5","tor_nadpisanie"]
 
 cechy=[]
 def addc(pid,typ,tr):
@@ -329,8 +329,8 @@ P-03|5|imp-24|nie_zadzialal|Sprawa wędruje między działami."""
 
 import os, sys, json, datetime
 PROCESY=["Pozyskanie","Zapytanie","Zakup","Finansowanie","Zamówienie","Dostawa","Użytkowanie","Serwis","Posprzedaż","Gwarancja","Reklamacje","Auta używane","Lojalność","Wymiana"]
-assert {r[3] for r in punkty}<=set(PROCESY),{r[3] for r in punkty}-set(PROCESY)
-assert {r[10] for r in punkty}=={"DEMO"}
+assert {r[4] for r in punkty}<=set(PROCESY),{r[4] for r in punkty}-set(PROCESY)
+assert {r[11] for r in punkty}=={"DEMO"}
 labels={"matrix":{"importer":"Importer","dealer":"Dealer i serwis"},
  "subtype":{"dealer":"Dealer","salon":"Salon","serwis":"Serwis"},
  "rating":{"niezaopiekowany":"Niezaopiekowany","do_poprawy":"Do poprawy","ok":"W porządku","brak_oceny":"Brak oceny"},
@@ -348,7 +348,7 @@ KH=["przypadek_id","lp","punkt_id","stan","co_sie_stalo","status_danych"]
 kroki=[[a,int(b),c,d,e,"DEMO"] for a,b,c,d,e in (l.split("|") for l in KROKI.split("\n"))]
 PRH=["lp","nazwa"]
 procesy=[[i,n] for i,n in enumerate(PROCESY,1)]
-ids={r[1] for r in punkty}
+ids={r[2] for r in punkty}
 assert all(c[1] in ids for c in cechy) and all(a[1] in ids for a in akcje)
 
 if os.path.exists("macierz-demo.xlsx") and "--force" not in sys.argv:
@@ -379,7 +379,7 @@ def dv(sheet,header,col,formula,title,msg,kind="list"):
 def group(g):
     rows=[i for i,r in enumerate(slowniki,2) if r[0]==g]
     return f"=slowniki!$B${rows[0]}:$B${rows[-1]}"
-ID_PUNKTU="=punkty_styku!$B$2:$B$1000"
+ID_PUNKTU="=punkty_styku!$C$2:$C$1000"
 dv("punkty_styku",PH,"macierz",group("matrix"),"Macierz","Wybierz wartość z listy (słownik).")
 dv("punkty_styku",PH,"podtyp",group("subtype"),"Podtyp","Wybierz wartość z listy (słownik) albo zostaw puste.")
 dv("punkty_styku",PH,"ocena_cx",group("rating"),"Ocena CX","Wybierz wartość z listy (słownik).")

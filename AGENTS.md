@@ -10,9 +10,9 @@ Budujemy **interaktywną, efektowną wizualizację Customer Journey** dla sieci 
 - Ma działać **offline z lokalnego `index.html` (`file://`)** w firmowym Edge/Chrome, bez serwera, instalacji, zewnętrznych API, CDN, fontów i pobierania zasobów.
 - Odbiorca biznesowy powinien móc aktualizować ścieżki **wyłącznie przez edycję plików danych** (również jako `.txt` w Copilot Chat), bez dotykania kodu mechaniki lub styli.
 
-## 2. Punkt startowy i zadanie v3
+## 2. Stan wdrożenia i układ v3
 
-Punktem wyjścia jest **v2** (`index.html`, `style.css`, `app.js`, `data/personas.js`, `data/journeys.js`). **Nie zakładaj, że v3 już istnieje.** Najpierw sprawdź aktualną zawartość repozytorium i ustal, co rzeczywiście zaimplementowano.
+v3 jest wdrożone (szczegóły i lista plików: `README.md`). Poza ścieżkami klienta (`index.html`, `app.js`) repo zawiera widoki macierzy punktów styku: `matrix.html`, `priorytety.html`, `radar.html`, `mapa.html`. Działają na danych generowanych z `macierz-demo.xlsx` (`data/matrix.js`, `data/flow.js`; konwerter `tools/xlsx-to-data.py`, testy w `tools/`; opis w `macierz.md`). Nie edytuj wygenerowanych plików ręcznie. Zanim założysz, co istnieje, sprawdź aktualną zawartość repozytorium.
 
 ### Docelowy układ v3: cztery sekcje
 
@@ -136,16 +136,9 @@ Przy zmianach wyglądu sprawdzaj też desktop i węższy ekran. Przy zmianach UX
 - Tekst z plików danych traktuj jako niezaufany: bezpiecznie wstawiaj do DOM (`textContent` / escapowanie). Nie wykonuj kodu pochodzącego z treści.
 - Dane testowe pozostają fikcyjne i wyraźnie oznaczone jako DEMO.
 
-## 8. Zakres prac na pierwszą iterację v3
+## 8. Definicja ukończenia v3
 
-Najpierw wdrożenie kompozycji czterech sekcji i interakcji, **bez wymiany całego silnika scen**. Zalecana kolejność:
-
-1. Utwórz tokeny VI i układ v3, zachowując działający POC.
-2. Rozdziel widok persony i perspektywy; dodaj czytelne oznaczenie aktywnej perspektywy.
-3. Przenieś ścieżkę i emocje do **jednego wspólnego widoku**. Uwzględnij rozwidlenia obecne w danych.
-4. Zrób zwijany panel emocji, synchronizację wybranego touchpointu z mapą.
-5. Zastąp obecny nakładający się overlay prawym panelem szczegółów; desktop bez zasłaniania trasy, z subtelnym przygaszeniem/rozmyciem mapy.
-6. Dopiero po regresji dopracuj animacje, mikrointerakcje i wersję responsywną.
+Kolejność wdrożenia (tokeny i układ, perspektywa, mapa z emocjami, zwijany panel, drawer, dopiero potem animacje) jest zrealizowana; poniższa definicja służy jako kryterium regresji.
 
 **Definicja ukończenia v3:** aplikacja uruchamia się offline dwuklikiem, zachowuje obsługę wszystkich przykładowych danych z v2, prezentuje cztery uzgodnione sekcje w jednym spójnym interfejsie, a nowa ścieżka w obsługiwanym schemacie nie wymaga edycji logiki ani CSS.
 

@@ -53,7 +53,7 @@ Ocena punktu styku (zaopiekowany / do poprawy / w porządku) to subiektywna ocen
 
 Dane wymyślone, do pracy nad wizualizacją: 30 punktów styku w każdej z dwóch macierzy.
 
-- [macierz-demo.xlsx](macierz-demo.xlsx): trzy arkusze do pracy w Excelu,
+- [macierz-demo.xlsx](macierz-demo.xlsx): skoroszyt do pracy w Excelu (9 zakładek, patrz niżej),
 - [macierz-demo/punkty_styku.csv](macierz-demo/punkty_styku.csv): punkty styku (jeden wiersz na punkt),
 - [macierz-demo/cechy.csv](macierz-demo/cechy.csv): wiele cech na punkt (dobre praktyki, błędy typowe i diagnozowane, przykłady, źródła),
 - [macierz-demo/akcje.csv](macierz-demo/akcje.csv): wiele akcji naprawczych na punkt (koszt, ryzyko, zysk, czas, ryzyka wdrożenia).
