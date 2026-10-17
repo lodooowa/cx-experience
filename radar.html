@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CX Radar punktów styku</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/matrix.css">
+  <link rel="stylesheet" href="css/radar.css">
+</head>
+<body>
+<div class="app-shell" id="app">
+  <header class="topbar">
+    <a class="brand" href="matrix.html" aria-label="CX Experience Explorer: radar punktów styku">
+      <span class="brand-icon">CX<span>✳</span></span>
+      <span class="brand-name">EXPERIENCE <b>EXPLORER</b><small>RADAR PUNKTÓW STYKU</small></span>
+    </a>
+    <nav class="top-nav" aria-label="Widoki"><a href="index.html">Mapa podróży</a><a href="matrix.html">Macierz</a><a href="priorytety.html">Priorytety</a><a href="radar.html" aria-current="page">Radar</a></nav>
+    <div class="top-actions"><span class="offline"><i></i> DZIAŁA OFFLINE</span></div>
+  </header>
+
+  <main id="top">
+    <section class="journey-heading" aria-label="Radar punktów styku">
+      <div><h1>Radar punktów styku</h1><p>Cała podróż klienta na jednym ekranie</p></div>
+      <span class="demo-pill" id="demoPill" hidden>DANE DEMO</span>
+    </section>
+
+    <section class="matrix-toolbar" aria-label="Filtry">
+      <div class="chips" id="chips" role="group" aria-label="Filtr oceny CX"></div>
+      <button type="button" id="discuss" class="primary" title="Przelot kamery po punktach: najpierw niezaopiekowane, potem do poprawy. Kolejność jak w danych (proces, punkt); to kolejność robocza, nie priorytet CX.">Przelot ▶</button>
+      <div class="discuss-bar" id="discussBar" hidden>
+        <button type="button" id="spotPrev" aria-label="Poprzedni punkt">←</button>
+        <strong id="spotCount"></strong>
+        <button type="button" id="spotNext" aria-label="Następny punkt">→</button>
+        <button type="button" id="spotAuto" class="ghost" aria-pressed="false">Auto ▶</button>
+        <button type="button" id="spotEnd" class="ghost">Zakończ</button>
+      </div>
+    </section>
+
+    <section class="workspace" id="workspace" aria-label="Radar i szczegóły">
+      <div class="workspace-main">
+        <div class="radar-stage" id="stage">
+          <div class="radar-stats" id="stats"></div>
+          <svg id="radar" viewBox="-560 -560 1120 1120" role="group" aria-label="Radar punktów styku: pierścienie to macierze, wycinki to procesy"></svg>
+          <p class="radar-legend" id="legend"></p>
+        </div>
+      </div>
+      <aside class="detail-drawer" id="detailDrawer" hidden aria-label="Szczegóły punktu styku">
+        <div class="drawer-heading"><div><span class="eyebrow">SZCZEGÓŁY PUNKTU STYKU</span><span class="drawer-perspective">EMOCJE · <b>KLIENT</b></span></div><button class="icon-button" id="closeDetails" type="button" aria-label="Zamknij szczegóły">×</button></div>
+        <div id="detailBody"></div>
+      </aside>
+    </section>
+    <div class="sr-only" id="live" aria-live="polite"></div>
+  </main>
+</div>
+<div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić radaru</h1><p id="errorText"></p><small>Sprawdź plik data/matrix.js i odśwież stronę.</small></div>
+<script src="data/matrix.js"></script>
+<script src="js/matrix-core.js"></script>
+<script src="js/radar.js"></script>
+</body>
+</html>

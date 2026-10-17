@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CX Priorytety działań</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/matrix.css">
+  <link rel="stylesheet" href="css/priorities.css">
+</head>
+<body>
+<div class="app-shell" id="app">
+  <header class="topbar">
+    <a class="brand" href="matrix.html" aria-label="CX Experience Explorer: priorytety działań">
+      <span class="brand-icon">CX<span>✳</span></span>
+      <span class="brand-name">EXPERIENCE <b>EXPLORER</b><small>PRIORYTETY DZIAŁAŃ</small></span>
+    </a>
+    <nav class="top-nav" aria-label="Widoki"><a href="index.html">Mapa podróży</a><a href="matrix.html">Macierz</a><a href="priorytety.html" aria-current="page">Priorytety</a><a href="radar.html">Radar</a></nav>
+    <div class="top-actions"><span class="offline"><i></i> DZIAŁA OFFLINE</span></div>
+  </header>
+
+  <main id="top">
+    <section class="journey-heading" aria-label="Priorytety działań">
+      <div><h1>Priorytety działań</h1><p>Co zrobić najpierw: koszt wobec zysku, a potem robocza lista na najbliższe tygodnie</p></div>
+      <span class="demo-pill" id="demoPill" hidden>DANE DEMO</span>
+    </section>
+
+    <section class="matrix-toolbar" aria-label="Filtry">
+      <label class="select-wrap matrix-select"><span>MACIERZ</span><select id="matrixSelect" aria-label="Wybierz macierz"></select></label>
+      <div class="chips" id="chips" role="group" aria-label="Ocena punktu styku"></div>
+      <div class="chips" id="kinds" role="group" aria-label="Rodzaj akcji"></div>
+    </section>
+
+    <section class="workspace" id="workspace" aria-label="Priorytety i szczegóły">
+      <div class="workspace-main">
+        <div class="map-panel prio-panel">
+          <p class="prio-help" id="prioHelp"></p>
+          <div class="prio-board" id="board"></div>
+          <p class="legend" id="legend"></p>
+        </div>
+        <section class="map-panel plan-panel" aria-label="Robocza lista na najbliższe tygodnie">
+          <div class="plan-head"><div><span class="eyebrow">ROBOCZA LISTA</span><h2>Plan na najbliższe tygodnie</h2></div><p id="planSummary"></p><button type="button" class="ghost" id="planClear">Wyczyść listę</button></div>
+          <div id="planBody"></div>
+        </section>
+      </div>
+      <aside class="detail-drawer" id="detailDrawer" hidden aria-label="Szczegóły punktu styku">
+        <div class="drawer-heading"><div><span class="eyebrow">SZCZEGÓŁY PUNKTU STYKU</span><span class="drawer-perspective">EMOCJE · <b>KLIENT</b></span></div><button class="icon-button" id="closeDetails" type="button" aria-label="Zamknij szczegóły">×</button></div>
+        <div id="detailBody"></div>
+      </aside>
+    </section>
+  </main>
+</div>
+<div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić widoku</h1><p id="errorText"></p><small>Sprawdź plik data/matrix.js i odśwież stronę.</small></div>
+<script src="data/matrix.js"></script>
+<script src="js/matrix-core.js"></script>
+<script src="js/priorities.js"></script>
+</body>
+</html>

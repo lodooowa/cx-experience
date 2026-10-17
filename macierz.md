@@ -60,7 +60,11 @@ Dane wymyślone, do pracy nad wizualizacją: 30 punktów styku w każdej z dwóc
 
 Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Pliki (razem z `data/matrix.js`) generuje [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py): źródłem jest skrypt, więc nie edytuj wygenerowanych plików ręcznie.
 
-Wizualizacja: [matrix.html](matrix.html), heatmapa punktów styku z trybem omawiania (otwierana dwuklikiem, offline).
+Wizualizacje (otwierane dwuklikiem, offline, na tych samych danych):
+
+- [matrix.html](matrix.html): **A, heatmapa** procesów z trybem omawiania, do szukania czerwonych punktów,
+- [priorytety.html](priorytety.html): **B, priorytety działań**: mapa koszt × zysk akcji naprawczych i robocza lista na najbliższe tygodnie (niezapisywana),
+- [radar.html](radar.html): **C, radar** podróży klienta z przelotem kamery po punktach do omówienia.
 
 ## Do przemyślenia
 
