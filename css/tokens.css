@@ -1,23 +1,28 @@
 :root {
-  color-scheme: dark;
-  /* VI wzorowane na palecie mazda.pl (granat, srebrne szarości, beż, czerwień).
+  color-scheme: light;
+  /* VI wzorowane na mazda.pl: jasne tło #f7f7f7, granat tylko w nagłówku i na przyciskach, beż i czerwień jako akcenty.
      Czcionka MazdaType jest własnościowa i nie jest dołączona; używamy fallbacku z witryny. */
-  --brand-primary: #d8dadd;
-  --brand-accent: #dcb694;
-  --surface-base: #041428;
-  --surface-panel: #0a1d33;
-  --surface-raised: #1e2c3e;
-  --surface-soft: #243649;
-  --text-primary: #f7f7f7;
-  --text-muted: #949daa;
-  --text-faint: #7d8898;
-  --line: rgba(216, 218, 221, .18);
-  --critical: #ff232c;
-  --success: #0db15c;
-  --selected: #dcb694;
-  --focus: #ffffff;
+  --brand-primary: #041428;
+  --brand-accent: #8b693e;
+  --surface-base: #f7f7f7;
+  --surface-panel: #ffffff;
+  --surface-raised: #ecedee;
+  --surface-soft: #d8dadd;
+  --text-primary: #041428;
+  --text-muted: #4a5b6e;
+  --text-faint: #5f6e80;
+  --line: rgba(4, 20, 40, .16);
+  --header-bg: #041428;
+  --header-text: #ffffff;
+  --header-muted: #949daa;
+  --header-line: rgba(216, 218, 221, .22);
+  --media-bg: #041428;
+  --critical: #d22a32;
+  --success: #0d8849;
+  --selected: #041428;
+  --focus: #041428;
   --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --radius-card: 4px;
-  --radius-s: 3px;
+  --radius-card: 0;
+  --radius-s: 0;
   --motion-standard: 240ms;
 }
