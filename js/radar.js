@@ -250,6 +250,22 @@
       }
       select(node.dataset.id);
     };
+    const sweepBtn = $('sweepMode'), sweep = () => svg.querySelector('.sweep');
+    let angle = 0;
+    sweepBtn.addEventListener('click', () => {
+      const follow = sweepBtn.getAttribute('aria-pressed') !== 'true';
+      sweepBtn.setAttribute('aria-pressed', follow);
+      sweepBtn.textContent = follow ? 'Skan: kursor' : 'Skan: auto';
+      sweep().classList.toggle('follow', follow);
+      if (!follow) sweep().style.transform = '';
+    });
+    svg.addEventListener('pointermove', event => {
+      if (sweepBtn.getAttribute('aria-pressed') !== 'true' || event.pointerType === 'touch') return;
+      const box = svg.getBoundingClientRect(), s = scale();
+      const to = Math.atan2(event.clientY - (box.top + box.height / 2 - (view.y + view.h / 2) * s), event.clientX - (box.left + box.width / 2 - (view.x + view.w / 2) * s)) * 180 / Math.PI;
+      angle += ((to - angle + 540) % 360) - 180;
+      sweep().style.transform = `rotate(${angle.toFixed(1)}deg)`;
+    });
     svg.addEventListener('pointerover', event => { const node = event.target.closest('.node'); if (node) showTag(node.dataset.id); });
     svg.addEventListener('pointerout', event => { if (event.target.closest('.node')) showTag(currentTag()); });
     svg.addEventListener('focusin', event => { const node = event.target.closest('.node'); if (node) showTag(node.dataset.id); });

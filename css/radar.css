@@ -43,6 +43,10 @@
 .ring-edge.ring-hit { stroke-width: 4; }
 .node.ring-dim { opacity: .45; }
 .sweep { animation: sweep 12s linear infinite; }
+.sweep.follow { animation: none; transition: transform .2s ease-out; }
+.sweep-mode { padding: 4px 10px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 999px; background: transparent; color: var(--header-text); font: inherit; font-size: 10px; letter-spacing: .08em; opacity: .7; cursor: pointer; }
+.sweep-mode:hover, .sweep-mode[aria-pressed="true"] { opacity: 1; }
+@media (max-width: 850px) { .sweep-mode { display: none; } }
 
 .node { cursor: pointer; outline: none; transition: opacity var(--motion-standard); }
 .node .dot { fill: var(--rating); stroke: #041428; stroke-width: 2.5; filter: url(#glow); transition: transform var(--motion-standard); transform-box: fill-box; transform-origin: center; }
