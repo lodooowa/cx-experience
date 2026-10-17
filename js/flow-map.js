@@ -53,13 +53,22 @@
       head.appendChild(el('title', {}, col.process));
       heads.appendChild(head);
     }
+    let edgeNo = 0;
     const nodeLane = new Map(layout.nodes.map(n => [n.id, n.lane]));
     const laneClass = id => 'lc-' + (allLanes.findIndex(lane => lane.id === id) % 6);
     for (const e of layout.edges) {
       const path = el('path', { class: 'flow-edge ' + laneClass(nodeLane.get(e.from)) + (e.optional ? ' optional' : '') + (e.backward ? ' backward' : ''), d: e.d, 'marker-end': 'url(#flow-arrow)', 'data-from': e.from, 'data-to': e.to });
       edges.appendChild(path);
-      // delikatny impuls biegnący po linii pokazuje kierunek przepływu
-      edges.appendChild(el('path', { class: 'flow-pulse' + (e.backward ? ' backward' : ''), d: e.d, 'data-from': e.from, 'data-to': e.to, 'aria-hidden': 'true' }));
+      // świetlik z ogonem płynie po linii (kierunek przepływu), kolor toru źródła
+      const pulse = el('g', { class: 'flow-pulse ' + laneClass(nodeLane.get(e.from)) + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, 'aria-hidden': 'true' });
+      const dur = Math.max(1.6, path.getTotalLength() / 70);
+      const phase = (edgeNo++ * 0.37) % dur;
+      [[2.6, 1, 0], [1.9, .55, .09], [1.3, .3, .18]].forEach(([r, o, lag]) => {
+        const dot = el('circle', { r, opacity: o });
+        dot.appendChild(el('animateMotion', { path: e.d, dur: dur + 's', begin: (-phase + lag * dur) + 's', repeatCount: 'indefinite' }));
+        pulse.appendChild(dot);
+      });
+      edges.appendChild(pulse);
       if (e.label && e.labelX !== undefined) edges.appendChild(el('text', { class: 'edge-label' + (e.backward ? ' backward' : ''), 'data-from': e.from, 'data-to': e.to, x: e.labelX, y: e.labelY, 'text-anchor': 'middle' }, e.label));
     }
     const laneIndex = new Map(layout.lanes.map((lane, i) => [lane.id, i]));
