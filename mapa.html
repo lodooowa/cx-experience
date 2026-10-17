@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CX Mapa przepływu</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/matrix.css">
+  <link rel="stylesheet" href="css/flow.css">
+</head>
+<body>
+<div class="app-shell" id="app">
+  <header class="topbar">
+    <a class="brand" href="matrix.html" aria-label="CX Experience Explorer: mapa przepływu">
+      <span class="brand-icon">CX<span>✳</span></span>
+      <span class="brand-name">EXPERIENCE <b>EXPLORER</b><small>MAPA PRZEPŁYWU</small></span>
+    </a>
+    <nav class="top-nav" aria-label="Widoki"><a href="index.html">Mapa podróży</a><a href="matrix.html">Macierz</a><a href="mapa.html" aria-current="page">Przepływ</a><a href="priorytety.html">Priorytety</a><a href="radar.html">Radar</a></nav>
+    <div class="top-actions"><span class="offline"><i></i> DZIAŁA OFFLINE</span></div>
+  </header>
+
+  <main id="top">
+    <section class="journey-heading" aria-label="Mapa przepływu">
+      <div><h1>Mapa przepływu</h1><p>Tory, procesy i przejścia między punktami styku</p></div>
+      <span class="demo-pill" id="demoPill" hidden>DANE DEMO</span>
+    </section>
+
+    <section class="matrix-toolbar" aria-label="Filtry i widok">
+      <div class="chips" id="lanes" role="group" aria-label="Tory"></div>
+      <div class="zoom-tools" id="zoomTools" role="group" aria-label="Powiększenie">
+        <button type="button" id="zoomOut" class="ghost" aria-label="Pomniejsz">−</button>
+        <button type="button" id="zoomIn" class="ghost" aria-label="Powiększ">+</button>
+        <button type="button" id="zoomFit" class="ghost">Dopasuj</button>
+        <button type="button" id="zoomReset" class="ghost">100%</button>
+      </div>
+      <div class="legend-tip"><button type="button" class="legend-btn" aria-describedby="legend" aria-label="Legenda">?</button><p class="legend" id="legend" role="tooltip"></p></div>
+    </section>
+
+    <section class="workspace" id="workspace" aria-label="Mapa przepływu i szczegóły">
+      <div class="workspace-main">
+        <div class="map-panel flow-panel">
+          <div class="flow-viewport" id="flowViewport" tabindex="0" role="group" aria-label="Mapa przepływu. Strzałki przesuwają, plus i minus powiększają, zero dopasowuje."><svg id="flowSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+          <div class="flow-list" id="flowList"></div>
+        </div>
+      </div>
+      <aside class="detail-drawer" id="detailDrawer" hidden aria-label="Szczegóły punktu styku">
+        <div class="drawer-heading"><div><span class="eyebrow">SZCZEGÓŁY PUNKTU STYKU</span><span class="drawer-perspective">EMOCJE · <b>KLIENT</b></span></div><button class="icon-button" id="closeDetails" type="button" aria-label="Zamknij szczegóły">×</button></div>
+        <div id="detailBody"></div>
+      </aside>
+    </section>
+  </main>
+</div>
+<div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić mapy przepływu</h1><p id="errorText"></p><small>Sprawdź pliki data/matrix.js i data/flow.js i odśwież stronę.</small></div>
+<script src="data/matrix.js"></script>
+<script src="data/flow.js"></script>
+<script src="js/matrix-core.js"></script>
+<script src="js/flow-core.js"></script>
+<script src="js/flow-layout.js"></script>
+<script src="js/flow-map.js"></script>
+</body>
+</html>

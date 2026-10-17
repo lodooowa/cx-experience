@@ -9,6 +9,8 @@ Do Copilota prześlij **jeden** z plików danych po zmianie nazwy rozszerzenia:
 
 Gdy Copilot zwróci kompletny plik TXT, przywróć nazwę `.js` i podmień odpowiedni plik w podfolderze `data`. Wykonaj testy opisane w README.
 
+Dotyczy to tylko ścieżek klienta (`index.html`). Dane macierzy punktów styku i mapy przepływu (`matrix.html`, `mapa.html` itd.) pochodzą z `macierz-demo.xlsx`; `data/matrix.js` i `data/flow.js` są generowane, więc nie przekazuj ich Copilotowi (patrz `macierz.md`).
+
 ## Gotowy prompt do Copilota
 
 > Załączony plik TXT zawiera dane lokalnej wizualizacji Customer Journey. Mimo rozszerzenia TXT jego zawartość to poprawny JavaScript: `window.CX_JOURNEYS = [ ... ];`, gdzie pomiędzy nawiasami znajdują się dane JSON.
