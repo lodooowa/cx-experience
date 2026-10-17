@@ -59,8 +59,8 @@
       const g = el('g', { class: `flow-node rating-${tp.rating}`, transform: `translate(${n.x} ${n.y})`, tabindex: 0, role: 'button', 'data-id': n.id, 'aria-label': nodeLabel(tp, n.lane) });
       g.appendChild(el('title', {}, nodeLabel(tp, n.lane)));
       g.appendChild(el('rect', { class: 'node-card', width: n.w, height: n.h }));
-      g.appendChild(el('rect', { class: 'node-bar', y: n.h - 5, width: n.w, height: 5 }));
-      const fo = el('foreignObject', { x: 0, y: 0, width: n.w, height: n.h - 5, 'pointer-events': 'none' });
+      g.appendChild(el('rect', { class: 'node-bar', y: n.h - 4, width: n.w, height: 4 }));
+      const fo = el('foreignObject', { x: 0, y: 0, width: n.w, height: n.h - 4, 'pointer-events': 'none' });
       const text = document.createElement('div');
       text.className = 'node-text';
       text.textContent = tp.title;

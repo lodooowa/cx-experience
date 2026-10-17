@@ -5,10 +5,10 @@
   // Kolumna = proces (kolejność matrix.processes), pas = tor (CX_FLOW_CORE.lanes). Liczby torów, kolumn i krawędzi wynikają z danych.
   const DEFAULTS = {
     nodeW: 168,
-    nodeH: 62,
+    nodeH: 40,
     gapX: 72,      // odstęp poziomy między kartami sąsiednich kolumn
-    gapY: 14,      // odstęp pionowy kart w jednej komórce (tor x proces)
-    padY: 40,      // margines pionowy wewnątrz pasa (miejsce na łuki wstecz)
+    gapY: 8,       // odstęp pionowy kart w jednej komórce (tor x proces)
+    padY: 32,      // margines pionowy wewnątrz pasa (miejsce na łuki wstecz)
     padX: 24,      // margines po prawej stronie ostatniej kolumny
     labelW: 120,   // szerokość kolumny etykiet torów po lewej
     headerH: 44,   // wysokość nagłówka kolumn (pasy zaczynają się od y = headerH)
