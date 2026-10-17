@@ -141,5 +141,6 @@
     return html;
   };
 
-  window.CX_MX = mx;
+  window.CX = window.CX || {};
+  window.CX.mx = mx;
 })();

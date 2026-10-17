@@ -24,31 +24,31 @@
 
   function validateData() {
     if (!Array.isArray(personas) || !personas.length || !Array.isArray(journeys) || !journeys.length) {
-      throw Error('Nie znaleziono tablic CX_PERSONAS lub CX_JOURNEYS.');
+      throw Error('data/personas.js, data/journeys.js: nie znaleziono tablic CX_PERSONAS lub CX_JOURNEYS.');
     }
     const personaIds = new Set();
     for (const persona of personas) {
-      if (!persona.id || !persona.name || personaIds.has(persona.id)) throw Error('Niepoprawne lub powtórzone ID persony: ' + persona.id);
+      if (!persona.id || !persona.name || personaIds.has(persona.id)) throw Error('data/personas.js: niepoprawne lub powtórzone ID persony: ' + persona.id);
       personaIds.add(persona.id);
     }
     const journeyIds = new Set();
     for (const journey of journeys) {
-      if (!journey.id || journeyIds.has(journey.id) || !personaIds.has(journey.personaId)) throw Error('Niepoprawne ID ścieżki lub brak persony: ' + journey.id);
+      if (!journey.id || journeyIds.has(journey.id) || !personaIds.has(journey.personaId)) throw Error('data/journeys.js: Niepoprawne ID ścieżki lub brak persony: ' + journey.id);
       journeyIds.add(journey.id);
-      if (!Array.isArray(journey.steps) || !journey.steps.length) throw Error('Ścieżka ' + journey.id + ' nie ma touchpointów.');
+      if (!Array.isArray(journey.steps) || !journey.steps.length) throw Error('data/journeys.js: Ścieżka ' + journey.id + ' nie ma touchpointów.');
       const ids = new Set();
       for (const step of journey.steps) {
-        if (!step.id || ids.has(step.id) || !step.title) throw Error('Powtórzone ID lub brak tytułu punktu w ' + journey.id);
+        if (!step.id || ids.has(step.id) || !step.title) throw Error('data/journeys.js: Powtórzone ID lub brak tytułu punktu w ' + journey.id);
         ids.add(step.id);
-        if (!validTypes.includes(step.type || 'standard')) throw Error('Nieznany typ punktu: ' + step.type + ' (' + step.id + ')');
-        if (step.scene && !validScenes.includes(step.scene)) throw Error('Nieznana scena: ' + step.scene + ' (' + step.id + ')');
+        if (!validTypes.includes(step.type || 'standard')) throw Error('data/journeys.js: Nieznany typ punktu: ' + step.type + ' (' + step.id + ')');
+        if (step.scene && !validScenes.includes(step.scene)) throw Error('data/journeys.js: Nieznana scena: ' + step.scene + ' (' + step.id + ')');
         if (step.emotion !== undefined && step.emotion !== null && step.emotion !== '' && (!Number.isFinite(Number(step.emotion)) || Number(step.emotion) < 1 || Number(step.emotion) > 5)) {
-          throw Error('Emocja musi mieścić się w zakresie 1–5: ' + step.id);
+          throw Error('data/journeys.js: Emocja musi mieścić się w zakresie 1–5: ' + step.id);
         }
       }
       for (const step of journey.steps) {
         for (const branch of step.branches || []) {
-          if (!branch.label || !ids.has(branch.target)) throw Error('Niepoprawna gałąź w ścieżce ' + journey.id + ': ' + (branch.target || step.id));
+          if (!branch.label || !ids.has(branch.target)) throw Error('data/journeys.js: Niepoprawna gałąź w ścieżce ' + journey.id + ': ' + (branch.target || step.id));
         }
       }
     }

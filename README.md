@@ -32,7 +32,7 @@ COPILOT.md           instrukcje edycji danych
 Widoki macierzy (dane z xlsx, patrz macierz.md):
 matrix.html, priorytety.html, radar.html, mapa.html   strony widoków
 css/matrix.css       wspólne style widoków; osobno priorities.css, radar.css, flow.css
-js/matrix-core.js    wspólny model danych (CX_MX)
+js/matrix-core.js    wspólny model danych (CX.mx)
 js/matrix.js, priorities.js, radar.js   logika poszczególnych widoków
 js/flow-core.js, flow-layout.js, flow-map.js   graf, układ i rysowanie mapy przepływu
 data/matrix.js, data/flow.js   GENEROWANE z macierz-demo.xlsx, nie edytować ręcznie

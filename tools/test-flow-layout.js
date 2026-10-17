@@ -10,7 +10,8 @@ vm.createContext(sandbox);
 for (const file of ['data/matrix.js', 'data/flow.js', 'js/flow-core.js', 'js/flow-layout.js']) {
   vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), sandbox, { filename: file });
 }
-const { CX_MATRIX: matrix, CX_FLOW: flow, CX_FLOW_CORE: core, CX_FLOW_LAYOUT: layout } = sandbox.window;
+const { CX_MATRIX: matrix, CX_FLOW: flow } = sandbox.window;
+const { flowCore: core, flowLayout: layout } = sandbox.window.CX;
 const clone = value => JSON.parse(JSON.stringify(value));
 
 const checkLayout = (l, m, f) => {

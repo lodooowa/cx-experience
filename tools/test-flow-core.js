@@ -10,7 +10,7 @@ vm.createContext(sandbox);
 for (const file of ['data/matrix.js', 'data/flow.js', 'js/flow-core.js']) {
   vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), sandbox, { filename: file });
 }
-const core = sandbox.window.CX_FLOW_CORE;
+const core = sandbox.window.CX.flowCore;
 const clone = value => JSON.parse(JSON.stringify(value));
 const matrix = sandbox.window.CX_MATRIX;
 const flow = sandbox.window.CX_FLOW;

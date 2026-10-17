@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const mx = window.CX_MX;
+  const mx = window.CX.mx;
   const { $, esc, data, marks, levels, tpIndex } = mx;
   const state = { matrix: 'all', ratings: new Set(mx.queueRatings), kinds: new Set(), subs: new Set(), plan: new Set(), selected: null };
   const rows = ['wysoki', 'średni', 'niski'];

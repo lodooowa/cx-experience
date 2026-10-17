@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const mx = window.CX_MX;
+  const mx = window.CX.mx;
   const { $, esc, data, marks, tpIndex } = mx;
   const { ratingLabel, matrixLabel } = mx;
   const state = { matrix: 'all', ratings: new Set(), selected: null, queue: null, pos: 0, subs: new Set() };

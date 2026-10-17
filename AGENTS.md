@@ -78,7 +78,7 @@ data/
 
 Przy dzieleniu:
 - Każdy plik ma **jedną, rozpoznawalną odpowiedzialność**; celuj w około 100–250 linii na moduł, ale nie dziel sztucznie tylko ze względu na liczbę linii.
-- Zależności między modułami muszą być jawne, minimalne, a kolejność skryptów w `index.html` stabilna. Dla klasycznych skryptów używaj jednej przestrzeni nazw (np. `window.CX`), nie rozsypuj wielu nowych globali.
+- Zależności między modułami muszą być jawne, minimalne, a kolejność skryptów w `index.html` stabilna. Dla klasycznych skryptów używaj jednej przestrzeni nazw (np. `window.CX`), nie rozsypuj wielu nowych globali. Wyjątek: tablice danych (`window.CX_PERSONAS`, `CX_JOURNEYS`, `CX_MATRIX`, `CX_FLOW`) to kontrakt plików danych; kod rejestruje się w `window.CX` (`CX.sceneSvg`, `CX.mx`, `CX.flowCore`, `CX.flowLayout`).
 - **Nie dubluj** renderowania, stylów ani walidacji. Logika prezentacji nie powinna trafiać do danych.
 - Przy prośbie „popraw drawer” najpierw czytaj plik komponentu drawera, jego style, testy i ewentualnie kontrakt stanu; nie wczytuj wszystkich scen i danych.
 - Każdy etap refaktoryzacji ma być osobno uruchamialny i testowalny. Nie mieszaj refaktoryzacji z nowymi funkcjami.

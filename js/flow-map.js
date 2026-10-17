@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const mx = window.CX_MX;
+  const mx = window.CX.mx;
   const { $, esc, data, marks, tpIndex } = mx;
   const NS = 'http://www.w3.org/2000/svg';
   const MIN_K = 0.5, MAX_K = 8;
@@ -38,7 +38,7 @@
 
   function compute() {
     const lanes = allLanes.map(lane => lane.id).filter(id => state.lanes.has(id));
-    layout = window.CX_FLOW_LAYOUT.compute(data, window.CX_FLOW, { lanes });
+    layout = window.CX.flowLayout.compute(data, window.CX_FLOW, { lanes });
   }
 
   function renderMap() {
@@ -52,7 +52,7 @@
     root.appendChild(defs);
     const { width, height } = layout;
     const body = el('g');
-    const D = window.CX_FLOW_LAYOUT.DEFAULTS;
+    const D = window.CX.flowLayout.DEFAULTS;
     const bands = el('g'), heads = el('g'), edges = el('g', { class: 'flow-edges' }), nodes = el('g', { class: 'flow-nodes' });
     layout.lanes.forEach((lane, i) => {
       bands.appendChild(el('rect', { class: 'lane-band' + (i % 2 ? ' alt' : ''), x: 0, y: lane.y, width, height: lane.h }));
@@ -138,13 +138,13 @@
   }
 
   function renderList() {
-    const shown = data.touchpoints.filter(tp => state.lanes.has(window.CX_FLOW_CORE.laneOf(tp)));
+    const shown = data.touchpoints.filter(tp => state.lanes.has(window.CX.flowCore.laneOf(tp)));
     const { map: caseMap } = caseSteps();
     let html = '';
     for (const lane of allLanes.filter(l => state.lanes.has(l.id))) {
       html += `<h2 class="list-lane">${esc(lane.label)}</h2>`;
       for (const process of data.processes) {
-        const items = shown.filter(tp => tp.process === process && window.CX_FLOW_CORE.laneOf(tp) === lane.id);
+        const items = shown.filter(tp => tp.process === process && window.CX.flowCore.laneOf(tp) === lane.id);
         if (!items.length) continue;
         html += `<h3 class="list-process">${esc(process)}</h3>` + items.map(tp => {
           const cs = caseMap.get(tp.id);
@@ -278,7 +278,7 @@
     $('stepPrev').disabled = state.step === null || state.step <= 0;
     $('stepNext').disabled = state.step !== null && state.step >= c.steps.length - 1;
     $('stepNext').textContent = state.step === null ? 'Start ›' : 'Dalej ›';
-    $('stepText').innerHTML = step ? `<strong>Krok ${esc(step.n)} z ${c.steps.length}: ${esc(tpIndex.get(step.touchpointId).title)}</strong> · <span class="case-chip st-${esc(step.state)}"><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> ${esc(stateLabel(step.state))}</span>${state.lanes.has(window.CX_FLOW_CORE.laneOf(tpIndex.get(step.touchpointId))) ? '' : ' <em>(tor ukryty)</em>'}${step.note ? '<br>' + esc(step.note) : ''}` : 'Przejdź przypadek krok po kroku.';
+    $('stepText').innerHTML = step ? `<strong>Krok ${esc(step.n)} z ${c.steps.length}: ${esc(tpIndex.get(step.touchpointId).title)}</strong> · <span class="case-chip st-${esc(step.state)}"><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> ${esc(stateLabel(step.state))}</span>${state.lanes.has(window.CX.flowCore.laneOf(tpIndex.get(step.touchpointId))) ? '' : ' <em>(tor ukryty)</em>'}${step.note ? '<br>' + esc(step.note) : ''}` : 'Przejdź przypadek krok po kroku.';
   }
   function runDot(from) {
     cancelAnimationFrame(dotFrame);
@@ -323,16 +323,16 @@
     info.hidden = !c;
     if (!c) { info.textContent = ''; return; }
     const count = key => c.steps.filter(step => step.state === key).length;
-    const hidden = c.steps.filter(step => !state.lanes.has(window.CX_FLOW_CORE.laneOf(tpIndex.get(step.touchpointId)))).length;
+    const hidden = c.steps.filter(step => !state.lanes.has(window.CX.flowCore.laneOf(tpIndex.get(step.touchpointId)))).length;
     const meta = [c.client, c.vehicle, c.caseNumber].filter(Boolean).map(esc).join(' · ');
     info.innerHTML = `<strong>${esc(c.name)}</strong>${meta ? ' · ' + meta : ''} · ${c.steps.length} kroków: ` + Object.keys(window.CX_FLOW.labels.state).map(key => `<span class="case-chip st-${esc(key)}"><span aria-hidden="true">${esc(stateMarks[key] || '?')}</span> ${esc(stateLabel(key))} ${count(key)}</span>`).join(' ') + ' <span class="case-hint">Punkty bez znaku: pominięte w tym przypadku.' + (hidden ? ' Kroków na ukrytych torach: ' + hidden + '.' : '') + '</span>';
   }
 
   function renderChips() {
-    $('lanes').innerHTML = allLanes.map(lane => `<button type="button" class="chip chip-lane lc-${allLanes.indexOf(lane) % 6}" data-lane="${esc(lane.id)}" aria-pressed="${state.lanes.has(lane.id)}">${esc(lane.label)} <b>${data.touchpoints.filter(tp => window.CX_FLOW_CORE.laneOf(tp) === lane.id).length}</b></button>`).join('');
+    $('lanes').innerHTML = allLanes.map(lane => `<button type="button" class="chip chip-lane lc-${allLanes.indexOf(lane) % 6}" data-lane="${esc(lane.id)}" aria-pressed="${state.lanes.has(lane.id)}">${esc(lane.label)} <b>${data.touchpoints.filter(tp => window.CX.flowCore.laneOf(tp) === lane.id).length}</b></button>`).join('');
   }
   function redraw() {
-    if (state.selected && !state.lanes.has(window.CX_FLOW_CORE.laneOf(tpIndex.get(state.selected)))) closeDetails();
+    if (state.selected && !state.lanes.has(window.CX.flowCore.laneOf(tpIndex.get(state.selected)))) closeDetails();
     renderChips();
     renderCase();
     compute();
@@ -423,8 +423,8 @@
 
   function init() {
     mx.init();
-    const flow = window.CX_FLOW, core = window.CX_FLOW_CORE;
-    if (!core || !window.CX_FLOW_LAYOUT) throw Error('Brak js/flow-core.js lub js/flow-layout.js.');
+    const flow = window.CX_FLOW, core = window.CX.flowCore;
+    if (!core || !window.CX.flowLayout) throw Error('Brak js/flow-core.js lub js/flow-layout.js.');
     core.validate(data, flow).forEach(text => console.warn(text));
     Object.keys(flow.labels.state).filter(key => !stateMarks[key]).forEach(key => console.warn(`Stan kroku '${key}' nie ma znaku w js/flow-map.js (stateMarks): na mapie pokaże się '?'.`));
     $('demoPill').hidden = !(data.status === 'DEMO' || flow.status === 'DEMO');

@@ -2,7 +2,7 @@
   'use strict';
 
   // Mapa przepływu (swimlane): układ węzłów i krawędzi w jednostkach SVG. Bez DOM i CSS, wynik deterministyczny.
-  // Kolumna = proces (kolejność matrix.processes), pas = tor (CX_FLOW_CORE.lanes). Liczby torów, kolumn i krawędzi wynikają z danych.
+  // Kolumna = proces (kolejność matrix.processes), pas = tor (CX.flowCore.lanes). Liczby torów, kolumn i krawędzi wynikają z danych.
   const DEFAULTS = {
     nodeW: 208,
     nodeH: 30,
@@ -37,7 +37,7 @@
 
   function compute(matrix, flow, opts) {
     const o = Object.assign({}, DEFAULTS, opts || {});
-    const core = window.CX_FLOW_CORE;
+    const core = window.CX.flowCore;
     const allLanes = core.lanes(matrix, flow);
     let laneList = allLanes;
     if (Array.isArray(o.lanes)) {
@@ -196,5 +196,6 @@
     return { width: r(colX + o.padX), height: r(y), lanes, columns, nodes, edges };
   }
 
-  window.CX_FLOW_LAYOUT = { compute, DEFAULTS };
+  window.CX = window.CX || {};
+  window.CX.flowLayout = { compute, DEFAULTS };
 })();

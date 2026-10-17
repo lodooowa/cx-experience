@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // Mapa przepływu: tory, walidacja relacji i przypadków. Bez DOM. Zakłada, że dane macierzy przeszły walidację CX_MX.
+  // Mapa przepływu: tory, walidacja relacji i przypadków. Bez DOM. Zakłada, że dane macierzy przeszły walidację CX.mx.
   const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
   const fail = text => { throw Error('data/flow.js: ' + text); };
 
@@ -85,5 +85,6 @@
     return warnings;
   }
 
-  window.CX_FLOW_CORE = { laneOf, lanes, validate };
+  window.CX = window.CX || {};
+  window.CX.flowCore = { laneOf, lanes, validate };
 })();

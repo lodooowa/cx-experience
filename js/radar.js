@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const mx = window.CX_MX;
+  const mx = window.CX.mx;
   const { $, esc, data, marks, tpIndex } = mx;
   const R_IN = 175, R_OUT = 510, GAP = 10, LABEL_R = 532, TOP_GAP = 26, NODE_R = 9, STEP = 22, ZOOM = 300, AUTO_MS = 7000;
   const mobileQuery = window.matchMedia('(max-width: 850px)');
