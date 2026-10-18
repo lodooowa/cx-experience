@@ -1,5 +1,5 @@
 @echo off
-rem Dwuklik (Windows): zamienia macierz-demo.xlsx na pliki danych dla stron. Wymaga Pythona 3.
+rem Dwuklik (Windows): zamienia macierz-demo.xlsx na pliki danych dla stron. Wymaga Pythona 3 (systemowego albo przenosnego w tools\python).
 chcp 65001 >nul
 set PYTHONIOENCODING=utf-8
 cd /d "%~dp0"
@@ -13,7 +13,11 @@ if %errorlevel%==0 (
   python tools\xlsx-to-data.py
   goto koniec
 )
-echo Nie znaleziono Pythona 3. Zainstaluj go (python.org, zaznacz "Add to PATH") albo popros o uruchomienie konwersji osobe, ktora go ma.
+if exist tools\python\python.exe (
+  tools\python\python.exe tools\xlsx-to-data.py
+  goto koniec
+)
+echo Nie znaleziono Pythona 3. Rozpakuj przenosny Python do tools\python (instrukcja w README.md), zainstaluj go (python.org, zaznacz "Add to PATH") albo popros o uruchomienie konwersji osobe, ktora go ma.
 :koniec
 echo.
 pause
