@@ -90,7 +90,7 @@ Osobne strony na wspólnym modelu danych, otwierane dwuklikiem (offline):
 
 Dane tych widoków nie są edytowane ręcznie: źródłem jest `macierz-demo.xlsx`. Po zmianie zamknij Excela i kliknij `konwertuj-dane.command` (macOS) albo `konwertuj-dane.bat` (Windows); skrypt (Python 3) zapisze `macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js`. Szczegóły zakładek, torów i przypadków: `macierz.md`.
 
-**Windows bez Pythona:** pobierz [python-3.13.9-embed-amd64.zip](https://www.python.org/ftp/python/3.13.9/python-3.13.9-embed-amd64.zip) (przenośny Python, ok. 10 MB, bez instalacji) i rozpakuj go do folderu `tools\python`, tak aby powstał plik `tools\python\python.exe`. `konwertuj-dane.bat` użyje go, gdy w systemie nie ma `py` ani `python`. Folder jest w `.gitignore`, więc zip nie trafia do repozytorium. Skrypt używa tylko biblioteki standardowej, więc nic więcej nie trzeba doinstalowywać.
+**Windows bez Pythona:** pobierz [python-3.13.9-embed-amd64.zip](https://www.python.org/ftp/python/3.13.9/python-3.13.9-embed-amd64.zip) (przenośny Python, ok. 10 MB, bez instalacji) i rozpakuj go do folderu `tools\python`, tak aby powstał plik `tools\python\python.exe`. `konwertuj-dane.bat` użyje go w pierwszej kolejności, przed Pythonem z systemu. Folder jest w `.gitignore`, więc zip nie trafia do repozytorium. Skrypt używa tylko biblioteki standardowej, więc nic więcej nie trzeba doinstalowywać.
 
 Testy (node/Python, bez zależności): `node tools/test-flow-core.js`, `node tools/test-flow-layout.js`, `python3 tools/test-xlsx-to-data.py`.
 
