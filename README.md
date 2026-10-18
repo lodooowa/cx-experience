@@ -94,6 +94,18 @@ Dane tych widoków nie są edytowane ręcznie: źródłem jest `macierz-demo.xls
 
 Testy (node/Python, bez zależności): `node tools/test-flow-core.js`, `node tools/test-flow-layout.js`, `python3 tools/test-xlsx-to-data.py`.
 
+## Synchronizacja z GitHubem (Windows)
+
+Pierwsza paczka trafia do użytkownika mailem (zip), kolejne zmiany idą przez GitHuba (repozytorium `lodooowa/cx-experience`, gałąź `main`). Użytkownik nie musi znać Gita: wystarczą dwa skrypty do kliknięcia w głównym folderze.
+
+- `pobierz-zmiany.bat`: pobiera najnowszą wersję z GitHuba. Gdy folder nie jest jeszcze repozytorium, tworzy je i ustawia `main` na `origin/main`, nie nadpisując plików z zipa (różnice widać potem jako zmiany). Zmiany lokalne zostają zachowane.
+- `wyslij-zmiany.bat`: zapisuje zmiany z folderu (pyta o krótki opis, Enter = „Aktualizacja danych”) i wysyła je na `main`. Gdy na GitHubie są nowsze, kolidujące zmiany, niczego nie wysyła i wyświetla komunikat.
+- `tools/git-wspolne.bat`: wspólna część obu skryptów (wybór Gita, inicjalizacja, token).
+
+**Git:** skrypty używają przenośnego `tools\PortableGit\cmd\git.exe`, a gdy go nie ma, Gita z systemu. PortableGit (archiwum `PortableGit-*-64-bit.7z.exe` ze strony git-scm.com/download/win) rozpakuj do `tools\PortableGit`, tak aby powstał plik `tools\PortableGit\cmd\git.exe`. Folder jest w `.gitignore`.
+
+**Token:** autoryzacja idzie tokenem GitHub typu fine-grained, utworzonym na koncie `lodooowa`, ograniczonym do jednego repozytorium `cx-experience`, z uprawnieniem *Contents: Read and write*. Skrypt prosi o token przy pierwszym uruchomieniu i zapisuje go w `.git\cx-token` (poza historią repozytorium; nie dołączaj folderu `.git` do zipa wysyłanego dalej). Token trafia do Gita tylko jako adres przy `fetch`/`push`, bez zapisu w konfiguracji. Aby wpisać nowy token, usuń plik `.git\cx-token`. Commity ze skryptów mają autora `lodooowa-cx` (`lodooowa-cx@users.noreply.github.com`), więc łatwo je odróżnić od commitów właściciela: `git log --author=lodooowa-cx`.
+
 ## Kontrola po zmianie danych
 
 1. Otwórz `index.html` dwuklikiem i sprawdź, czy pojawia się wybrana persona oraz jej ścieżki.
