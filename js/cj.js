@@ -214,8 +214,10 @@
     cj.painPoints.forEach((p, i) => ppIndex.set(p.id, i));
     $('demoPill').hidden = !demo && !/DEMO/.test(cj.forecastStatus || '');
     $('demoPill').textContent = demo ? 'DANE DEMO' : 'PROGNOZA DEMO';
-    $('dataProd').setAttribute('aria-current', String(!demo)); $('dataDemo').setAttribute('aria-current', String(demo));
-    if (!hasProd) { $('dataProd').removeAttribute('href'); $('dataProd').setAttribute('aria-disabled', 'true'); $('dataProd').title = 'Brak macierz_CX.xlsx i data/cj.js: uruchom 2-przebuduj-dane po dodaniu pliku produkcyjnego'; }
+    const dataSel = $('dataSelect');
+    dataSel.value = demo ? 'demo' : 'prod';
+    if (!hasProd) { dataSel.options[0].disabled = true; dataSel.title = 'Brak macierz_CX.xlsx i data/cj.js: uruchom 2-przebuduj-dane po dodaniu pliku produkcyjnego'; }
+    dataSel.addEventListener('change', () => { location.search = '?dane=' + dataSel.value; });
     if (cj.warnings && cj.warnings.length) {
       $('warnings').hidden = false;
       $('warnings').innerHTML = `<summary>Uwagi do danych: ${cj.warnings.length}</summary><ul>${cj.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;

@@ -90,7 +90,6 @@
     const { $ } = host;
     $('viz').hidden = next === 'chart'; $('chartPanel').hidden = next !== 'chart';
     document.body.classList.toggle('view-viz', next !== 'chart');
-    $('views').querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === next)));
     for (const key of Object.keys(BOXES)) $(BOXES[key]).hidden = key !== next;
     if (next !== 'chart') {
       if (!instances[next]) instances[next] = window.CX.cjViews[next](host, ctrl, $(BOXES[next]));
@@ -109,7 +108,7 @@
     $('vizHz').addEventListener('click', e => { const b = e.target.closest('.hz'); if (b) { stop(); goTo(b.dataset.h, 900); } });
     $('vizImprove').addEventListener('click', improve);
     $('vizTour').addEventListener('click', tour);
-    $('views').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) setView(b.dataset.view); });
+    $('viewSelect').addEventListener('change', e => setView(e.target.value));
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && (improving || touring)) { stop(); redraw(); } });
     ready = true;
   }

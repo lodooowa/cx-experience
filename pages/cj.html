@@ -30,10 +30,10 @@
 
     <details class="cj-warnings" id="warnings" hidden></details>
 
-    <div class="cj-views" id="views" role="group" aria-label="Sposób prezentacji emocji"><span class="cj-views-label">Widok</span><button type="button" class="chip" data-view="chart" aria-pressed="true">Wykres</button><button type="button" class="chip" data-view="orbit" aria-pressed="false">Orbita</button><button type="button" class="chip" data-view="landscape" aria-pressed="false">Krajobraz</button><span class="cj-views-label cj-data-label">Dane</span><a class="chip" id="dataProd" href="?dane=prod">Real</a><a class="chip" id="dataDemo" href="?dane=demo">Demo</a></div>
-
     <section class="matrix-toolbar" aria-label="Filtry i przesuwanie">
       <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
+      <label class="select-wrap matrix-select cj-select"><span>WIDOK</span><select id="viewSelect" aria-label="Sposób prezentacji emocji"><option value="chart">Wykres</option><option value="orbit">Orbita</option><option value="landscape">Krajobraz</option></select></label>
+      <label class="select-wrap matrix-select cj-select"><span>DANE</span><select id="dataSelect" aria-label="Rodzaj danych"><option value="prod">Real</option><option value="demo">Demo</option></select></label>
       <span class="cj-help"><button type="button" class="ghost" id="helpBtn" aria-label="Jak czytać wykres" aria-describedby="helpText">?</button><span class="cj-help-text" id="helpText" role="tooltip"></span></span>
       <div class="cj-zoom" role="group" aria-label="Powiększenie wykresu"><button type="button" class="ghost" id="zoomOut" aria-label="Oddal">−</button><span id="zoomLevel" aria-live="polite">100%</span><button type="button" class="ghost" id="zoomIn" aria-label="Przybliż">+</button><button type="button" class="ghost" id="zoomFit">Cały przebieg</button><button type="button" class="ghost" id="zoomReset">100%</button></div>
       <div class="cj-pan" role="group" aria-label="Przesuwanie wykresu"><button type="button" class="ghost" id="panLeft" aria-label="Przesuń wykres w lewo">‹</button><button type="button" class="ghost" id="panRight" aria-label="Przesuń wykres w prawo">›</button></div>

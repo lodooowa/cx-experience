@@ -1,11 +1,6 @@
 /* Widoki Orbita i Krajobraz (cj.html). Ciemna scena jak w radarze; kolory emocji i wody jako zmienne sceny. */
-.cj-views { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
-.cj-views-label { margin-right: 4px; color: var(--text-muted); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.cj-views .chip[aria-pressed="false"] { opacity: 1; text-decoration: none; }
-.cj-views .chip[aria-pressed="true"], .cj-views .chip[aria-current="true"] { background: var(--brand-primary); color: #fff; font-weight: 700; }
-.cj-views .chip { text-decoration: none; }
-.cj-views .chip[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
-.cj-data-label { margin-left: auto; }
+.cj-select { min-width: 0; max-width: none; flex: 0 1 auto; }
+@media (max-width: 850px) { .cj-select { flex: 1 1 0; } }
 .view-viz .cj-zoom, .view-viz .cj-pan { display: none; }
 .cj-viz[hidden], .viz-view[hidden], #chartPanel[hidden] { display: none; }
 
