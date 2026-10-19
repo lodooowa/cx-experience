@@ -38,7 +38,7 @@ js/flow-core.js, flow-layout.js, flow-map.js   graf, układ i rysowanie mapy prz
 data/matrix.js, data/flow.js   GENEROWANE z macierz-demo.xlsx, nie edytować ręcznie
 macierz-demo.xlsx, macierz-demo/*.csv   źródło danych i eksport CSV
 tools/               konwerter xlsx, seed xlsx i testy
-konwertuj-dane.bat, konwertuj-dane.command   dwuklik: uruchamia konwerter
+2-konwertuj-dane.bat, 2-konwertuj-dane.command   dwuklik: uruchamia konwerter
 ```
 
 ## Zmiana danych
@@ -86,12 +86,12 @@ Osobne strony na wspólnym modelu danych, otwierane dwuklikiem (offline):
 - `matrix.html`: heatmapa procesów i tryb omawiania,
 - `priorytety.html`: mapa koszt × zysk akcji naprawczych,
 - `radar.html`: radar podróży klienta,
-- `cj.html`: podróż klienta (Customer Journey): wykres emocji −5…+5 po punktach styku w krokach i etapach, pain pointy, drzewo pain point → root cause → inicjatywa oraz krzywe prognozy po Quick Wins, Mid i Long Term. Dwa zestawy danych: prawdziwe („Real”) z `macierz_CX.xlsx` (edytuje go ekspert, plik i `data/cj.js` są poza repozytorium i `pobierz-zmiany` ich nie nadpisuje) oraz demo z `macierz_CX_demo.xlsx` (w repozytorium, wszystkie pola wypełnione przykładowymi wartościami DEMO, → `data/cj-demo.js`); konwersja: `python3 tools/cj-xlsx-to-data.py` albo `konwertuj-dane`. Przełącznik „Dane: Real / Demo” nad wykresem (`?dane=demo`); bez pliku produkcyjnego strona pokazuje demo. Kolumny prognozy (`Po Quick Wins`, `Po Mid Term`, `Po Long Term`) w zakładce `Macierz CX` są w demo przykładowe,
+- `cj.html`: podróż klienta (Customer Journey): wykres emocji −5…+5 po punktach styku w krokach i etapach, pain pointy, drzewo pain point → root cause → inicjatywa oraz krzywe prognozy po Quick Wins, Mid i Long Term. Dwa zestawy danych: prawdziwe („Real”) z `macierz_CX.xlsx` (edytuje go ekspert, plik i `data/cj.js` są poza repozytorium i `1-pobierz-zmiany` ich nie nadpisuje) oraz demo z `macierz_CX_demo.xlsx` (w repozytorium, wszystkie pola wypełnione przykładowymi wartościami DEMO, → `data/cj-demo.js`); konwersja: `python3 tools/cj-xlsx-to-data.py` albo `2-konwertuj-dane`. Przełącznik „Dane: Real / Demo” nad wykresem (`?dane=demo`); bez pliku produkcyjnego strona pokazuje demo. Kolumny prognozy (`Po Quick Wins`, `Po Mid Term`, `Po Long Term`) w zakładce `Macierz CX` są w demo przykładowe,
 - `mapa.html`: mapa przepływu (swimlane: tory = wykonawcy, kolumny = procesy, krawędzie = kolejne kroki). Lista „Przypadek” podświetla trasę klienta z `data/flow.js` (stan kroku: znak i kolor, pominięte punkty przygaszone); przyciski Start/Dalej/Wstecz prowadzą krok po kroku (mapa przesuwa się do punktu, kropka jedzie po trasie; bez ruchu przy `prefers-reduced-motion`).
 
-Dane tych widoków nie są edytowane ręcznie: źródłem jest `macierz-demo.xlsx`. Po zmianie zamknij Excela i kliknij `konwertuj-dane.command` (macOS) albo `konwertuj-dane.bat` (Windows); skrypt (Python 3) zapisze `macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js`. Ten sam skrypt odświeża też `data/cj.js` z `macierz_CX.xlsx` i `data/cj-demo.js` z `macierz_CX_demo.xlsx` (widok `cj.html`). Szczegóły zakładek, torów i przypadków: `macierz.md`.
+Dane tych widoków nie są edytowane ręcznie: źródłem jest `macierz-demo.xlsx`. Po zmianie zamknij Excela i kliknij `2-konwertuj-dane.command` (macOS) albo `2-konwertuj-dane.bat` (Windows); skrypt (Python 3) zapisze `macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js`. Ten sam skrypt odświeża też `data/cj.js` z `macierz_CX.xlsx` i `data/cj-demo.js` z `macierz_CX_demo.xlsx` (widok `cj.html`). Szczegóły zakładek, torów i przypadków: `macierz.md`.
 
-**Windows bez Pythona:** pobierz [python-3.13.9-embed-amd64.zip](https://www.python.org/ftp/python/3.13.9/python-3.13.9-embed-amd64.zip) (przenośny Python, ok. 10 MB, bez instalacji) i rozpakuj go do folderu `tools\python`, tak aby powstał plik `tools\python\python.exe`. `konwertuj-dane.bat` użyje go w pierwszej kolejności, przed Pythonem z systemu. Folder jest w `.gitignore`, więc zip nie trafia do repozytorium. Skrypt używa tylko biblioteki standardowej, więc nic więcej nie trzeba doinstalowywać.
+**Windows bez Pythona:** pobierz [python-3.13.9-embed-amd64.zip](https://www.python.org/ftp/python/3.13.9/python-3.13.9-embed-amd64.zip) (przenośny Python, ok. 10 MB, bez instalacji) i rozpakuj go do folderu `tools\python`, tak aby powstał plik `tools\python\python.exe`. `2-konwertuj-dane.bat` użyje go w pierwszej kolejności, przed Pythonem z systemu. Folder jest w `.gitignore`, więc zip nie trafia do repozytorium. Skrypt używa tylko biblioteki standardowej, więc nic więcej nie trzeba doinstalowywać.
 
 Testy (node/Python, bez zależności): `node tools/test-flow-core.js`, `node tools/test-flow-layout.js`, `python3 tools/test-xlsx-to-data.py`.
 
@@ -99,8 +99,8 @@ Testy (node/Python, bez zależności): `node tools/test-flow-core.js`, `node too
 
 Pierwsza paczka trafia do użytkownika mailem (zip), kolejne zmiany idą przez GitHuba (repozytorium `lodooowa/cx-experience`, gałąź `main`). Użytkownik nie musi znać Gita: wystarczą dwa skrypty do kliknięcia w głównym folderze.
 
-- `pobierz-zmiany.bat`: pobiera najnowszą wersję z GitHuba. Gdy folder nie jest jeszcze repozytorium, tworzy je i ustawia `main` na `origin/main`, nie nadpisując plików z zipa (różnice widać potem jako zmiany). Przy każdym uruchomieniu nadpisuje pliki wersją z GitHuba (`reset --hard`): zmiany lokalne są odrzucane, a kopię zmian w śledzonych plikach zachowuje `refs/kopie/ostatnia` (odzysk: `git checkout refs/kopie/ostatnia -- plik`). Zmiany do wysłania wysyłaj przed pobraniem.
-- `wyslij-zmiany.bat`: zapisuje zmiany z folderu (pyta o krótki opis, Enter = „Aktualizacja danych”) i wysyła je na `main`. Gdy na GitHubie są nowsze, kolidujące zmiany, niczego nie wysyła i wyświetla komunikat.
+- `1-pobierz-zmiany.bat`: pobiera najnowszą wersję z GitHuba. Gdy folder nie jest jeszcze repozytorium, tworzy je i ustawia `main` na `origin/main`, nie nadpisując plików z zipa (różnice widać potem jako zmiany). Przy każdym uruchomieniu nadpisuje pliki wersją z GitHuba (`reset --hard`): zmiany lokalne są odrzucane, a kopię zmian w śledzonych plikach zachowuje `refs/kopie/ostatnia` (odzysk: `git checkout refs/kopie/ostatnia -- plik`). Zmiany do wysłania wysyłaj przed pobraniem.
+- `3-wyslij-zmiany.bat`: zapisuje zmiany z folderu (pyta o krótki opis, Enter = „Aktualizacja danych”) i wysyła je na `main`. Gdy na GitHubie są nowsze, kolidujące zmiany, niczego nie wysyła i wyświetla komunikat.
 - `tools/git-wspolne.bat`: wspólna część obu skryptów (wybór Gita, inicjalizacja, token).
 
 **Git:** skrypty używają przenośnego `tools\PortableGit\cmd\git.exe`, a gdy go nie ma, Gita z systemu. PortableGit (archiwum `PortableGit-*-64-bit.7z.exe` ze strony git-scm.com/download/win) rozpakuj do `tools\PortableGit`, tak aby powstał plik `tools\PortableGit\cmd\git.exe`. Folder jest w `.gitignore`.

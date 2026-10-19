@@ -1,5 +1,5 @@
 @echo off
-rem Wspolny start dla pobierz-zmiany.bat i wyslij-zmiany.bat (wolane przez call).
+rem Wspolny start dla 1-pobierz-zmiany.bat i 3-wyslij-zmiany.bat (wolane przez call).
 rem Ustawia GIT, AUTHURL; w razie braku tworzy repozytorium i pyta o token. Kod wyjscia 1 = blad.
 set "REPO=github.com/lodooowa/cx-experience.git"
 set "GIT="

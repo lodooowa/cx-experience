@@ -1,6 +1,6 @@
 ---
 name: cx-data-update
-description: Zmiany danych i schematu danych w CX Journey Experience - edycja ścieżek klienta (data/personas.js, data/journeys.js) oraz macierzy i mapy przepływu z macierz-demo.xlsx przez konwerter tools/xlsx-to-data.py (data/matrix.js, data/flow.js, macierz-demo/*.csv). Używaj zawsze, gdy zadanie dotyczy nowej kolumny, zakładki, pola, słownika, toru, stanu przypadku, procesu, punktu styku, krawędzi mapy, konwertera xlsx, pliku konwertuj-dane albo błędu „BŁĄD DANYCH”, także gdy użytkownik mówi tylko „dodaj pole”, „zmień dane”, „przelicz xlsx” albo „ekspert dopisał wiersze”.
+description: Zmiany danych i schematu danych w CX Journey Experience - edycja ścieżek klienta (data/personas.js, data/journeys.js) oraz macierzy i mapy przepływu z macierz-demo.xlsx przez konwerter tools/xlsx-to-data.py (data/matrix.js, data/flow.js, macierz-demo/*.csv). Używaj zawsze, gdy zadanie dotyczy nowej kolumny, zakładki, pola, słownika, toru, stanu przypadku, procesu, punktu styku, krawędzi mapy, konwertera xlsx, pliku 2-konwertuj-dane albo błędu „BŁĄD DANYCH”, także gdy użytkownik mówi tylko „dodaj pole”, „zmień dane”, „przelicz xlsx” albo „ekspert dopisał wiersze”.
 ---
 
 # Dane i schemat (cx-experience)
