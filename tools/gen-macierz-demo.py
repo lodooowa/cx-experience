@@ -413,7 +413,7 @@ README=[
 ("Stany kroku (stan)","zadzialal, czesciowo, nie_zadzialal, brakuje (punkt, który powinien wystąpić, a go nie było). Etykiety są w zakładce slowniki."),
 ("Tory mapy","Domyślnie wynikają z macierzy i podtypu punktu (importer, dealer, salon, serwis). Nowy tor: wpisz jego nazwę w kolumnie tor_nadpisanie punktu i dodaj etykietę w slowniki (grupa tor; kolejność wierszy to kolejność torów; ID toru nie może być samą liczbą)."),
 ("status_danych","Wartość DEMO oznacza dane przykładowe. Wiersze własne oznacz inaczej albo zostaw puste; nie zostawiaj DEMO przy danych prawdziwych."),
-("Po edycji","Zapisz plik i zamknij Excela. Kliknij dwukrotnie 2-konwertuj-dane.command (macOS) albo 2-konwertuj-dane.bat (Windows). Jeśli pojawi się błąd, zawiera nazwę zakładki i numer wiersza do poprawy."),
+("Po edycji","Zapisz plik i zamknij Excela. Kliknij dwukrotnie 2-przebuduj-dane.command (macOS) albo 2-przebuduj-dane.bat (Windows). Jeśli pojawi się błąd, zawiera nazwę zakładki i numer wiersza do poprawy."),
 ("Zasady","Nie zmieniaj nazw zakładek ani nagłówków kolumn, nie wstawiaj kolumn ani pustych wierszy w środku tabeli. Teksty wpisuj zwykłym tekstem."),
 ]
 rm=wb.create_sheet("czytaj_mnie",0)
