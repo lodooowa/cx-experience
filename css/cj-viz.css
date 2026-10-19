@@ -25,20 +25,21 @@
 .v-neg { fill: var(--v-neg); } .v-zero { fill: var(--v-zero); } .v-pos { fill: var(--v-pos); }
 
 /* Orbita */
-.orbit { display: block; width: 100%; height: min(calc(100vh - 220px), 860px); min-height: 520px; }
+.orbit { display: block; width: 100%; height: clamp(680px, 76vw, 1120px); }
 .o-wedge { fill-opacity: .1; } .o-band { fill-opacity: .85; }
-.o-stage { fill: #b8c7de; font-size: 10px; font-weight: 700; letter-spacing: .03em; pointer-events: auto; }
+.o-stage { fill: #d3deef; font-size: 12px; font-weight: 700; letter-spacing: .03em; pointer-events: auto; }
 .o-sep { stroke: rgba(160, 190, 230, .16); }
 .o-ring { fill: none; stroke: rgba(160, 190, 230, .1); } .o-zero { fill: none; stroke: rgba(160, 190, 230, .45); stroke-dasharray: 5 5; }
-.o-scale { fill: #b8c7de; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: #071c38; stroke-width: 3px; }
-.o-sweep { transform-origin: 0 0; animation: o-sweep 14s linear infinite; pointer-events: none; }
+.o-scale { fill: #d3deef; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: #071c38; stroke-width: 3px; }
+.o-sweep { transform-origin: 0 0; opacity: 0; transition: opacity var(--motion-standard); pointer-events: none; }
+.o-sweep.aim { opacity: 1; }
 .o-dyn { animation: o-in 900ms ease-out; }
 .o-ghost { fill: none; stroke: rgba(232, 238, 248, .45); stroke-width: 1.5; stroke-dasharray: 4 5; }
 .o-area { fill: url(#oGrad); fill-opacity: .32; pointer-events: none; }
-.o-line { fill: none; stroke: url(#oGrad); stroke-width: 3.2; stroke-linejoin: round; filter: url(#oGlow); pointer-events: none; }
+.o-line { fill: none; stroke: url(#oGrad); stroke-width: 4; stroke-linejoin: round; filter: url(#oGlow); pointer-events: none; }
 .o-node { cursor: pointer; outline: none; }
 .o-stem { stroke: var(--vc, var(--v-zero)); stroke-opacity: .28; stroke-width: 1.2; }
-.o-dot { fill: var(--vc, var(--v-zero)); stroke: var(--pp, #041428); stroke-width: 2.2; }
+.o-dot { fill: var(--vc, var(--v-zero)); stroke: var(--pp, #041428); stroke-width: 2.6; }
 .o-node.pp-none .o-dot { stroke: #041428; }
 .o-hit { fill: transparent; }
 .o-pulse { display: none; fill: var(--pp); transform-box: fill-box; transform-origin: center; }
@@ -51,7 +52,7 @@
 .o-hub { fill: #041428; stroke: rgba(160, 190, 230, .3); }
 .o-hub-top { fill: #fff; font-size: 17px; font-weight: 800; letter-spacing: .24em; }
 .o-hub-top.big { font-size: 40px; letter-spacing: 0; }
-.o-hub-sub { fill: #9fb2cc; font-size: 9px; font-weight: 700; letter-spacing: .1em; }
+.o-hub-sub { fill: #9fb2cc; font-size: 10px; font-weight: 700; letter-spacing: .1em; }
 
 /* Krajobraz */
 .land-wrap { display: flex; }
@@ -88,12 +89,11 @@
 .l-trav-core { fill: #fff; filter: url(#lGlow); }
 .l-trav.empty circle { display: none; }
 
-@keyframes o-sweep { to { transform: rotate(360deg); } }
 @keyframes o-in { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
 @keyframes o-pulse { 0% { transform: scale(.7); opacity: .6; } 100% { transform: scale(2.1); opacity: 0; } }
 @keyframes l-flow { to { stroke-dashoffset: -32; } }
 @media (prefers-reduced-motion: reduce) {
-  .o-sweep, .o-dyn, .o-node[data-pulse="1"] .o-pulse, .o-cursor, .l-water-line, .l-node[data-pulse="1"] .l-pulse, .l-trav-halo { animation: none; }
+  .o-dyn, .o-node[data-pulse="1"] .o-pulse, .o-cursor, .l-water-line, .l-node[data-pulse="1"] .l-pulse, .l-trav-halo { animation: none; }
   .l-trav { transition: none; }
 }
-@media (max-width: 850px) { .orbit { min-height: 380px; } }
+@media (max-width: 850px) { .orbit { height: auto; aspect-ratio: 1; } }

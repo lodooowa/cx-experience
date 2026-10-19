@@ -3,7 +3,7 @@
 
   // Widok „Orbita”: punkty styku po okręgu (etapy jako sektory), odległość od środka to emocja klienta (−5 na obrzeżu środka, +5 na zewnątrz).
   // Krzywa pokazuje horyzont wybrany w sterowniku, cienki kontur to emocje obecne. Wartości pochodzą wyłącznie z danych; brak wartości to przerwa.
-  const R_IN = 96, R_OUT = 330, GAP = 16, VB = 420, SAMPLES = 6;
+  const R_IN = 96, R_OUT = 330, GAP = 16, VB = 402, SAMPLES = 6;
   const rad = v => R_IN + (v + 5) / 10 * (R_OUT - R_IN);
   const polar = (r, deg) => [r * Math.cos(deg * Math.PI / 180), r * Math.sin(deg * Math.PI / 180)];
   const num = n => n.toFixed(1);
@@ -29,7 +29,7 @@
     pts.forEach((t, i) => { const s = stageOf(t), last = runs[runs.length - 1]; if (last && last.stage === s) last.i1 = i; else runs.push({ stage: s, i0: i, i1: i }); });
     runs.forEach((r, k) => {
       const color = (cj.stages.find(s => s.name === r.stage) || {}).color || '#999', a0 = ang(r.i0) - unit / 2, a1 = ang(r.i1) + unit / 2, mid = (a0 + a1) / 2;
-      const lower = Math.sin(mid * Math.PI / 180) > 0, lr = lower ? 384 : 366, fit = Math.max(0, Math.floor((a1 - a0) * Math.PI / 180 * lr / 7.2));
+      const lower = Math.sin(mid * Math.PI / 180) > 0, lr = lower ? 382 : 365, fit = Math.max(0, Math.floor((a1 - a0) * Math.PI / 180 * lr / 9.6));
       const label = fit < 6 ? '' : r.stage.length > fit ? r.stage.slice(0, fit - 1) + '…' : r.stage;
       const [sx, sy] = polar(lr, lower ? a1 - .4 : a0 + .4), [ex, ey] = polar(lr, lower ? a0 + .4 : a1 - .4);
       html += `<path class="o-wedge" d="${sector(R_IN, R_OUT + 8, a0 + .3, a1 - .3)}" style="fill:${esc(color)}"/><path class="o-band" d="${sector(R_OUT + 12, R_OUT + 19, a0 + .3, a1 - .3)}" style="fill:${esc(color)}"><title>${esc(r.stage)}</title></path>`
@@ -45,7 +45,7 @@
     const hubTop = svg.querySelector('.o-hub-top'), hubSub = svg.querySelector('.o-hub-sub');
     const els = pts.map((t, i) => {
       const g = el('g', { class: 'o-node ' + ppClass(t.painPoint), tabindex: 0, role: 'button', 'data-i': i, 'aria-label': title(t) });
-      const stem = el('line', { class: 'o-stem' }), pulse = el('circle', { class: 'o-pulse', r: 9 }), dot = el('circle', { class: 'o-dot', r: 4.8 }), hit = el('circle', { class: 'o-hit', r: 13 });
+      const stem = el('line', { class: 'o-stem' }), pulse = el('circle', { class: 'o-pulse', r: 9 }), dot = el('circle', { class: 'o-dot', r: 6 }), hit = el('circle', { class: 'o-hit', r: 15 });
       g.append(stem, pulse, dot, hit); nodes.append(g);
       return { g, stem, pulse, dot, hit };
     });
@@ -112,6 +112,23 @@
     const pick = e => { const g = e.target.closest('.o-node'); return g ? Number(g.dataset.i) : -1; };
     svg.addEventListener('click', e => { const i = pick(e); if (i >= 0) host.select({ kind: 'tp', id: pts[i].id }); });
     svg.addEventListener('keydown', e => { const i = pick(e); if (i >= 0 && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); host.select({ kind: 'tp', id: pts[i].id }); } });
+    // Wiązka skanu podąża za myszą: kąt liczony względem środka orbity, z wygładzeniem (bez wygładzenia przy reduced motion); poza wykresem znika.
+    const sweep = svg.querySelector('.o-sweep');
+    let target = -90, shownAngle = -90, sweepRaf = 0;
+    const spin = () => {
+      const diff = ((target - shownAngle + 540) % 360) - 180;
+      shownAngle = ctrl.reduced() || Math.abs(diff) < .3 ? target : shownAngle + diff * .18;
+      sweep.style.transform = `rotate(${shownAngle}deg)`;
+      sweepRaf = shownAngle === target ? 0 : requestAnimationFrame(spin);
+    };
+    const aim = e => {
+      const m = svg.getScreenCTM(); if (!m) return;
+      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
+      target = Math.atan2(p.y, p.x) * 180 / Math.PI; sweep.classList.add('aim');
+      if (!sweepRaf) sweepRaf = requestAnimationFrame(spin);
+    };
+    svg.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') aim(e); });
+    svg.addEventListener('pointerleave', () => sweep.classList.remove('aim'));
     svg.addEventListener('pointermove', e => { const i = pick(e); if (i >= 0 && e.pointerType === 'mouse') host.showTip(e, i); else host.hideTip(); });
     svg.addEventListener('pointerleave', () => host.hideTip());
     box.append(svg);
