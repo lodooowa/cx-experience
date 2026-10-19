@@ -28,8 +28,6 @@
       <span class="demo-pill" id="demoPill" hidden>PROGNOZA DEMO</span>
     </section>
 
-    <details class="cj-warnings" id="warnings" hidden></details>
-
     <section class="matrix-toolbar" aria-label="Filtry i przesuwanie">
       <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
       <label class="select-wrap matrix-select cj-select"><span>WIDOK</span><select id="viewSelect" aria-label="Sposób prezentacji emocji"><option value="chart">Wykres</option><option value="orbit">Orbita</option><option value="landscape">Krajobraz</option></select></label>
@@ -39,15 +37,19 @@
       <div class="cj-pan" role="group" aria-label="Przesuwanie wykresu"><button type="button" class="ghost" id="panLeft" aria-label="Przesuń wykres w lewo">‹</button><button type="button" class="ghost" id="panRight" aria-label="Przesuń wykres w prawo">›</button></div>
     </section>
 
+    <section class="cj-warnings" id="warnings" aria-label="Uwagi do danych" hidden></section>
+
     <div class="cj-filters" id="filtersPanel" role="region" aria-label="Filtry" hidden>
       <div class="cj-filter-group"><h2>Krzywe emocji</h2><div class="chips" id="horizons" role="group" aria-label="Krzywe emocji"></div></div>
       <div class="cj-filter-group"><h2>Pain pointy <small>(bez wyboru pokazane są wszystkie)</small></h2><div class="chips" id="pains" role="group" aria-label="Pain pointy"></div></div>
       <div class="cj-filter-actions"><button type="button" class="ghost" id="filtersClear">Wyczyść filtr pain pointów</button><button type="button" class="ghost" id="filtersClose">Zamknij</button></div>
     </div>
 
+    <section class="cj-summary" id="summary" aria-label="Podsumowanie emocji klienta"></section>
+
     <section class="cj-viz" id="viz" aria-label="Wizualizacja emocji klienta" hidden>
       <div class="viz-bar">
-        <div class="viz-hz" id="vizHz" role="group" aria-label="Horyzont emocji"></div>
+        <label class="select-wrap matrix-select cj-select viz-hz"><span>HORYZONT</span><select id="vizHz" aria-label="Horyzont emocji"></select></label>
         <button type="button" class="chip viz-play" id="vizImprove">▶ Pokaż poprawę</button>
         <button type="button" class="chip viz-play" id="vizTour">▶ Przejdź podróż</button>
       </div>
@@ -78,6 +80,7 @@
           </div>
         </div>
       </div>
+      <div class="cj-pp-legend" id="ppLegend" role="group" aria-label="Pain pointy (filtr punktów)"></div>
     </section>
 
     <div class="cj-detail" id="detail" role="region" aria-label="Szczegóły" hidden></div>

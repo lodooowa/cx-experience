@@ -36,7 +36,7 @@
   function goTo(key, ms) {
     cancelAnimationFrame(raf);
     horizon = key;
-    host.$('vizHz').querySelectorAll('.hz').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.h === key)));
+    host.$('vizHz').value = key;
     const to = host.model.series[key], from = vals.slice();
     if (!ms || reduced()) { vals = to.slice(); redraw(); return Promise.resolve(); }
     return new Promise(resolve => {
@@ -103,9 +103,9 @@
     const { $, esc, core, model, cj } = host;
     vals = model.series.now.slice();
     const keys = core.HORIZONS.filter(x => x.key === 'now' || model.hasForecast(x.key));
-    $('vizHz').innerHTML = keys.map(x => `<button type="button" class="chip hz hz-${x.key}" data-h="${x.key}" aria-pressed="${x.key === 'now'}"><i class="sw"></i>${esc(x.label)}</button>`).join('');
+    $('vizHz').innerHTML = keys.map(x => `<option value="${x.key}">${esc(x.label)}</option>`).join('');
     $('vizImprove').hidden = keys.length < 2;
-    $('vizHz').addEventListener('click', e => { const b = e.target.closest('.hz'); if (b) { stop(); goTo(b.dataset.h, 900); } });
+    $('vizHz').addEventListener('change', e => { stop(); goTo(e.target.value, 900); });
     $('vizImprove').addEventListener('click', improve);
     $('vizTour').addEventListener('click', tour);
     $('viewSelect').addEventListener('change', e => setView(e.target.value));

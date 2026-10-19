@@ -6,11 +6,8 @@
 
 .cj-viz { margin-top: 12px; }
 .viz-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
-.viz-hz { display: flex; flex-wrap: wrap; gap: 8px; margin-right: auto; }
-.viz-hz .chip, .viz-play { text-decoration: none; }
-.viz-hz .chip[aria-pressed="false"] { opacity: .6; }
-.viz-hz .chip .sw { display: inline-block; width: 18px; height: 0; border-top: 3px solid var(--c); }
-.viz-hz .hz-now { --c: var(--h-now); } .viz-hz .hz-qw { --c: var(--h-qw); } .viz-hz .hz-mid { --c: var(--h-mid); } .viz-hz .hz-long { --c: var(--h-long); }
+.viz-hz { min-width: 150px; margin-right: auto; }
+.viz-play, .viz-play[aria-pressed="false"] { text-decoration: none; opacity: 1; }
 .viz-play[aria-pressed="true"] { background: var(--brand-primary); color: #fff; }
 
 .viz-stage { --v-neg: #ff5a63; --v-zero: #8fa0b8; --v-pos: #3fcf8e; --v-water: #5fd0ff; position: relative; overflow: hidden; border: 1px solid #0d2a52; background: radial-gradient(circle at 50% 48%, #0d2a52 0%, #071c38 45%, #041428 80%); color: #e8eef8; }

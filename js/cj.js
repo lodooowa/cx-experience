@@ -32,6 +32,7 @@
       return `<button type="button" class="chip hz hz-${h.key}" data-h="${h.key}" aria-pressed="${shown.has(h.key)}"${ok && h.key !== 'now' ? '' : h.key === 'now' ? ' disabled' : ' disabled title="Brak wartości prognozy w arkuszu"'}><i class="sw"></i>${esc(h.label)}${h.key !== 'now' && cj.forecastStatus ? ' (' + esc(cj.forecastStatus) + ')' : ''}</button>`;
     }).join('');
     $('pains').innerHTML = cj.painPoints.map(p => `<button type="button" class="chip pp ${ppClass(p.id)}" data-pp="${esc(p.id)}" aria-pressed="${painFilter.has(p.id)}" title="${esc(p.description)}"><i class="sw"></i>${esc(p.name)}</button>`).join('');
+    $('ppLegend').innerHTML = cj.painPoints.map(p => `<button type="button" class="chip pp ${ppClass(p.id)}" data-pp="${esc(p.id)}" aria-pressed="${painFilter.has(p.id)}" title="${esc(p.description)}"><i class="sw"></i>${esc(p.id)} ${esc(p.name)}</button>`).join('');
   }
 
   // Szerokość kolumny punktu: PW * powiększenie; od 80% etap dostaje dodatkowo tyle miejsca, żeby jego nazwa zmieściła się w jednej linii (po równo na jego punkty).
@@ -76,7 +77,10 @@
       let d = '', pen = false;
       model.series[h.key].forEach((v, i) => { if (v === null) { pen = false; return; } d += (pen ? 'L' : 'M') + x(i) + ' ' + y(v).toFixed(1) + ' '; pen = true; });
       group.append(el('path', { d, class: 'cj-line' }));
-      model.series[h.key].forEach((v, i) => { if (v !== null) { const c = el('circle', { cx: x(i), cy: y(v), r: 4.5, class: 'cj-pt' }); group.append(c); seriesDots.push({ i, c }); } });
+      model.series[h.key].forEach((v, i) => {
+        if (v !== null) { const c = el('circle', { cx: x(i), cy: y(v), r: 4.5, class: 'cj-pt' }); group.append(c); seriesDots.push({ i, c }); }
+        else if (h.key === 'now') { const c = el('circle', { cx: x(i), cy: HEIGHT - 12, r: 4, class: 'cj-nodata' }); c.append(el('title', {}, 'brak danych')); group.append(c); seriesDots.push({ i, c }); }
+      });
       svg.append(group);
     }
     dots = pts.map((t, i) => {
@@ -110,6 +114,20 @@
     $('steps').innerHTML = pts.map((t, i) => `<button type="button" class="cj-tp ${ppClass(t.painPoint)}${t.title ? '' : ' unnamed'}${edge(i)}" data-i="${i}" style="width:${colW[i]}px" aria-pressed="false" title="${esc(title(t))}" aria-label="${esc(title(t) + ', emocja ' + level(t.emotionValue) + (t.painPoint ? ', pain point ' + t.painPoint : ''))}"><span>${esc(title(t))}</span></button>`).join('');
     pointEls = [...document.querySelectorAll('.cj-tp')];
     ppCells = [...document.querySelectorAll('.pp-cell')];
+  }
+
+  // Podsumowanie z samych danych (poziom obecny): średnia i liczba punktów poniżej zera na etap oraz najniższe punkty. Punkty bez wartości są pomijane, nic nie jest dopełniane.
+  function summary() {
+    const pts = model.points, now = model.series.now, stageOf = t => cj.steps.find(s => s.nr === t.step).stage;
+    const fmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1).replace('.', ',');
+    const stages = cj.stages.map(st => {
+      const idx = pts.map((t, i) => i).filter(i => stageOf(pts[i]) === st.name), vals = idx.map(i => now[i]).filter(v => v !== null);
+      return { st, first: idx[0], known: vals.length, neg: vals.filter(v => v < 0).length, avg: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null };
+    }).filter(s => s.first !== undefined);
+    const known = now.filter(v => v !== null), low = pts.map((t, i) => ({ t, i, v: now[i] })).filter(x => x.v !== null && x.v < 0).sort((a, b) => a.v - b.v).slice(0, 3);
+    $('summary').innerHTML = `<p class="sum-line"><b>${known.length} z ${pts.length}</b> punktów styku ma poziom emocji; <b>${known.filter(v => v < 0).length}</b> poniżej zera.${cj.warnings && cj.warnings.length ? ` <button type="button" class="chip sum-warn" id="warnBtn" aria-expanded="false" aria-controls="warnings">Jakość danych: ${cj.warnings.length}</button>` : ''} Średnia emocji obecnie na etapach:</p>`
+      + `<div class="sum-stages">${stages.map(s => `<button type="button" class="sum-stage" data-i="${s.first}" style="--stage:${esc(s.st.color)}" title="Przejdź do etapu"><span class="ss-name">${esc(s.st.name)}</span><b class="em ${emClass(s.avg)}">${s.avg === null ? 'brak danych' : fmt(s.avg)}</b><small>${s.known ? s.neg + ' z ' + s.known + ' poniżej 0' : 'brak wartości'}</small></button>`).join('')}</div>`
+      + (low.length ? `<div class="sum-low"><span>Najniższe punkty:</span>${low.map(x => `<button type="button" class="chip" data-i="${x.i}">${esc(level(x.v))} · ${esc(title(x.t))} <small>${esc(stageOf(x.t))}</small></button>`).join('')}</div>` : '');
   }
 
   function treeSvg() {
@@ -160,7 +178,7 @@
     });
     document.querySelectorAll('.cj-series').forEach(g => g.classList.toggle('hidden', !shown.has(g.dataset.h)));
     $('horizons').querySelectorAll('.hz').forEach(b => b.setAttribute('aria-pressed', String(shown.has(b.dataset.h))));
-    $('pains').querySelectorAll('.pp').forEach(b => b.setAttribute('aria-pressed', String(painFilter.has(b.dataset.pp))));
+    document.querySelectorAll('#pains .pp, #ppLegend .pp').forEach(b => b.setAttribute('aria-pressed', String(painFilter.has(b.dataset.pp))));
     const count = painFilter.size + (shown.size < core.HORIZONS.filter(h => h.key === 'now' || model.hasForecast(h.key)).length ? 1 : 0);
     $('filtersCount').hidden = !count; $('filtersCount').textContent = count;
     detail();
@@ -219,14 +237,21 @@
     if (!hasProd) { dataSel.options[0].disabled = true; dataSel.title = 'Brak macierz_CX.xlsx i data/cj.js: uruchom 2-przebuduj-dane po dodaniu pliku produkcyjnego'; }
     dataSel.addEventListener('change', () => { location.search = '?dane=' + dataSel.value; });
     if (cj.warnings && cj.warnings.length) {
-      $('warnings').hidden = false;
-      $('warnings').innerHTML = `<summary>Uwagi do danych: ${cj.warnings.length}</summary><ul>${cj.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;
+      $('warnings').innerHTML = `<b>Uwagi do danych</b><ul>${cj.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;
+      $('summary').addEventListener('click', e => { if (!e.target.closest('#warnBtn')) return; const open = $('warnings').hidden; $('warnings').hidden = !open; $('warnBtn').setAttribute('aria-expanded', String(open)); });
     }
-    layout(); toolbar(); chart(); stepsList(); treeSvg();
+    layout(); toolbar(); chart(); stepsList(); treeSvg(); summary();
     $('helpText').textContent = 'Powiększanie: przyciski nad wykresem albo Ctrl/⌘ + kółko myszy; „Cały przebieg” pokazuje całą podróż naraz. Skala emocji klienta od −5 do +5. Brak wartości w danych oznacza przerwę w krzywej. Krzywe po Quick Wins, Mid i Long Term pochodzą z kolumn prognozy w zakładce Macierz CX'
       + (cj.forecastStatus ? ' (status: ' + cj.forecastStatus + ', wartości przykładowe do czasu uzupełnienia przez eksperta).' : '.');
     $('horizons').addEventListener('click', e => { const b = e.target.closest('.hz'); if (!b || b.disabled) return; shown.has(b.dataset.h) ? shown.delete(b.dataset.h) : shown.add(b.dataset.h); apply(); });
-    $('pains').addEventListener('click', e => { const b = e.target.closest('.pp'); if (!b) return; painFilter.has(b.dataset.pp) ? painFilter.delete(b.dataset.pp) : painFilter.add(b.dataset.pp); apply(); });
+    const pickPain = e => { const b = e.target.closest('.pp'); if (!b) return; painFilter.has(b.dataset.pp) ? painFilter.delete(b.dataset.pp) : painFilter.add(b.dataset.pp); apply(); };
+    $('pains').addEventListener('click', pickPain);
+    $('ppLegend').addEventListener('click', pickPain);
+    $('summary').addEventListener('click', e => {
+      const low = e.target.closest('.sum-low [data-i]'), stage = e.target.closest('.sum-stage');
+      if (low) select({ kind: 'tp', id: model.points[Number(low.dataset.i)].id });
+      else if (stage) $('scroll').scrollLeft = colX[Number(stage.dataset.i)];
+    });
     $('detail').addEventListener('click', e => { if (e.target.closest('.det-close')) select(sel); });
     $('inner').addEventListener('click', e => { const b = e.target.closest('.cj-tp, .pp-cell'); if (b) select({ kind: 'tp', id: model.points[Number(b.dataset.i)].id }); });
     $('chart').addEventListener('click', e => { const g = e.target.closest('.cj-mark'); if (g) select({ kind: 'tp', id: model.points[Number(g.dataset.i)].id }); });
@@ -339,6 +364,7 @@
     $('inner').addEventListener('pointerleave', hideTip);
     scroll.addEventListener('scroll', hideTip);
     // Widoki Orbita i Krajobraz (js/cj-viz.js) korzystają z tego samego zaznaczenia, filtra pain pointów i dymka.
+    if (fitZoom() >= .2) setZoom(fitZoom());
     window.CX.cjViz.init({ cj, core, model, $, el, esc, title, level, emClass, ppClass, select, showTip, hideTip, state: () => ({ sel, rel, painFilter }) });
     apply();
   }
