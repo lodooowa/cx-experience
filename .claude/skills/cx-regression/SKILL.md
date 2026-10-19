@@ -22,7 +22,7 @@ Dobierz najwęższy zestaw, który pokrywa zmianę (pełny zestaw puść raz, po
 | `js/matrix-core.js`, `css/matrix.css`, `css/tokens.css` | — | `--pages matrix,priorytety,radar,mapa` (+ `index`, jeśli tokeny) |
 | `js/matrix.js` / `priorities.js` / `radar.js` (+ ich CSS i HTML) | — | ta jedna strona |
 | `js/cj*.js`, `css/cj.css`, `pages/cj.html`, `data/cj.js`, `data/cj-demo.js`, `tools/cj-xlsx-to-data.py`, `macierz_CX_demo.xlsx` | `node tools/test-cj-core.js` | `--pages cj` |
-| `js/app.js`, `js/scenes.js`, `index.html`, `css/style.css`, `css/layout.css`, `data/personas.js`, `data/journeys.js` | — | `--pages index` |
+| `js/app.js`, `js/scenes.js`, `pages/sciezki.html`, `css/style.css`, `css/layout.css`, `data/personas.js`, `data/journeys.js` | — | `--pages index` |
 | tylko `.md` | — | — (sprawdź odwołania do plików) |
 
 Zawsze dodaj `node --check <plik>` dla każdego zmienionego `.js`.

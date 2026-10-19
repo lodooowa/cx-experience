@@ -12,7 +12,7 @@ Budujemy **interaktywną, efektowną wizualizację Customer Journey** dla sieci 
 
 ## 2. Stan wdrożenia i układ v3
 
-v3 jest wdrożone (szczegóły i lista plików: `README.md`). Poza ścieżkami klienta (`index.html`, `js/app.js`) repo zawiera widoki macierzy punktów styku: `pages/matrix.html`, `pages/priorytety.html`, `pages/radar.html`, `pages/mapa.html`. Działają na danych generowanych z `macierz-demo.xlsx` (`data/matrix.js`, `data/flow.js`; konwerter `tools/xlsx-to-data.py`, testy w `tools/`; opis w `docs/macierz.md`). Nie edytuj wygenerowanych plików ręcznie. Zanim założysz, co istnieje, sprawdź aktualną zawartość repozytorium.
+v3 jest wdrożone (szczegóły i lista plików: `README.md`). Strona startowa `index.html` przekierowuje na `pages/cj.html`; ścieżki klienta to `pages/sciezki.html` + `js/app.js`. Poza nimi repo zawiera widoki macierzy punktów styku: `pages/matrix.html`, `pages/priorytety.html`, `pages/radar.html`, `pages/mapa.html`. Działają na danych generowanych z `macierz-demo.xlsx` (`data/matrix.js`, `data/flow.js`; konwerter `tools/xlsx-to-data.py`, testy w `tools/`; opis w `docs/macierz.md`). Nie edytuj wygenerowanych plików ręcznie. Zanim założysz, co istnieje, sprawdź aktualną zawartość repozytorium.
 
 ### Docelowy układ v3: cztery sekcje
 

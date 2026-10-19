@@ -1,7 +1,7 @@
 # Instrukcja dla eksperta CX i Microsoft Copilot Chat
 
 ## Edycja danych
-W aplikacji CX Experience Explorer treści i kod są rozdzielone. Ekspert **nie edytuje** `index.html`, `css/style.css` ani `js/app.js`.
+W aplikacji CX Experience Explorer treści i kod są rozdzielone. Ekspert **nie edytuje** `pages/sciezki.html`, `css/style.css` ani `js/app.js`.
 
 Do Copilota prześlij **jeden** z plików danych po zmianie nazwy rozszerzenia:
 - `data/journeys.js` → `journeys.txt`
@@ -9,7 +9,7 @@ Do Copilota prześlij **jeden** z plików danych po zmianie nazwy rozszerzenia:
 
 Gdy Copilot zwróci kompletny plik TXT, przywróć nazwę `.js` i podmień odpowiedni plik w podfolderze `data`. Wykonaj testy opisane w README.
 
-Dotyczy to tylko ścieżek klienta (`index.html`). Dane macierzy punktów styku i mapy przepływu (`pages/matrix.html`, `pages/mapa.html` itd.) pochodzą z `macierz-demo.xlsx`; `data/matrix.js` i `data/flow.js` są generowane, więc nie przekazuj ich Copilotowi (patrz `docs/macierz.md`).
+Dotyczy to tylko ścieżek klienta (`pages/sciezki.html`). Dane macierzy punktów styku i mapy przepływu (`pages/matrix.html`, `pages/mapa.html` itd.) pochodzą z `macierz-demo.xlsx`; `data/matrix.js` i `data/flow.js` są generowane, więc nie przekazuj ich Copilotowi (patrz `docs/macierz.md`).
 
 ## Gotowy prompt do Copilota
 

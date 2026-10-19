@@ -12,7 +12,7 @@ const WAIT = 3000;
 
 // item: klikalny punkt styku; main: obszar, którego szuflada na desktopie nie może zasłaniać.
 const PAGES = {
-  index: { file: 'index.html', item: '#graphNodes [data-step]', main: '.map-panel' },
+  index: { file: 'pages/sciezki.html', item: '#graphNodes [data-step]', main: '.map-panel' },
   matrix: { file: 'pages/matrix.html', item: '.tile', main: '#gridPanel' },
   priorytety: { file: 'pages/priorytety.html', item: '.act-open', main: '#board' },
   radar: { file: 'pages/radar.html', item: '#radar .node', main: '#stage' },

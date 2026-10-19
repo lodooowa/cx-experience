@@ -3,7 +3,7 @@
 ## Uruchomienie
 
 1. Rozpakuj całą paczkę ZIP. Nie otwieraj pliku HTML wewnątrz ZIP.
-2. Otwórz `index.html` dwuklikiem w Microsoft Edge lub Google Chrome.
+2. Otwórz `index.html` dwuklikiem w Microsoft Edge lub Google Chrome. Od razu pokazuje się podróż klienta (`pages/cj.html`); pozostałe widoki są w menu „Więcej widoków”.
 3. Dane ładują się lokalnie. Serwer, internet i instalacja nie są potrzebne.
 
 ## Co zawiera v3
@@ -19,7 +19,8 @@
 ## Struktura
 
 ```
-index.html           układ i kolejność lokalnych skryptów
+index.html           przekierowanie na pages/cj.html (widok główny)
+pages/sciezki.html   ścieżki klienta (mapa podróży): układ i kolejność lokalnych skryptów
 css/style.css        lokalne wejście do arkuszy CSS (tokens, layout)
 css/tokens.css       tokeny wyglądu
 css/layout.css       układ, komponenty i responsywność
@@ -109,7 +110,7 @@ Pierwsza paczka trafia do użytkownika mailem (zip), kolejne zmiany idą przez G
 
 ## Kontrola po zmianie danych
 
-1. Otwórz `index.html` dwuklikiem i sprawdź, czy pojawia się wybrana persona oraz jej ścieżki.
+1. Otwórz `pages/sciezki.html` dwuklikiem i sprawdź, czy pojawia się wybrana persona oraz jej ścieżki.
 2. Wybierz różne punkty na mapie i sprawdź panel szczegółów.
 3. Sprawdź gałęzie ścieżki, jeśli występują.
 4. Zwiń i rozwiń emocje; wybierz punkty mapy i wykresu.
