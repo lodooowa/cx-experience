@@ -16,7 +16,8 @@ const PAGES = {
   matrix: { file: 'matrix.html', item: '.tile', main: '#gridPanel' },
   priorytety: { file: 'priorytety.html', item: '.act-open', main: '#board' },
   radar: { file: 'radar.html', item: '#radar .node', main: '#stage' },
-  mapa: { file: 'mapa.html', item: '.flow-node', mobileItem: '.flow-item', main: '#flowViewport' }
+  mapa: { file: 'mapa.html', item: '.flow-node', mobileItem: '.flow-item', main: '#flowViewport' },
+  cj: { file: 'cj.html', item: '.cj-tp', main: '#scroll' }
 };
 const PROFILES = {
   desktop: { viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' },
@@ -104,6 +105,27 @@ async function runPage(browser, key, profileKey) {
   }
   if (key === 'mapa' && profileKey === 'reduced') {
     check(scope, 'brak animateMotion przy reduced-motion', await page.locator('#flowSvg animateMotion').count() === 0);
+  }
+
+  if (key === 'cj') {
+    check(scope, 'krzywa emocji na wykresie', await page.locator('#chart .cj-series.hz-now .cj-line').count() === 1);
+    check(scope, 'drzewo pain pointów ma węzły', await page.locator('.cj-node').count() > 0);
+    const pts = page.locator('.cj-tp'), n = await pts.count();
+    check(scope, 'są punkty styku', n > 0, n + ' szt.');
+    for (const i of [...new Set([0, Math.floor((n - 1) / 2), n - 1])]) {
+      await pts.nth(i).focus(); await page.keyboard.press('Enter');
+      const open = await page.locator('#detail').isVisible() && (await textOf(page.locator('#detail'))).length > 0;
+      check(scope, `szczegóły po wyborze punktu #${i + 1} (klawiatura)`, open);
+      await page.keyboard.press('Escape');
+      check(scope, `Escape zamyka szczegóły (#${i + 1})`, await page.locator('#detail').isHidden());
+    }
+    const node = page.locator('.cj-node').first();
+    await node.focus(); await page.keyboard.press('Enter');
+    check(scope, 'wybór węzła drzewa podświetla punkty', await page.locator('.cj-tp.on').count() > 0);
+    await page.screenshot({ path: path.join(OUT, `${key}-${profileKey}-tree.png`), fullPage: true });
+    await page.keyboard.press('Escape');
+    check(scope, 'Escape czyści zaznaczenie drzewa', await page.locator('.cj-tp.on').count() === 0);
+    return finish();
   }
 
   const drawer = page.locator('#detailDrawer');

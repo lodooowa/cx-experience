@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CX Podróż klienta: emocje i pain pointy</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/matrix.css">
+  <link rel="stylesheet" href="css/cj.css">
+</head>
+<body>
+<div class="app-shell" id="app">
+  <header class="topbar">
+    <a class="brand" href="cj.html" aria-label="CX Experience Explorer: podróż klienta">
+      <span class="brand-icon">CX<span>✳</span></span>
+      <span class="brand-name">EXPERIENCE <b>EXPLORER</b><small>PODRÓŻ KLIENTA</small></span>
+    </a>
+    <nav class="top-nav" aria-label="Widoki"><a href="cj.html" aria-current="page">Podróż klienta</a><a href="index.html">Mapa podróży</a><a href="matrix.html">Macierz</a></nav>
+    <div class="top-actions"><span class="offline"><i></i> DZIAŁA OFFLINE</span></div>
+  </header>
+
+  <main id="top">
+    <section class="journey-heading" aria-label="Podróż klienta">
+      <div><h1>Emocje klienta w podróży</h1><p>Punkty styku w krokach, pain pointy i ich przyczyny źródłowe</p></div>
+      <span class="demo-pill" id="demoPill" hidden>PROGNOZA DEMO</span>
+    </section>
+
+    <details class="cj-warnings" id="warnings" hidden></details>
+
+    <section class="matrix-toolbar" aria-label="Filtry i przesuwanie">
+      <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
+      <div class="cj-zoom" role="group" aria-label="Powiększenie wykresu"><button type="button" class="ghost" id="zoomOut" aria-label="Oddal">−</button><span id="zoomLevel" aria-live="polite">100%</span><button type="button" class="ghost" id="zoomIn" aria-label="Przybliż">+</button><button type="button" class="ghost" id="zoomFit">Cały przebieg</button><button type="button" class="ghost" id="zoomReset">100%</button></div>
+      <div class="cj-pan" role="group" aria-label="Przesuwanie wykresu"><button type="button" class="ghost" id="panLeft" aria-label="Przesuń wykres w lewo">‹</button><button type="button" class="ghost" id="panRight" aria-label="Przesuń wykres w prawo">›</button></div>
+    </section>
+
+    <div class="cj-filters" id="filtersPanel" role="region" aria-label="Filtry" hidden>
+      <div class="cj-filter-group"><h2>Krzywe emocji</h2><div class="chips" id="horizons" role="group" aria-label="Krzywe emocji"></div></div>
+      <div class="cj-filter-group"><h2>Pain pointy <small>(bez wyboru pokazane są wszystkie)</small></h2><div class="chips" id="pains" role="group" aria-label="Pain pointy"></div></div>
+      <div class="cj-filter-actions"><button type="button" class="ghost" id="filtersClear">Wyczyść filtr pain pointów</button><button type="button" class="ghost" id="filtersClose">Zamknij</button></div>
+    </div>
+
+    <section class="cj-panel" aria-label="Wykres emocji i punkty styku">
+      <div class="cj-chart-row">
+        <div class="cj-gutter" aria-hidden="true">
+          <div class="cj-glabel cj-g-stage">Etap</div>
+          <svg class="cj-axis" id="axis"></svg>
+          <div class="cj-glabel cj-g-step">Krok</div>
+          <div class="cj-glabel cj-g-tp">Punkt styku</div>
+          <div class="cj-gpp collapsed" id="gutterPp"><button type="button" class="cj-glabel cj-g-pp" id="ppToggle" aria-expanded="false" aria-controls="ppRow" title="Pokaż lub ukryj pain pointy">Pain point <i aria-hidden="true">▸</i></button></div>
+        </div>
+        <div class="cj-scroll" id="scroll" tabindex="0" role="group" aria-label="Wykres emocji i lista punktów styku. Przewijaj poziomo strzałkami.">
+          <div class="cj-inner" id="inner">
+            <div class="cj-row cj-stage-row" id="stageRow"></div>
+            <svg id="chart" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="chartTitle"><title id="chartTitle"></title></svg>
+            <div class="cj-row cj-step-row" id="stepRow"></div>
+            <div class="cj-row cj-tp-row" id="steps"></div>
+            <div class="cj-row cj-pp-row collapsed" id="ppRow"></div>
+          </div>
+        </div>
+      </div>
+      <p class="cj-note" id="note"></p>
+      <div class="cj-detail" id="detail" role="region" aria-label="Szczegóły" hidden></div>
+    </section>
+
+    <section class="cj-panel cj-tree-panel" aria-label="Pain pointy i przyczyny źródłowe">
+      <h2>Pain pointy → przyczyny źródłowe → inicjatywy</h2>
+      <p class="cj-note">Kliknij element drzewa, aby podświetlić powiązane punkty styku. Kliknięcie punktu podświetla jego pain point i przyczynę.</p>
+      <div class="cj-tree-scroll"><svg id="tree" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Drzewo pain pointów"></svg></div>
+    </section>
+  </main>
+</div>
+<div class="cj-tip" id="tip" role="tooltip" hidden></div>
+<div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić widoku podróży klienta</h1><p id="errorText"></p><small>Sprawdź plik data/cj.js (python3 tools/cj-xlsx-to-data.py) i odśwież stronę.</small></div>
+<script src="data/cj.js"></script>
+<script src="js/cj-core.js"></script>
+<script src="js/cj.js"></script>
+</body>
+</html>

@@ -21,6 +21,7 @@ Dobierz najwęższy zestaw, który pokrywa zmianę (pełny zestaw puść raz, po
 | `tools/xlsx-to-data.py`, `macierz-demo.xlsx`, `data/matrix.js`, `data/flow.js`, `macierz-demo/*.csv` | `python3 tools/test-xlsx-to-data.py` + oba testy flow | wszystkie strony macierzy (`--pages matrix,priorytety,radar,mapa`) |
 | `js/matrix-core.js`, `css/matrix.css`, `css/tokens.css` | — | `--pages matrix,priorytety,radar,mapa` (+ `index`, jeśli tokeny) |
 | `js/matrix.js` / `priorities.js` / `radar.js` (+ ich CSS i HTML) | — | ta jedna strona |
+| `js/cj*.js`, `css/cj.css`, `cj.html`, `data/cj.js`, `tools/cj-xlsx-to-data.py`, `macierz_anonymized.xlsx` | `node tools/test-cj-core.js` | `--pages cj` |
 | `app.js`, `js/scenes.js`, `index.html`, `style.css`, `css/layout.css`, `data/personas.js`, `data/journeys.js` | — | `--pages index` |
 | tylko `.md` | — | — (sprawdź odwołania do plików) |
 
