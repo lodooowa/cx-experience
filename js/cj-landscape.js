@@ -19,7 +19,6 @@
     const svg = el('svg', { class: 'land', width: W, height: H, viewBox: `0 0 ${W} ${H}` });
     let html = `<defs><linearGradient id="lTerrain" gradientUnits="userSpaceOnUse" x1="0" y1="${y(5)}" x2="0" y2="${y(-5)}"><stop offset="0" stop-color="#3fcf8e"/><stop offset=".5" stop-color="#6f86a6"/><stop offset="1" stop-color="#ff5a63"/></linearGradient>
       <linearGradient id="lWater" gradientUnits="userSpaceOnUse" x1="0" y1="${y(5)}" x2="0" y2="${y(-5)}"><stop offset="0" stop-color="#8fe6ff" stop-opacity=".85"/><stop offset="1" stop-color="#2f6fdd" stop-opacity=".45"/></linearGradient>
-      <filter id="lGlow" x="-5%" y="-30%" width="110%" height="160%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       <mask id="lMask" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#fff"/><path class="l-mask-terrain" fill="#000"/></mask></defs>`;
     // Pasy etapów z nazwą (zagnieżdżony svg przycina długą nazwę do szerokości etapu), granice kroków z numerem kroku u dołu.
     const runs = [];
@@ -33,9 +32,9 @@
     pts.forEach((t, i) => { if (!i || t.step !== pts[i - 1].step) stepAt.push(i); });
     stepAt.forEach(i => { html += `<line class="l-sep" x1="${i * COL}" y1="${STRIP + 8}" x2="${i * COL}" y2="${H}"/><text class="l-step" x="${i * COL + 6}" y="${PLOT_B + 22}">${esc(pts[i].step)}</text>`; });
     for (let v = -5; v <= 5; v++) html += `<line class="${v === 0 ? 'l-zero' : 'l-grid'}" x1="0" y1="${y(v)}" x2="${W}" y2="${y(v)}"/>`;
-    html += '<path class="l-terrain"/><path class="l-terrain-line"/><g mask="url(#lMask)"><path class="l-water"/></g><path class="l-water-line"/><g class="l-nodes"></g><g class="l-trav" visibility="hidden"><circle r="16" class="l-trav-halo"/><circle r="6" class="l-trav-core"/></g>';
+    html += '<path class="l-terrain"/><path class="l-terrain-glow"/><path class="l-terrain-line"/><g mask="url(#lMask)"><path class="l-water"/></g><path class="l-water-glow"/><path class="l-water-line"/><g class="l-nodes"></g><g class="l-trav" visibility="hidden"><circle r="16" class="l-trav-halo"/><circle r="6" class="l-trav-core"/></g>';
     svg.innerHTML = html;
-    const terrain = svg.querySelector('.l-terrain'), terrainLine = svg.querySelector('.l-terrain-line'), maskTerrain = svg.querySelector('.l-mask-terrain'), water = svg.querySelector('.l-water'), waterLine = svg.querySelector('.l-water-line');
+    const terrain = svg.querySelector('.l-terrain'), terrainLine = svg.querySelector('.l-terrain-line'), terrainGlow = svg.querySelector('.l-terrain-glow'), waterGlow = svg.querySelector('.l-water-glow'), maskTerrain = svg.querySelector('.l-mask-terrain'), water = svg.querySelector('.l-water'), waterLine = svg.querySelector('.l-water-line');
     const nodes = svg.querySelector('.l-nodes'), trav = svg.querySelector('.l-trav');
     const els = pts.map((t, i) => {
       const g = el('g', { class: 'l-node ' + ppClass(t.painPoint), tabindex: 0, role: 'button', 'data-i': i, 'aria-label': title(t) });
@@ -53,12 +52,12 @@
     const lineD = arr => runsOf(arr).map(idx => bez(arr, idx)).join('');
     const areaD = arr => runsOf(arr).filter(idx => idx.length > 1).map(idx => bez(arr, idx) + `L${x(idx[idx.length - 1])} ${y(-5)}L${x(idx[0])} ${y(-5)}Z`).join('');
     const base = ctrl.base();
-    terrain.setAttribute('d', areaD(base)); maskTerrain.setAttribute('d', areaD(base)); terrainLine.setAttribute('d', lineD(base));
+    terrain.setAttribute('d', areaD(base)); maskTerrain.setAttribute('d', areaD(base)); terrainLine.setAttribute('d', lineD(base)); terrainGlow.setAttribute('d', lineD(base));
 
     const cursorIndex = () => ctrl.cursor();
     function draw() {
       const vals = ctrl.vals(), shown = ctrl.horizon() !== 'now';
-      water.setAttribute('d', shown ? areaD(vals) : ''); waterLine.setAttribute('d', shown ? lineD(vals) : '');
+      water.setAttribute('d', shown ? areaD(vals) : ''); { const d = shown ? lineD(vals) : ''; waterLine.setAttribute('d', d); waterGlow.setAttribute('d', d); }
       pts.forEach((t, i) => {
         const e = els[i], v = vals[i];
         e.g.toggleAttribute('data-empty', v === null);

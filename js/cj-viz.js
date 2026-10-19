@@ -15,6 +15,8 @@
   const ctrl = { shown, vals: () => vals, base: () => host.model.series.now, horizon: () => horizon, cursor: () => cursor, reduced };
   const current = () => instances[view];
   const redraw = () => { const v = current(); if (v) { v.draw(); v.update(); } caption(); };
+  // Klatka przejścia: zmieniają się tylko wartości, zaznaczenie i filtry zostają, więc pomijamy update().
+  const frame = () => { const v = current(); if (v) v.draw(); caption(); };
 
   function caption() {
     const { $, cj, esc, title, level, emClass } = host, st = host.state(), pts = host.model.points;
@@ -41,7 +43,7 @@
       const t0 = performance.now(), step = now => {
         const p = Math.min(1, (now - t0) / ms), e = ease(p);
         vals = from.map((a, i) => a === null || to[i] === null ? to[i] : a + (to[i] - a) * e);
-        redraw();
+        frame();
         if (p < 1) raf = requestAnimationFrame(step); else { vals = to.slice(); redraw(); resolve(); }
       };
       raf = requestAnimationFrame(step);

@@ -160,3 +160,15 @@
 .goal.qw { --g: var(--h-qw); } .goal.mid { --g: var(--h-mid); } .goal.dir, .goal.long { --g: var(--h-long); }
 .det-close { position: absolute; top: 8px; right: 10px; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); font-size: 18px; line-height: 1; cursor: pointer; }
 .det-close:hover, .det-close:focus-visible { background: var(--surface-panel); color: var(--text-primary); }
+
+/* Menu „Więcej widoków”: pozostałe widoki schowane pod jednym przyciskiem (tymczasowo, cj jest widokiem głównym).
+   Lista leży poza nagłówkiem, bo jego clip-path ucina wszystko poniżej paska. */
+.app-shell { position: relative; }
+.nav-more-btn { padding: 6px 0; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--header-muted); font: inherit; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+.nav-more-btn::after { content: " ▾"; }
+.nav-more-btn:hover, .nav-more-btn[aria-expanded="true"] { border-color: var(--header-text); color: var(--header-text); }
+.nav-more-btn:focus-visible { outline: 2px solid var(--header-text); outline-offset: 2px; }
+.nav-more-list { position: absolute; z-index: 30; display: grid; min-width: 190px; padding: 6px 0; border: 1px solid rgba(160, 190, 230, .3); background: var(--header-bg); box-shadow: 0 8px 24px rgba(0, 0, 0, .35); }
+.nav-more-list[hidden] { display: none; }
+.nav-more-list a { padding: 9px 18px; color: var(--header-muted); font-size: 11px; letter-spacing: .14em; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
+.nav-more-list a:hover, .nav-more-list a:focus-visible { background: rgba(160, 190, 230, .14); color: var(--header-text); }

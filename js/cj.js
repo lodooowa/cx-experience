@@ -266,8 +266,17 @@
     btn.addEventListener('click', () => toggleFilters(panel.hidden));
     $('filtersClose').addEventListener('click', () => { toggleFilters(false); btn.focus(); });
     $('filtersClear').addEventListener('click', () => { painFilter.clear(); apply(); });
+    // Menu „Więcej widoków”: lista pod przyciskiem; Escape albo kliknięcie poza nią zamyka ją.
+    const moreBtn = $('navMore'), moreList = $('navMoreList');
+    const toggleMore = open => {
+      moreList.hidden = !open; moreBtn.setAttribute('aria-expanded', String(open));
+      if (open) { const r = moreBtn.getBoundingClientRect(), s = moreBtn.closest('.app-shell').getBoundingClientRect(); moreList.style.left = Math.max(0, r.left - s.left) + 'px'; moreList.style.top = r.bottom - s.top + 8 + 'px'; }
+    };
+    moreBtn.addEventListener('click', () => toggleMore(moreList.hidden));
+    document.addEventListener('click', e => { if (!moreList.hidden && !moreList.contains(e.target) && e.target !== moreBtn) toggleMore(false); });
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape' || window.CX.cjViz.playing()) return;
+      if (!moreList.hidden) { toggleMore(false); moreBtn.focus(); return; }
       if (!panel.hidden) { toggleFilters(false); btn.focus(); } else if (sel) select(sel);
     });
     // Przesuwanie wykresu: przeciąganie myszą, przyciski ‹ › (strzałki i dotyk działają natywnie; przewijanie boczne bywa niewidoczne).

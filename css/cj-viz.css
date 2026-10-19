@@ -70,9 +70,11 @@
 .l-step { fill: #9fb2cc; font: 700 11px var(--font-ui); }
 .l-grid { stroke: rgba(160, 190, 230, .1); } .l-zero { stroke: rgba(160, 190, 230, .5); stroke-dasharray: 5 5; }
 .l-terrain { fill: url(#lTerrain); fill-opacity: .5; }
-.l-terrain-line { fill: none; stroke: #e8eef8; stroke-width: 2.4; stroke-linejoin: round; filter: url(#lGlow); }
+.l-terrain-line { fill: none; stroke: #e8eef8; stroke-width: 2.4; stroke-linejoin: round; }
+.l-terrain-glow { fill: none; stroke: #e8eef8; stroke-opacity: .22; stroke-width: 7; stroke-linejoin: round; }
 .l-water { fill: url(#lWater); fill-opacity: .8; }
-.l-water-line { fill: none; stroke: var(--v-water); stroke-width: 3; stroke-dasharray: 10 6; filter: url(#lGlow); animation: l-flow 1.6s linear infinite; }
+.l-water-line { fill: none; stroke: var(--v-water); stroke-width: 3; stroke-dasharray: 10 6; animation: l-flow 1.6s linear infinite; }
+.l-water-glow { fill: none; stroke: var(--v-water); stroke-opacity: .25; stroke-width: 8; }
 .l-node { cursor: pointer; outline: none; }
 .l-hit { fill: transparent; }
 .l-node:hover .l-hit, .l-node.sel .l-hit, .l-node.cur .l-hit { fill: rgba(232, 238, 248, .06); }
@@ -89,7 +91,7 @@
 .l-node:focus-visible .l-hit { fill: rgba(232, 238, 248, .12); }
 .l-trav { pointer-events: none; transition: transform 700ms ease-in-out; }
 .l-trav-halo { fill: rgba(255, 255, 255, .22); animation: o-pulse 1.4s ease-out infinite; transform-box: fill-box; transform-origin: center; }
-.l-trav-core { fill: #fff; filter: url(#lGlow); }
+.l-trav-core { fill: #fff; }
 .l-trav.empty circle { display: none; }
 
 @keyframes o-in { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
