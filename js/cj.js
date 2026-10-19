@@ -126,10 +126,11 @@
     }).filter(s => s.first !== undefined);
     stageStats = stages;
     const known = now.filter(v => v !== null), low = pts.map((t, i) => ({ t, i, v: now[i] })).filter(x => x.v !== null && x.v < 0).sort((a, b) => a.v - b.v).slice(0, 3);
+    const hasFc = core.HORIZONS.some(h => h.key !== 'now' && model.hasForecast(h.key));
     $('summary').innerHTML = `<p class="sum-line"><b>${known.length} z ${pts.length}</b> punktów styku ma poziom emocji; <b>${known.filter(v => v < 0).length}</b> poniżej zera.${cj.warnings && cj.warnings.length ? ` <button type="button" class="chip sum-warn" id="warnBtn" aria-expanded="false" aria-controls="warnings">Jakość danych: ${cj.warnings.length}</button>` : ''} Średnia emocji obecnie na etapach:</p>`
       + `<div class="sum-stages">${stages.map(s => `<button type="button" class="sum-stage" data-i="${s.first}" style="--stage:${esc(s.st.color)}" title="Przejdź do etapu"><span class="ss-name">${esc(s.st.name)}</span><b class="em ${emClass(s.avg)}">${s.avg === null ? 'brak danych' : fmt(s.avg)}</b><small>${s.known ? s.neg + ' z ' + s.known + ' poniżej 0' : 'brak wartości'}</small></button>`).join('')}</div><div class="sum-detail" id="stageDetail" hidden></div>`
       + (low.length ? `<div class="sum-low"><span>Najniższe punkty:</span>${low.map(x => `<button type="button" class="chip" data-i="${x.i}">${esc(level(x.v))} · ${esc(title(x.t))} <small>${esc(stageOf(x.t))}</small></button>`).join('')}</div>` : '')
-      + `<div class="sum-actions"><button type="button" class="ghost" id="printBtn">Drukuj / zapisz PDF</button></div>`;
+      + `<div class="sum-actions">${hasFc ? '<button type="button" class="ghost" id="fcBtn" aria-pressed="false">Pokaż prognozę</button> ' : ''}<button type="button" class="ghost" id="printBtn">Drukuj / zapisz PDF</button></div>`;
   }
 
   // Drążenie etapu: średnie na horyzontach, pain pointy i inicjatywy powiązane z punktami etapu (tylko z danych).
@@ -204,7 +205,8 @@
     document.querySelectorAll('.cj-series').forEach(g => g.classList.toggle('hidden', !shown.has(g.dataset.h)));
     $('horizons').querySelectorAll('.hz').forEach(b => b.setAttribute('aria-pressed', String(shown.has(b.dataset.h))));
     document.querySelectorAll('#pains .pp, #ppLegend .pp').forEach(b => b.setAttribute('aria-pressed', String(painFilter.has(b.dataset.pp))));
-    const count = painFilter.size + (shown.size < core.HORIZONS.filter(h => h.key === 'now' || model.hasForecast(h.key)).length ? 1 : 0);
+    const forecasts = core.HORIZONS.filter(h => h.key !== 'now' && model.hasForecast(h.key)), count = painFilter.size;
+    if ($('fcBtn')) { const on = forecasts.every(h => shown.has(h.key)); $('fcBtn').setAttribute('aria-pressed', String(on)); $('fcBtn').textContent = on ? 'Ukryj prognozę' : 'Pokaż prognozę'; }
     $('filtersCount').hidden = !count; $('filtersCount').textContent = count;
     detail();
     if (window.CX.cjViz) window.CX.cjViz.update();
@@ -253,7 +255,7 @@
     if (!core) throw Error('Brak js/cj-core.js.');
     core.validate(cj);
     model = core.model(cj);
-    shown = new Set(core.HORIZONS.filter(h => h.key === 'now' || model.hasForecast(h.key)).map(h => h.key));
+    shown = new Set(['now']);
     cj.painPoints.forEach((p, i) => ppIndex.set(p.id, i));
     $('demoPill').hidden = !demo && !/DEMO/.test(cj.forecastStatus || '');
     $('demoPill').textContent = demo ? 'DANE DEMO' : 'PROGNOZA DEMO';
@@ -274,6 +276,10 @@
     $('ppLegend').addEventListener('click', pickPain);
     $('summary').addEventListener('click', e => {
       if (e.target.closest('#printBtn')) { window.print(); return; }
+      if (e.target.closest('#fcBtn')) {
+        const fc = core.HORIZONS.filter(h => h.key !== 'now' && model.hasForecast(h.key)), on = fc.every(h => shown.has(h.key));
+        fc.forEach(h => on ? shown.delete(h.key) : shown.add(h.key)); apply(); return;
+      }
       const low = e.target.closest('.sum-low [data-i]'), stage = e.target.closest('.sum-stage');
       if (low) select({ kind: 'tp', id: model.points[Number(low.dataset.i)].id });
       else if (stage) { const first = Number(stage.dataset.i), off = stage.getAttribute('aria-pressed') === 'true'; stageDetail(off ? -1 : first); if (!off) $('scroll').scrollLeft = colX[first]; }
