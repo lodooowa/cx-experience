@@ -99,7 +99,7 @@ Testy (node/Python, bez zależności): `node tools/test-flow-core.js`, `node too
 
 Pierwsza paczka trafia do użytkownika mailem (zip), kolejne zmiany idą przez GitHuba (repozytorium `lodooowa/cx-experience`, gałąź `main`). Użytkownik nie musi znać Gita: wystarczą dwa skrypty do kliknięcia w głównym folderze.
 
-- `pobierz-zmiany.bat`: pobiera najnowszą wersję z GitHuba. Gdy folder nie jest jeszcze repozytorium, tworzy je i ustawia `main` na `origin/main`, nie nadpisując plików z zipa (różnice widać potem jako zmiany). Zmiany lokalne zostają zachowane.
+- `pobierz-zmiany.bat`: pobiera najnowszą wersję z GitHuba. Gdy folder nie jest jeszcze repozytorium, tworzy je i ustawia `main` na `origin/main`, nie nadpisując plików z zipa (różnice widać potem jako zmiany). Przy każdym uruchomieniu nadpisuje pliki wersją z GitHuba (`reset --hard`): zmiany lokalne są odrzucane, a kopię zmian w śledzonych plikach zachowuje `refs/kopie/ostatnia` (odzysk: `git checkout refs/kopie/ostatnia -- plik`). Zmiany do wysłania wysyłaj przed pobraniem.
 - `wyslij-zmiany.bat`: zapisuje zmiany z folderu (pyta o krótki opis, Enter = „Aktualizacja danych”) i wysyła je na `main`. Gdy na GitHubie są nowsze, kolidujące zmiany, niczego nie wysyła i wyświetla komunikat.
 - `tools/git-wspolne.bat`: wspólna część obu skryptów (wybór Gita, inicjalizacja, token).
 
