@@ -13,11 +13,11 @@ const WAIT = 3000;
 // item: klikalny punkt styku; main: obszar, którego szuflada na desktopie nie może zasłaniać.
 const PAGES = {
   index: { file: 'index.html', item: '#graphNodes [data-step]', main: '.map-panel' },
-  matrix: { file: 'matrix.html', item: '.tile', main: '#gridPanel' },
-  priorytety: { file: 'priorytety.html', item: '.act-open', main: '#board' },
-  radar: { file: 'radar.html', item: '#radar .node', main: '#stage' },
-  mapa: { file: 'mapa.html', item: '.flow-node', mobileItem: '.flow-item', main: '#flowViewport' },
-  cj: { file: 'cj.html', item: '.cj-tp', main: '#scroll' }
+  matrix: { file: 'pages/matrix.html', item: '.tile', main: '#gridPanel' },
+  priorytety: { file: 'pages/priorytety.html', item: '.act-open', main: '#board' },
+  radar: { file: 'pages/radar.html', item: '#radar .node', main: '#stage' },
+  mapa: { file: 'pages/mapa.html', item: '.flow-node', mobileItem: '.flow-item', main: '#flowViewport' },
+  cj: { file: 'pages/cj.html', item: '.cj-tp', main: '#scroll' }
 };
 const PROFILES = {
   desktop: { viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' },

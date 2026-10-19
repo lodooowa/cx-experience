@@ -188,7 +188,7 @@ def main():
         d = Path(d)
         x2d.convert(ROOT / "macierz-demo.xlsx", d / "csv", d / "matrix.js")
         for name in x2d.CSV_SHEETS:
-            assert (d / "csv" / f"{name}.csv").read_bytes() == (ROOT / "macierz-demo" / f"{name}.csv").read_bytes(), f"{name}.csv z repo różni się od wygenerowanego"
+            assert (d / "csv" / f"{name}.csv").read_bytes() == (ROOT / "data" / "macierz-demo" / f"{name}.csv").read_bytes(), f"{name}.csv z repo różni się od wygenerowanego"
         assert (d / "flow.js").read_bytes() == (ROOT / "data" / "flow.js").read_bytes(), "data/flow.js z repo różni się od wygenerowanego"
     body = (ROOT / "data" / "matrix.js").read_text(encoding="utf-8")
     assert data == json.loads(re.search(r"^window\.CX_MATRIX = (.*);\n$", body, re.S | re.M).group(1)), "data/matrix.js z repo różni się od wygenerowanego"

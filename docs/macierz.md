@@ -53,22 +53,22 @@ Ocena punktu styku (zaopiekowany / do poprawy / w porządku) to subiektywna ocen
 
 Dane wymyślone, do pracy nad wizualizacją: 30 punktów styku w każdej z dwóch macierzy.
 
-- [macierz-demo.xlsx](macierz-demo.xlsx): skoroszyt do pracy w Excelu (9 zakładek, patrz niżej),
-- [macierz-demo/punkty_styku.csv](macierz-demo/punkty_styku.csv): punkty styku (jeden wiersz na punkt),
-- [macierz-demo/cechy.csv](macierz-demo/cechy.csv): wiele cech na punkt (dobre praktyki, błędy typowe i diagnozowane, przykłady, źródła),
-- [macierz-demo/akcje.csv](macierz-demo/akcje.csv): wiele akcji naprawczych na punkt (koszt, ryzyko, zysk, czas, ryzyka wdrożenia).
+- [macierz-demo.xlsx](../macierz-demo.xlsx): skoroszyt do pracy w Excelu (9 zakładek, patrz niżej),
+- [data/macierz-demo/punkty_styku.csv](../data/macierz-demo/punkty_styku.csv): punkty styku (jeden wiersz na punkt),
+- [data/macierz-demo/cechy.csv](../data/macierz-demo/cechy.csv): wiele cech na punkt (dobre praktyki, błędy typowe i diagnozowane, przykłady, źródła),
+- [data/macierz-demo/akcje.csv](../data/macierz-demo/akcje.csv): wiele akcji naprawczych na punkt (koszt, ryzyko, zysk, czas, ryzyka wdrożenia).
 
 Punkty w macierzy dealera mają podtyp (kolumna `podtyp`: dealer, salon, serwis); przypisanie w danych DEMO jest przykładowe. Importer podtypów nie ma.
 
 Kolumna `zaopiekowanie_1_5` to stopień zaopiekowania punktu (1–5, 5 = w pełni zaopiekowany); na kafelkach macierzy pokazują go paski. W danych DEMO wynika z oceny CX (niezaopiekowany 1–2, do poprawy 3, w porządku 4–5, brak oceny = pusto), więc docelowo wpisuje ją ekspert CX.
 
-Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Źródłem danych jest [macierz-demo.xlsx](macierz-demo.xlsx) (zakładki: punkty_styku, cechy, akcje, slowniki, procesy oraz mapa przepływu: nastepne, przypadki, kroki_przypadku). Po edycji zamknij Excela i kliknij dwukrotnie `2-przebuduj-dane.command` (macOS) albo `2-przebuduj-dane.bat` (Windows), albo uruchom `python3 tools/xlsx-to-data.py` (Python 3, bez dodatkowych bibliotek): zapisze CSV, `data/matrix.js` i `data/flow.js`, więc nie edytuj ich ręcznie. Plik pobrany z internetu (zip) macOS może zablokować: otwórz go z menu kontekstowego (Otwórz), a Windows (SmartScreen) zapyta o zgodę (Więcej informacji, Uruchom mimo to). Pierwsza zakładka `czytaj_mnie` opisuje kolejność uzupełniania, a kolumny słownikowe i `punkt_id` mają listy rozwijane (dodane przez seed; zakładki spoza listy konwerter ignoruje). Skrypt zgłasza błędy z nazwą zakładki i numerem wiersza. Test: `python3 tools/test-xlsx-to-data.py`. [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py) to jednorazowy seed xlsx z danych DEMO i nie nadpisuje istniejącego pliku bez `--force`.
+Relacje: `cechy.punkt_id` i `akcje.punkt_id` wskazują `punkty_styku.id`. Źródłem danych jest [macierz-demo.xlsx](../macierz-demo.xlsx) (zakładki: punkty_styku, cechy, akcje, slowniki, procesy oraz mapa przepływu: nastepne, przypadki, kroki_przypadku). Po edycji zamknij Excela i kliknij dwukrotnie `2-przebuduj-dane.command` (macOS) albo `2-przebuduj-dane.bat` (Windows), albo uruchom `python3 tools/xlsx-to-data.py` (Python 3, bez dodatkowych bibliotek): zapisze CSV, `data/matrix.js` i `data/flow.js`, więc nie edytuj ich ręcznie. Plik pobrany z internetu (zip) macOS może zablokować: otwórz go z menu kontekstowego (Otwórz), a Windows (SmartScreen) zapyta o zgodę (Więcej informacji, Uruchom mimo to). Pierwsza zakładka `czytaj_mnie` opisuje kolejność uzupełniania, a kolumny słownikowe i `punkt_id` mają listy rozwijane (dodane przez seed; zakładki spoza listy konwerter ignoruje). Skrypt zgłasza błędy z nazwą zakładki i numerem wiersza. Test: `python3 tools/test-xlsx-to-data.py`. [tools/gen-macierz-demo.py](tools/gen-macierz-demo.py) to jednorazowy seed xlsx z danych DEMO i nie nadpisuje istniejącego pliku bez `--force`.
 
 Wizualizacje (otwierane dwuklikiem, offline, na tych samych danych):
 
-- [matrix.html](matrix.html): **A, heatmapa** procesów z trybem omawiania, do szukania czerwonych punktów,
-- [priorytety.html](priorytety.html): **B, priorytety działań**: mapa koszt × zysk akcji naprawczych i robocza lista na najbliższe tygodnie (niezapisywana),
-- [radar.html](radar.html): **C, radar** podróży klienta z przelotem kamery po punktach do omówienia.
+- [matrix.html](../pages/matrix.html): **A, heatmapa** procesów z trybem omawiania, do szukania czerwonych punktów,
+- [priorytety.html](../pages/priorytety.html): **B, priorytety działań**: mapa koszt × zysk akcji naprawczych i robocza lista na najbliższe tygodnie (niezapisywana),
+- [radar.html](../pages/radar.html): **C, radar** podróży klienta z przelotem kamery po punktach do omówienia.
 
 ### Mapa przepływu i przypadki (DEMO)
 

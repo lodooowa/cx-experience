@@ -20,25 +20,25 @@
 
 ```
 index.html           układ i kolejność lokalnych skryptów
-style.css            lokalne wejście do arkuszy CSS (tokens, layout)
+css/style.css        lokalne wejście do arkuszy CSS (tokens, layout)
 css/tokens.css       tokeny wyglądu
 css/layout.css       układ, komponenty i responsywność
-app.js               walidacja, stan i interakcje
+js/app.js            walidacja, stan i interakcje
 js/scenes.js         lokalne szablony scen SVG
 data/personas.js     wyłącznie dane person
 data/journeys.js     wyłącznie dane ścieżek i touchpointów
-COPILOT.md           instrukcje edycji danych
+docs/COPILOT.md     instrukcje edycji danych
 
-Widoki macierzy (dane z xlsx, patrz macierz.md):
-matrix.html, priorytety.html, radar.html, mapa.html   strony widoków
+Widoki macierzy (dane z xlsx, patrz docs/macierz.md):
+pages/   matrix.html, priorytety.html, radar.html, mapa.html, cj.html (strony widoków)
 css/matrix.css       wspólne style widoków; osobno priorities.css, radar.css, flow.css
 js/matrix-core.js    wspólny model danych (CX.mx)
 js/matrix.js, priorities.js, radar.js   logika poszczególnych widoków
 js/flow-core.js, flow-layout.js, flow-map.js   graf, układ i rysowanie mapy przepływu
 data/matrix.js, data/flow.js   GENEROWANE z macierz-demo.xlsx, nie edytować ręcznie
-macierz-demo.xlsx, macierz-demo/*.csv   źródło danych i eksport CSV
+macierz-demo.xlsx, data/macierz-demo/*.csv   źródło danych i eksport CSV
 tools/               konwerter xlsx, seed xlsx i testy
-2-przebuduj-dane.bat, 2-przebuduj-dane.command   dwuklik: uruchamia konwerter
+1-sciagnij-zmiany.bat, 2-przebuduj-dane.bat/.command, wyslij-zmiany.bat   dwuklik: uruchamia konwerter
 ```
 
 ## Zmiana danych
@@ -83,13 +83,13 @@ Sceny są szablonami wizualnymi. Dodanie nowej ścieżki, punktu, typu lub gał�
 
 Osobne strony na wspólnym modelu danych, otwierane dwuklikiem (offline):
 
-- `matrix.html`: heatmapa procesów i tryb omawiania,
-- `priorytety.html`: mapa koszt × zysk akcji naprawczych,
-- `radar.html`: radar podróży klienta,
-- `cj.html`: podróż klienta (Customer Journey): wykres emocji −5…+5 po punktach styku w krokach i etapach, pain pointy, drzewo pain point → root cause → inicjatywa oraz krzywe prognozy po Quick Wins, Mid i Long Term. Dwa zestawy danych: prawdziwe („Real”) z `macierz_CX.xlsx` (edytuje go ekspert, plik i `data/cj.js` są poza repozytorium i `1-sciagnij-zmiany` ich nie nadpisuje) oraz demo z `macierz_CX_demo.xlsx` (w repozytorium, wszystkie pola wypełnione przykładowymi wartościami DEMO, → `data/cj-demo.js`); konwersja: `python3 tools/cj-xlsx-to-data.py` albo `2-przebuduj-dane`. Przełącznik „Dane: Real / Demo” nad wykresem (`?dane=demo`); bez pliku produkcyjnego strona pokazuje demo. Kolumny prognozy (`Po Quick Wins`, `Po Mid Term`, `Po Long Term`) w zakładce `Macierz CX` są w demo przykładowe,
-- `mapa.html`: mapa przepływu (swimlane: tory = wykonawcy, kolumny = procesy, krawędzie = kolejne kroki). Lista „Przypadek” podświetla trasę klienta z `data/flow.js` (stan kroku: znak i kolor, pominięte punkty przygaszone); przyciski Start/Dalej/Wstecz prowadzą krok po kroku (mapa przesuwa się do punktu, kropka jedzie po trasie; bez ruchu przy `prefers-reduced-motion`).
+- `pages/matrix.html`: heatmapa procesów i tryb omawiania,
+- `pages/priorytety.html`: mapa koszt × zysk akcji naprawczych,
+- `pages/radar.html`: radar podróży klienta,
+- `pages/cj.html`: podróż klienta (Customer Journey): wykres emocji −5…+5 po punktach styku w krokach i etapach, pain pointy, drzewo pain point → root cause → inicjatywa oraz krzywe prognozy po Quick Wins, Mid i Long Term. Dwa zestawy danych: prawdziwe („Real”) z `macierz_CX.xlsx` (edytuje go ekspert, plik i `data/cj.js` są poza repozytorium i `1-sciagnij-zmiany` ich nie nadpisuje) oraz demo z `macierz_CX_demo.xlsx` (w repozytorium, wszystkie pola wypełnione przykładowymi wartościami DEMO, → `data/cj-demo.js`); konwersja: `python3 tools/cj-xlsx-to-data.py` albo `2-przebuduj-dane`. Przełącznik „Dane: Real / Demo” nad wykresem (`?dane=demo`); bez pliku produkcyjnego strona pokazuje demo. Kolumny prognozy (`Po Quick Wins`, `Po Mid Term`, `Po Long Term`) w zakładce `Macierz CX` są w demo przykładowe,
+- `pages/mapa.html`: mapa przepływu (swimlane: tory = wykonawcy, kolumny = procesy, krawędzie = kolejne kroki). Lista „Przypadek” podświetla trasę klienta z `data/flow.js` (stan kroku: znak i kolor, pominięte punkty przygaszone); przyciski Start/Dalej/Wstecz prowadzą krok po kroku (mapa przesuwa się do punktu, kropka jedzie po trasie; bez ruchu przy `prefers-reduced-motion`).
 
-Dane tych widoków nie są edytowane ręcznie: źródłem jest `macierz-demo.xlsx`. Po zmianie zamknij Excela i kliknij `2-przebuduj-dane.command` (macOS) albo `2-przebuduj-dane.bat` (Windows); skrypt (Python 3) zapisze `macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js`. Ten sam skrypt odświeża też `data/cj.js` z `macierz_CX.xlsx` i `data/cj-demo.js` z `macierz_CX_demo.xlsx` (widok `cj.html`). Szczegóły zakładek, torów i przypadków: `macierz.md`.
+Dane tych widoków nie są edytowane ręcznie: źródłem jest `macierz-demo.xlsx`. Po zmianie zamknij Excela i kliknij `2-przebuduj-dane.command` (macOS) albo `2-przebuduj-dane.bat` (Windows); skrypt (Python 3) zapisze `data/macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js`. Ten sam skrypt odświeża też `data/cj.js` z `macierz_CX.xlsx` i `data/cj-demo.js` z `macierz_CX_demo.xlsx` (widok `pages/cj.html`). Szczegóły zakładek, torów i przypadków: `docs/macierz.md`.
 
 **Windows bez Pythona:** pobierz [python-3.13.9-embed-amd64.zip](https://www.python.org/ftp/python/3.13.9/python-3.13.9-embed-amd64.zip) (przenośny Python, ok. 10 MB, bez instalacji) i rozpakuj go do folderu `tools\python`, tak aby powstał plik `tools\python\python.exe`. `2-przebuduj-dane.bat` użyje go w pierwszej kolejności, przed Pythonem z systemu. Folder jest w `.gitignore`, więc zip nie trafia do repozytorium. Skrypt używa tylko biblioteki standardowej, więc nic więcej nie trzeba doinstalowywać.
 

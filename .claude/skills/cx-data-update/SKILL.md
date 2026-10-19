@@ -11,14 +11,14 @@ Najpierw rozpoznaj, w którym świecie danych jest zadanie. Mają różne źród
 
 ## A. Ścieżki klienta: `data/personas.js`, `data/journeys.js`
 
-- Edytowane ręcznie (także przez Copilot Chat jako `.txt`, patrz `COPILOT.md`). Format: JSON w jednym przypisaniu, `window.CX_PERSONAS = [...];` w `personas.js` i `window.CX_JOURNEYS = [...];` w `journeys.js`, z komentarzem nagłówka. Zachowaj przypisanie, średnik i styl wierszy.
-- Schemat pól: `README.md` („Pola ścieżki i punktu”). Walidacja: `validateData()` w `app.js` (ID, `personaId`, typy, sceny, emocja 1–5, `branches.target` w tej samej ścieżce). Błąd pokazuje się na `#errorScreen` z nazwą pliku.
+- Edytowane ręcznie (także przez Copilot Chat jako `.txt`, patrz `docs/COPILOT.md`). Format: JSON w jednym przypisaniu, `window.CX_PERSONAS = [...];` w `personas.js` i `window.CX_JOURNEYS = [...];` w `journeys.js`, z komentarzem nagłówka. Zachowaj przypisanie, średnik i styl wierszy.
+- Schemat pól: `README.md` („Pola ścieżki i punktu”). Walidacja: `validateData()` w `js/app.js` (ID, `personaId`, typy, sceny, emocja 1–5, `branches.target` w tej samej ścieżce). Błąd pokazuje się na `#errorScreen` z nazwą pliku.
 - Nie ma testu w Node. Sprawdzeniem jest smoke `--pages index` ze skilla `cx-regression`.
-- Nowe pole w schemacie oznacza zmiany w: renderowaniu w `app.js` (opcjonalnie, z bezpiecznym `esc`), `README.md`, nagłówku komentarza w `data/journeys.js` i prompcie w `COPILOT.md`, żeby Copilot nie usunął pola.
+- Nowe pole w schemacie oznacza zmiany w: renderowaniu w `js/app.js` (opcjonalnie, z bezpiecznym `esc`), `README.md`, nagłówku komentarza w `data/journeys.js` i prompcie w `docs/COPILOT.md`, żeby Copilot nie usunął pola.
 
 ## B. Macierz i mapa przepływu: `macierz-demo.xlsx` → konwerter
 
-Źródłem jest wyłącznie `macierz-demo.xlsx`. `macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js` są **generowane**: nie edytuj ich ręcznie. Opis zakładek, torów i przypadków: `macierz.md`.
+Źródłem jest wyłącznie `macierz-demo.xlsx`. `data/macierz-demo/*.csv`, `data/matrix.js` i `data/flow.js` są **generowane**: nie edytuj ich ręcznie. Opis zakładek, torów i przypadków: `docs/macierz.md`.
 
 ### B1. Zmiana treści (wiersze w istniejących kolumnach)
 
@@ -44,7 +44,7 @@ Przejdź wszystkie miejsca. Pominięte miejsce zwykle daje cichy brak danych, a 
 6. **Przypadki szczególne mapy przepływu**:
    - **tor** domyślnie wynika z macierzy i podtypu punktu (`laneOf` w `js/flow-core.js`), więc nowy podtyp (z etykietą w `slowniki`, grupa `subtype`) daje nowy tor bez osobnego wpisu toru. Tor spoza tego podziału to `tor_nadpisanie` + etykieta w `slowniki` (grupa `tor`). Kolory torów to tylko 6 klas `lc-0…5` (`% 6` w `js/flow-map.js`, `--lane-N` w `css/flow.css`), więc siódmy tor powtórzy kolor. Zgłoś to, zamiast dokładać kolory po cichu.
    - nowy **stan kroku** to wpis w `slowniki` (grupa `stan`) + znak w `stateMarks` (`js/flow-map.js`; bez niego mapa pokaże `?` i `console.warn`) + kolor `--st-<klucz>` i klasa `.st-<klucz>` w `css/flow.css`.
-7. Uruchom konwerter i wszystkie testy jak w B1. Zaktualizuj `macierz.md`, tekst `czytaj_mnie` i `README.md`/`COPILOT.md`, jeśli zmienia się to, co robi ekspert.
+7. Uruchom konwerter i wszystkie testy jak w B1. Zaktualizuj `docs/macierz.md`, tekst `czytaj_mnie` i `README.md`/`COPILOT.md`, jeśli zmienia się to, co robi ekspert.
 
 ## Na koniec
 

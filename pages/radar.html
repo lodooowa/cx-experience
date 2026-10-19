@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CX Radar punktów styku</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="css/matrix.css">
-  <link rel="stylesheet" href="css/radar.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/matrix.css">
+  <link rel="stylesheet" href="../css/radar.css">
 </head>
 <body>
 <div class="app-shell" id="app">
@@ -15,7 +15,7 @@
       <span class="brand-icon">CX<span>✳</span></span>
       <span class="brand-name">EXPERIENCE <b>EXPLORER</b><small>RADAR PUNKTÓW STYKU</small></span>
     </a>
-    <nav class="top-nav" aria-label="Widoki"><a href="index.html">Mapa podróży</a><a href="matrix.html">Macierz</a><a href="mapa.html">Przepływ</a><a href="priorytety.html">Priorytety</a><a href="radar.html" aria-current="page">Radar</a></nav>
+    <nav class="top-nav" aria-label="Widoki"><a href="../index.html">Mapa podróży</a><a href="matrix.html">Macierz</a><a href="mapa.html">Przepływ</a><a href="priorytety.html">Priorytety</a><a href="radar.html" aria-current="page">Radar</a></nav>
     <div class="top-actions"><button type="button" id="sweepMode" class="sweep-mode" aria-pressed="false" title="Skan radaru: automatyczny obrót albo podążanie za kursorem">Skan: auto</button><span class="offline"><i></i> DZIAŁA OFFLINE</span></div>
   </header>
 
@@ -63,8 +63,8 @@
 </div>
 <div class="scrim" id="scrim" hidden></div>
 <div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić radaru</h1><p id="errorText"></p><small>Sprawdź plik data/matrix.js i odśwież stronę.</small></div>
-<script src="data/matrix.js"></script>
-<script src="js/matrix-core.js"></script>
-<script src="js/radar.js"></script>
+<script src="../data/matrix.js"></script>
+<script src="../js/matrix-core.js"></script>
+<script src="../js/radar.js"></script>
 </body>
 </html>

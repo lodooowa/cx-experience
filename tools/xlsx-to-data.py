@@ -1,4 +1,4 @@
-# Źródłem danych jest macierz-demo.xlsx (edytuje ekspert CX). Skrypt czyta go i zapisuje macierz-demo/*.csv, data/matrix.js oraz data/flow.js.
+# Źródłem danych jest macierz-demo.xlsx (edytuje ekspert CX). Skrypt czyta go i zapisuje data/macierz-demo/*.csv, data/matrix.js oraz data/flow.js.
 # Tylko biblioteka standardowa Pythona 3 (xlsx to zip z XML). Użycie: python3 tools/xlsx-to-data.py [plik.xlsx]
 import csv, json, math, sys, zipfile
 import xml.etree.ElementTree as ET
@@ -104,7 +104,7 @@ def num(sheet, row_no, col, value):
 
 def table(book, name):
     if name not in book:
-        raise DataError(f"Brak arkusza '{name}' w pliku (to może być xlsx ze starszej wersji: zob. macierz.md)")
+        raise DataError(f"Brak arkusza '{name}' w pliku (to może być xlsx ze starszej wersji: zob. docs/macierz.md)")
     rows = book[name]
     want = SHEETS[name]
     head = rows[0][1] if rows else []
@@ -287,6 +287,6 @@ def convert(xlsx, csv_dir, js_path):
 if __name__ == "__main__":
     xlsx = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "macierz-demo.xlsx"
     try:
-        print("Gotowe. punkty, cechy, akcje, krawędzie, przypadki:", *convert(xlsx, ROOT / "macierz-demo", ROOT / "data" / "matrix.js"))
+        print("Gotowe. punkty, cechy, akcje, krawędzie, przypadki:", *convert(xlsx, ROOT / "data" / "macierz-demo", ROOT / "data" / "matrix.js"))
     except DataError as error:
         sys.exit(f"BŁĄD DANYCH: {error}")

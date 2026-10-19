@@ -12,7 +12,7 @@ Budujemy **interaktywną, efektowną wizualizację Customer Journey** dla sieci 
 
 ## 2. Stan wdrożenia i układ v3
 
-v3 jest wdrożone (szczegóły i lista plików: `README.md`). Poza ścieżkami klienta (`index.html`, `app.js`) repo zawiera widoki macierzy punktów styku: `matrix.html`, `priorytety.html`, `radar.html`, `mapa.html`. Działają na danych generowanych z `macierz-demo.xlsx` (`data/matrix.js`, `data/flow.js`; konwerter `tools/xlsx-to-data.py`, testy w `tools/`; opis w `macierz.md`). Nie edytuj wygenerowanych plików ręcznie. Zanim założysz, co istnieje, sprawdź aktualną zawartość repozytorium.
+v3 jest wdrożone (szczegóły i lista plików: `README.md`). Poza ścieżkami klienta (`index.html`, `js/app.js`) repo zawiera widoki macierzy punktów styku: `pages/matrix.html`, `pages/priorytety.html`, `pages/radar.html`, `pages/mapa.html`. Działają na danych generowanych z `macierz-demo.xlsx` (`data/matrix.js`, `data/flow.js`; konwerter `tools/xlsx-to-data.py`, testy w `tools/`; opis w `docs/macierz.md`). Nie edytuj wygenerowanych plików ręcznie. Zanim założysz, co istnieje, sprawdź aktualną zawartość repozytorium.
 
 ### Docelowy układ v3: cztery sekcje
 
@@ -45,7 +45,7 @@ Wymagania v3: zachować działanie bez internetu, obsługę wielu person, ście�
 
 ## 4. Podział na małe pliki domenowe
 
-**Unikaj monolitu.** `app.js` i `style.css` z v2 to materiał do **stopniowego**, testowanego podziału. Nie przenoś wszystkiego jednocześnie wyłącznie dla estetyki struktury. Dziel po odpowiedzialności, aby niewielka zmiana wymagała odczytania 1–3 plików, a nie całej aplikacji.
+**Unikaj monolitu.** `js/app.js` i `css/style.css` z v2 to materiał do **stopniowego**, testowanego podziału. Nie przenoś wszystkiego jednocześnie wyłącznie dla estetyki struktury. Dziel po odpowiedzialności, aby niewielka zmiana wymagała odczytania 1–3 plików, a nie całej aplikacji.
 
 Proponowana struktura **docelowa**, nie obowiązek jednorazowego utworzenia wszystkich plików:
 

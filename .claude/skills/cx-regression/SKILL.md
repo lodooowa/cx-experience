@@ -17,12 +17,12 @@ Dobierz najwęższy zestaw, który pokrywa zmianę (pełny zestaw puść raz, po
 
 | Zmienione pliki | Testy | Smoke |
 |---|---|---|
-| `js/flow-*.js`, `css/flow.css`, `mapa.html` | `node tools/test-flow-core.js`, `node tools/test-flow-layout.js` | `--pages mapa` |
-| `tools/xlsx-to-data.py`, `macierz-demo.xlsx`, `data/matrix.js`, `data/flow.js`, `macierz-demo/*.csv` | `python3 tools/test-xlsx-to-data.py` + oba testy flow | wszystkie strony macierzy (`--pages matrix,priorytety,radar,mapa`) |
+| `js/flow-*.js`, `css/flow.css`, `pages/mapa.html` | `node tools/test-flow-core.js`, `node tools/test-flow-layout.js` | `--pages mapa` |
+| `tools/xlsx-to-data.py`, `macierz-demo.xlsx`, `data/matrix.js`, `data/flow.js`, `data/macierz-demo/*.csv` | `python3 tools/test-xlsx-to-data.py` + oba testy flow | wszystkie strony macierzy (`--pages matrix,priorytety,radar,mapa`) |
 | `js/matrix-core.js`, `css/matrix.css`, `css/tokens.css` | — | `--pages matrix,priorytety,radar,mapa` (+ `index`, jeśli tokeny) |
 | `js/matrix.js` / `priorities.js` / `radar.js` (+ ich CSS i HTML) | — | ta jedna strona |
-| `js/cj*.js`, `css/cj.css`, `cj.html`, `data/cj.js`, `data/cj-demo.js`, `tools/cj-xlsx-to-data.py`, `macierz_CX_demo.xlsx` | `node tools/test-cj-core.js` | `--pages cj` |
-| `app.js`, `js/scenes.js`, `index.html`, `style.css`, `css/layout.css`, `data/personas.js`, `data/journeys.js` | — | `--pages index` |
+| `js/cj*.js`, `css/cj.css`, `pages/cj.html`, `data/cj.js`, `data/cj-demo.js`, `tools/cj-xlsx-to-data.py`, `macierz_CX_demo.xlsx` | `node tools/test-cj-core.js` | `--pages cj` |
+| `js/app.js`, `js/scenes.js`, `index.html`, `css/style.css`, `css/layout.css`, `data/personas.js`, `data/journeys.js` | — | `--pages index` |
 | tylko `.md` | — | — (sprawdź odwołania do plików) |
 
 Zawsze dodaj `node --check <plik>` dla każdego zmienionego `.js`.
@@ -59,7 +59,7 @@ Pozostałe punkty AGENTS.md §6, których smoke nie obejmuje (perspektywa dealer
 Podaj komendy i liczby, np.:
 
 ```
-node --check app.js                         OK
+node --check js/app.js                         OK
 node tools/test-flow-core.js                OK
 smoke --pages index                          N PASS, 0 FAIL, 0 SKIP (zrzuty: …/smoke)
 ```

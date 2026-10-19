@@ -5,4 +5,4 @@
 - Źródłem zasad jest `AGENTS.md` (powyżej). Tu tylko to, co specyficzne dla Claude Code; nie dubluj reguł.
 - Bez npm/bundlera: testy to `node --check` na zmienionych `.js` oraz regresja z `AGENTS.md` (sekcja 6) przez `file://`. Prowadź ją skillem `cx-regression` (testy z `tools/` + smoke wszystkich stron w Chromium).
 - Skille projektu (`.claude/skills/`): `cx-regression` (regresja i zrzuty), `cx-data-update` (dane ścieżek i xlsx → `data/`), `cx-flow-map` (mapa przepływu).
-- Stan: v3 wdrożone, plus widoki macierzy (patrz `AGENTS.md` §2). `app.js` jest nadal monolitem (~330 linii), podział na `js/` robić stopniowo, osobno od funkcji.
+- Stan: v3 wdrożone, plus widoki macierzy (patrz `AGENTS.md` §2). `js/app.js` jest nadal monolitem (~330 linii), podział na `js/` robić stopniowo, osobno od funkcji.

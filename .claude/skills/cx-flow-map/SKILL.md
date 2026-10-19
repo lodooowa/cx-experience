@@ -1,6 +1,6 @@
 ---
 name: cx-flow-map
-description: Zmiany mapy przepływu (mapa.html, swimlane punktów styku) w CX Journey Experience - układ kart, kolumn, torów i podkolumn, trasy krawędzi i powrotów, groty, kolory torów, animacja kierunku, zoom/pan, szuflada, tryb przypadku i krok po kroku (Start/Dalej/Wstecz), lista na mobile. Używaj zawsze, gdy zmieniasz js/flow-core.js, js/flow-layout.js, js/flow-map.js, css/flow.css albo mapa.html, oraz gdy użytkownik mówi o „mapie przepływu”, „liniach”, „strzałkach”, „powrotach”, „torach”, „przypadku klienta” lub „swimlane”, nawet jeśli nie podaje nazwy pliku.
+description: Zmiany mapy przepływu (pages/mapa.html, swimlane punktów styku) w CX Journey Experience - układ kart, kolumn, torów i podkolumn, trasy krawędzi i powrotów, groty, kolory torów, animacja kierunku, zoom/pan, szuflada, tryb przypadku i krok po kroku (Start/Dalej/Wstecz), lista na mobile. Używaj zawsze, gdy zmieniasz js/flow-core.js, js/flow-layout.js, js/flow-map.js, css/flow.css albo mapa.html, oraz gdy użytkownik mówi o „mapie przepływu”, „liniach”, „strzałkach”, „powrotach”, „torach”, „przypadku klienta” lub „swimlane”, nawet jeśli nie podaje nazwy pliku.
 ---
 
 # Mapa przepływu (cx-experience)
