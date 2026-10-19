@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="css/matrix.css">
   <link rel="stylesheet" href="css/cj.css">
+  <link rel="stylesheet" href="css/cj-viz.css">
 </head>
 <body>
 <div class="app-shell" id="app">
@@ -27,6 +28,8 @@
 
     <details class="cj-warnings" id="warnings" hidden></details>
 
+    <div class="cj-views" id="views" role="group" aria-label="Sposób prezentacji emocji"><span class="cj-views-label">Widok</span><button type="button" class="chip" data-view="chart" aria-pressed="true">Wykres</button><button type="button" class="chip" data-view="orbit" aria-pressed="false">Orbita</button><button type="button" class="chip" data-view="landscape" aria-pressed="false">Krajobraz</button></div>
+
     <section class="matrix-toolbar" aria-label="Filtry i przesuwanie">
       <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
       <span class="cj-help"><button type="button" class="ghost" id="helpBtn" aria-label="Jak czytać wykres" aria-describedby="helpText">?</button><span class="cj-help-text" id="helpText" role="tooltip"></span></span>
@@ -40,7 +43,21 @@
       <div class="cj-filter-actions"><button type="button" class="ghost" id="filtersClear">Wyczyść filtr pain pointów</button><button type="button" class="ghost" id="filtersClose">Zamknij</button></div>
     </div>
 
-    <section class="cj-panel" aria-label="Wykres emocji i punkty styku">
+    <section class="cj-viz" id="viz" aria-label="Wizualizacja emocji klienta" hidden>
+      <div class="viz-bar">
+        <div class="viz-hz" id="vizHz" role="group" aria-label="Horyzont emocji"></div>
+        <button type="button" class="chip viz-play" id="vizImprove">▶ Pokaż poprawę</button>
+        <button type="button" class="chip viz-play" id="vizTour">▶ Przejdź podróż</button>
+      </div>
+      <div class="viz-stage">
+        <div class="viz-view" id="orbitView" hidden></div>
+        <div class="viz-view" id="landView" hidden></div>
+        <div class="viz-caption" id="vizCaption" aria-live="polite"></div>
+        <p class="viz-legend" id="vizLegend"></p>
+      </div>
+    </section>
+
+    <section class="cj-panel" id="chartPanel" aria-label="Wykres emocji i punkty styku">
       <div class="cj-chart-row">
         <div class="cj-gutter" aria-hidden="true">
           <div class="cj-glabel cj-g-stage">Etap</div>
@@ -59,8 +76,9 @@
           </div>
         </div>
       </div>
-      <div class="cj-detail" id="detail" role="region" aria-label="Szczegóły" hidden></div>
     </section>
+
+    <div class="cj-detail" id="detail" role="region" aria-label="Szczegóły" hidden></div>
 
     <section class="cj-panel cj-tree-panel" aria-label="Pain pointy i przyczyny źródłowe">
       <h2>Pain pointy → przyczyny źródłowe → inicjatywy</h2>
@@ -73,6 +91,9 @@
 <div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić widoku podróży klienta</h1><p id="errorText"></p><small>Sprawdź plik data/cj.js (python3 tools/cj-xlsx-to-data.py) i odśwież stronę.</small></div>
 <script src="data/cj.js"></script>
 <script src="js/cj-core.js"></script>
+<script src="js/cj-orbit.js"></script>
+<script src="js/cj-landscape.js"></script>
+<script src="js/cj-viz.js"></script>
 <script src="js/cj.js"></script>
 </body>
 </html>

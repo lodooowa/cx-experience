@@ -162,6 +162,7 @@
     const count = painFilter.size + (shown.size < core.HORIZONS.filter(h => h.key === 'now' || model.hasForecast(h.key)).length ? 1 : 0);
     $('filtersCount').hidden = !count; $('filtersCount').textContent = count;
     detail();
+    if (window.CX.cjViz) window.CX.cjViz.update();
   }
 
   function detail() {
@@ -261,7 +262,7 @@
     $('filtersClose').addEventListener('click', () => { toggleFilters(false); btn.focus(); });
     $('filtersClear').addEventListener('click', () => { painFilter.clear(); apply(); });
     document.addEventListener('keydown', e => {
-      if (e.key !== 'Escape') return;
+      if (e.key !== 'Escape' || window.CX.cjViz.playing()) return;
       if (!panel.hidden) { toggleFilters(false); btn.focus(); } else if (sel) select(sel);
     });
     // Przesuwanie wykresu: przeciąganie myszą, przyciski ‹ › (strzałki i dotyk działają natywnie; przewijanie boczne bywa niewidoczne).
@@ -301,6 +302,13 @@
     const hideTip = () => { tip.hidden = true; tipIndex = -1; setHover(-1); };
     // Dymek tylko przy najechaniu na punkt krzywej (promień 12 px); nad resztą wykresu świeci sama kolumna.
     const nearDot = (i, px, py) => [...shown].some(key => { const v = model.series[key][i]; return v !== null && Math.hypot(px - (colX[i] + colW[i] / 2), py - y(v)) <= 12; });
+    const showTip = (e, i) => {
+      if (i !== tipIndex) { tip.innerHTML = tipHtml(model.points[i]); tipIndex = i; }
+      tip.hidden = false;
+      const w = tip.offsetWidth, h = tip.offsetHeight;
+      tip.style.left = Math.max(8, Math.min(e.clientX + 14, window.innerWidth - w - 8)) + 'px';
+      tip.style.top = (e.clientY + 18 + h > window.innerHeight ? e.clientY - h - 12 : e.clientY + 18) + 'px';
+    };
     const moveTip = e => {
       if (drag || e.pointerType !== 'mouse') return hideTip();
       const chart = $('chart').getBoundingClientRect();
@@ -309,15 +317,13 @@
       if (i < 0 || i >= model.points.length) return hideTip();
       setHover(i);
       if (!e.target.closest('#chart') || !nearDot(i, e.clientX - chart.left, e.clientY - chart.top)) { tip.hidden = true; tipIndex = -1; return; }
-      if (i !== tipIndex) { tip.innerHTML = tipHtml(model.points[i]); tipIndex = i; }
-      tip.hidden = false;
-      const w = tip.offsetWidth, h = tip.offsetHeight;
-      tip.style.left = Math.max(8, Math.min(e.clientX + 14, window.innerWidth - w - 8)) + 'px';
-      tip.style.top = (e.clientY + 18 + h > window.innerHeight ? e.clientY - h - 12 : e.clientY + 18) + 'px';
+      showTip(e, i);
     };
     $('inner').addEventListener('pointermove', moveTip);
     $('inner').addEventListener('pointerleave', hideTip);
     scroll.addEventListener('scroll', hideTip);
+    // Widoki Orbita i Krajobraz (js/cj-viz.js) korzystają z tego samego zaznaczenia, filtra pain pointów i dymka.
+    window.CX.cjViz.init({ cj, core, model, $, el, esc, title, level, emClass, ppClass, select, showTip, hideTip, state: () => ({ sel, rel, painFilter }) });
     apply();
   }
 
