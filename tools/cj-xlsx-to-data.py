@@ -165,9 +165,9 @@ if __name__ == "__main__":
     failed = False
     for xlsx, js, var in jobs:
         if not xlsx.exists():
-            print(f"Pominięto {xlsx.name}: brak pliku" + (" (widok produkcyjny będzie niedostępny)" if var == "CX_CJ" else ""))
+            print(f"Pominięto {xlsx.name}: brak pliku" + (" (widok Real będzie niedostępny)" if var == "CX_CJ" else ""))
             if var == "CX_CJ" and not js.exists():
-                js.write_text("// Brak macierz_CX.xlsx: widok produkcyjny niedostępny, strona pokazuje dane demo.\nwindow.CX_CJ = null;\n", encoding="utf-8", newline="\n")
+                js.write_text("// Brak macierz_CX.xlsx: widok Real niedostępny, strona pokazuje dane demo.\nwindow.CX_CJ = null;\n", encoding="utf-8", newline="\n")
             continue
         try:
             print(f"{xlsx.name} → {js.name}. punkty, kroki, etapy, ostrzeżenia:", *convert(xlsx, js, var))
