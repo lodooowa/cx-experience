@@ -192,6 +192,11 @@ def main():
         assert (d / "flow.js").read_bytes() == (ROOT / "data" / "flow.js").read_bytes(), "data/flow.js z repo różni się od wygenerowanego"
     body = (ROOT / "data" / "matrix.js").read_text(encoding="utf-8")
     assert data == json.loads(re.search(r"^window\.CX_MATRIX = (.*);\n$", body, re.S | re.M).group(1)), "data/matrix.js z repo różni się od wygenerowanego"
+    cj = importlib.util.module_from_spec(importlib.util.spec_from_file_location("cj2d", ROOT / "tools" / "cj-xlsx-to-data.py"))
+    cj.__spec__.loader.exec_module(cj)
+    book = {"Arkusz": [(1, ["Grupa nagłówków", ""]), (2, ["pain_point-id", "  Root CAUSE  ", "Poziom emocji (-5 do +5)", "Dominująca emocja"]), (3, ["PP01", "RC01", "-2", "Zła"])]}
+    rec = cj.table(book, "Arkusz", ["Pain Point ID", "Root Cause", "Poziom emocji (-5 do +5)", "Dominujaca emocja"])
+    assert rec[0]["Pain Point ID"] == "PP01" and rec[0]["Dominujaca emocja"] == "Zła", "tolerancyjne nazwy kolumn (wielkość liter, polskie znaki, podkreślenia)"
     print("OK: czytnik (sharedStrings + inlineStr), konwersja, błędy z arkuszem i wierszem, zgodność z plikami w repo")
 
 

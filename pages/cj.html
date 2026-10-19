@@ -30,7 +30,7 @@
 
     <section class="matrix-toolbar" aria-label="Filtry i przesuwanie">
       <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
-      <label class="select-wrap matrix-select cj-select"><span>WIDOK</span><select id="viewSelect" aria-label="Sposób prezentacji emocji"><option value="chart">Wykres</option><option value="orbit">Orbita</option><option value="landscape">Krajobraz</option></select></label>
+      <label class="select-wrap matrix-select cj-select"><span>WIDOK</span><select id="viewSelect" aria-label="Sposób prezentacji emocji"><optgroup label="Przegląd"><option value="chart">Wykres</option></optgroup><optgroup label="Prezentacja"><option value="orbit">Orbita</option><option value="landscape">Krajobraz</option></optgroup></select></label>
       <label class="select-wrap matrix-select cj-select"><span>DANE</span><select id="dataSelect" aria-label="Rodzaj danych"><option value="prod">Real</option><option value="demo">Demo</option></select></label>
       <span class="cj-help"><button type="button" class="ghost" id="helpBtn" aria-label="Jak czytać wykres" aria-describedby="helpText">?</button><span class="cj-help-text" id="helpText" role="tooltip"></span></span>
       <div class="cj-zoom" role="group" aria-label="Powiększenie wykresu"><button type="button" class="ghost" id="zoomOut" aria-label="Oddal">−</button><span id="zoomLevel" aria-live="polite">100%</span><button type="button" class="ghost" id="zoomIn" aria-label="Przybliż">+</button><button type="button" class="ghost" id="zoomFit">Cały przebieg</button><button type="button" class="ghost" id="zoomReset">100%</button></div>

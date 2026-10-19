@@ -109,6 +109,13 @@ async function runPage(browser, key, profileKey) {
 
   if (key === 'cj') {
     check(scope, 'krzywa emocji na wykresie', await page.locator('#chart .cj-series.hz-now .cj-line').count() === 1);
+    check(scope, 'podsumowanie etapów ma karty', await page.locator('.sum-stage').count() > 0);
+    await page.locator('.sum-stage').first().click();
+    check(scope, 'karta etapu otwiera szczegóły etapu', await page.locator('#stageDetail').isVisible());
+    await page.locator('.sum-stage').first().click();
+    check(scope, 'ponowny klik zamyka szczegóły etapu', await page.locator('#stageDetail').isHidden());
+    check(scope, 'legenda pain pointów pod wykresem', await page.locator('#ppLegend .pp').count() > 0);
+    check(scope, 'widok i dane to listy rozwijane', await page.locator('select#viewSelect, select#dataSelect').count() === 2);
     check(scope, 'drzewo pain pointów ma węzły', await page.locator('.cj-node').count() > 0);
     const pts = page.locator('.cj-tp'), n = await pts.count();
     check(scope, 'są punkty styku', n > 0, n + ' szt.');

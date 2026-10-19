@@ -2,7 +2,7 @@
 # oraz macierz_CX_demo.xlsx (przykładowy, w repozytorium) → data/cj-demo.js (window.CX_CJ_DEMO). Brak pliku produkcyjnego nie jest błędem.
 # Tylko biblioteka standardowa Pythona 3. Użycie: python3 tools/cj-xlsx-to-data.py [plik.xlsx]; z argumentem plik z "demo" w nazwie trafia do cj-demo.js.
 # Błędy referencji przerywają konwersję (BŁĄD DANYCH); niejednoznaczne wartości trafiają do "warnings" i są widoczne na stronie.
-import importlib.util, json, math, sys
+import importlib.util, json, math, re, sys, unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,6 +31,12 @@ SHEETS = {
 FORECAST = ["Po Quick Wins", "Po Mid Term", "Po Long Term"]
 
 
+def norm(value):
+    # Nazwy kolumn porównujemy bez różnic w wielkości liter, polskich znakach, spacjach, podkreśleniach, myślnikach i innych znakach interpunkcyjnych.
+    text = unicodedata.normalize("NFKD", value.replace("ł", "l").replace("Ł", "L"))
+    return " ".join(re.sub(r"[\W_]+", " ", "".join(c for c in text if not unicodedata.combining(c)).casefold()).split())
+
+
 def table(book, name, columns, required=True, optional=()):
     if name not in book:
         if required:
@@ -38,8 +44,6 @@ def table(book, name, columns, required=True, optional=()):
         return []
     rows = book[name]
     # Wiersz nagłówków to pierwszy wiersz zawierający wszystkie wymagane kolumny: nad nim mogą być dodatkowe wiersze (np. scalone nagłówki grup).
-    # Nazwy porównujemy bez różnic w wielkości liter i spacjach na brzegach.
-    norm = lambda v: " ".join(v.split()).casefold()
     start = next((k for k, (_, r) in enumerate(rows) if {norm(c) for c in columns} <= {norm(v) for v in r}), None)
     if start is None:
         head = {norm(v) for _, r in rows for v in r}
