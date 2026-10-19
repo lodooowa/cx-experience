@@ -37,14 +37,18 @@ def table(book, name, columns, required=True, optional=()):
             raise DataError(f"Brak zakładki '{name}' w pliku")
         return []
     rows = book[name]
-    head = rows[0][1] if rows else []
-    for col in columns:
-        if col not in head:
-            raise DataError(f"Zakładka '{name}': brak kolumny '{col}'")
-    idx = {col: head.index(col) for col in columns}
-    idx.update({col: head.index(col) for col in optional if col in head})
+    # Wiersz nagłówków to pierwszy wiersz zawierający wszystkie wymagane kolumny: nad nim mogą być dodatkowe wiersze (np. scalone nagłówki grup).
+    # Nazwy porównujemy bez różnic w wielkości liter i spacjach na brzegach.
+    norm = lambda v: " ".join(v.split()).casefold()
+    start = next((k for k, (_, r) in enumerate(rows) if {norm(c) for c in columns} <= {norm(v) for v in r}), None)
+    if start is None:
+        head = {norm(v) for _, r in rows for v in r}
+        raise DataError(f"Zakładka '{name}': brak kolumny '{next((c for c in columns if norm(c) not in head), columns[0])}'")
+    head = [norm(v) for v in rows[start][1]]
+    idx = {col: head.index(norm(col)) for col in columns}
+    idx.update({col: head.index(norm(col)) for col in optional if norm(col) in head})
     out = []
-    for n, row in rows[1:]:
+    for n, row in rows[start + 1:]:
         rec = {col: (row[i].strip() if i < len(row) else "") for col, i in idx.items()}
         if any(rec.values()):
             rec["_row"] = n
