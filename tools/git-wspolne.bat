@@ -24,7 +24,7 @@ if not exist .git (
 
 if not exist .git\cx-token (
   echo.
-  echo Wklej token GitHub (fine-grained, repozytorium cx-experience, Contents: Read and write) i nacisnij Enter.
+  echo Wklej token GitHub ^(fine-grained, repozytorium cx-experience, Contents: Read and write^) i nacisnij Enter.
   echo Zostanie zapamietany w .git\cx-token i nie trafia do repozytorium.
   set "TOKEN="
   set /p "TOKEN=Token: "
