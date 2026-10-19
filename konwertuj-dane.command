@@ -1,5 +1,5 @@
 #!/bin/bash
-# Dwuklik (macOS): zamienia macierz-demo.xlsx i macierz_CX.xlsx (cj.html) na pliki danych dla stron. Wymaga Pythona 3.
+# Dwuklik (macOS): zamienia macierz-demo.xlsx oraz macierz_CX.xlsx i macierz_CX_demo.xlsx (cj.html) na pliki danych dla stron. Wymaga Pythona 3.
 cd "$(dirname "$0")" || exit 1
 if command -v python3 >/dev/null 2>&1; then
   python3 tools/xlsx-to-data.py

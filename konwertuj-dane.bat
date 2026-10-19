@@ -1,5 +1,5 @@
 @echo off
-rem Dwuklik (Windows): zamienia macierz-demo.xlsx (macierze, mapa) i macierz_CX.xlsx (podroz klienta, cj.html) na pliki danych dla stron. Wymaga Pythona 3 (przenosnego w tools\python albo systemowego).
+rem Dwuklik (Windows): zamienia macierz-demo.xlsx (macierze, mapa), macierz_CX.xlsx (podroz klienta, produkcyjny, poza repozytorium) i macierz_CX_demo.xlsx (podroz klienta, demo, cj.html) na pliki danych dla stron. Wymaga Pythona 3 (przenosnego w tools\python albo systemowego).
 chcp 65001 >nul
 set PYTHONIOENCODING=utf-8
 cd /d "%~dp0"
@@ -23,7 +23,7 @@ goto koniec
 echo === macierz-demo.xlsx ===
 %PY% tools\xlsx-to-data.py
 echo.
-echo === macierz_CX.xlsx ===
+echo === macierz_CX.xlsx i macierz_CX_demo.xlsx ===
 %PY% tools\cj-xlsx-to-data.py
 :koniec
 echo.

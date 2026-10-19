@@ -1,5 +1,6 @@
-# Źródłem danych widoku Customer Journey jest macierz_CX.xlsx. Skrypt czyta go i zapisuje data/cj.js (window.CX_CJ).
-# Tylko biblioteka standardowa Pythona 3. Użycie: python3 tools/cj-xlsx-to-data.py [plik.xlsx]
+# Źródłem danych widoku Customer Journey są dwa pliki: macierz_CX.xlsx (produkcyjny, edytuje go ekspert, poza repozytorium) → data/cj.js (window.CX_CJ)
+# oraz macierz_CX_demo.xlsx (przykładowy, w repozytorium) → data/cj-demo.js (window.CX_CJ_DEMO). Brak pliku produkcyjnego nie jest błędem.
+# Tylko biblioteka standardowa Pythona 3. Użycie: python3 tools/cj-xlsx-to-data.py [plik.xlsx]; z argumentem plik z "demo" w nazwie trafia do cj-demo.js.
 # Błędy referencji przerywają konwersję (BŁĄD DANYCH); niejednoznaczne wartości trafiają do "warnings" i są widoczne na stronie.
 import importlib.util, json, math, sys
 from pathlib import Path
@@ -69,7 +70,7 @@ def number(value, where, warnings):
     return None
 
 
-def convert(xlsx, js_path):
+def convert(xlsx, js_path, var="CX_CJ"):
     book = x2d.read_xlsx(xlsx)
     t = {name: table(book, name, cols, optional=FORECAST if name == "Macierz CX" else ()) for name, cols in SHEETS.items()}
     warnings = []
@@ -148,16 +149,29 @@ def convert(xlsx, js_path):
         painRoot=[[r["Pain Point ID"], r["Root Cause ID"]] for r in t["Mapowanie_PP_RC"]],
         rootInitiative=[[r["Root Cause ID"], r["Initiative ID"]] for r in t["Mapowanie_RC_IN"]],
         warnings=warnings)
-    hdr = ("// DANE wygenerowane przez tools/cj-xlsx-to-data.py z macierz_CX.xlsx. NIE EDYTUJ RĘCZNIE:\n"
-           "// źródłem jest xlsx (po zmianach uruchom skrypt ponownie). Zostaw window.CX_CJ = oraz końcowy średnik.\n")
+    hdr = (f"// DANE wygenerowane przez tools/cj-xlsx-to-data.py z {xlsx.name}. NIE EDYTUJ RĘCZNIE:\n"
+           f"// źródłem jest xlsx (po zmianach uruchom skrypt ponownie). Zostaw window.{var} = oraz końcowy średnik.\n")
     with open(js_path, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(hdr + "window.CX_CJ = " + json.dumps(data, ensure_ascii=False, indent=1) + ";\n")
+        fh.write(hdr + f"window.{var} = " + json.dumps(data, ensure_ascii=False, indent=1) + ";\n")
     return len(tps), len(steps), len(stages), len(warnings)
 
 
 if __name__ == "__main__":
-    xlsx = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "macierz_CX.xlsx"
-    try:
-        print("Gotowe. punkty, kroki, etapy, ostrzeżenia:", *convert(xlsx, ROOT / "data" / "cj.js"))
-    except DataError as error:
-        sys.exit(f"BŁĄD DANYCH: {error}")
+    if len(sys.argv) > 1:
+        xlsx = Path(sys.argv[1])
+        jobs = [(xlsx, ROOT / "data" / ("cj-demo.js" if "demo" in xlsx.stem.lower() else "cj.js"), "CX_CJ_DEMO" if "demo" in xlsx.stem.lower() else "CX_CJ")]
+    else:
+        jobs = [(ROOT / "macierz_CX.xlsx", ROOT / "data" / "cj.js", "CX_CJ"), (ROOT / "macierz_CX_demo.xlsx", ROOT / "data" / "cj-demo.js", "CX_CJ_DEMO")]
+    failed = False
+    for xlsx, js, var in jobs:
+        if not xlsx.exists():
+            print(f"Pominięto {xlsx.name}: brak pliku" + (" (widok produkcyjny będzie niedostępny)" if var == "CX_CJ" else ""))
+            if var == "CX_CJ" and not js.exists():
+                js.write_text("// Brak macierz_CX.xlsx: widok produkcyjny niedostępny, strona pokazuje dane demo.\nwindow.CX_CJ = null;\n", encoding="utf-8", newline="\n")
+            continue
+        try:
+            print(f"{xlsx.name} → {js.name}. punkty, kroki, etapy, ostrzeżenia:", *convert(xlsx, js, var))
+        except DataError as error:
+            failed = True
+            print(f"BŁĄD DANYCH ({xlsx.name}): {error}", file=sys.stderr)
+    sys.exit(1 if failed else 0)

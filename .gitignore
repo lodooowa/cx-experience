@@ -2,3 +2,6 @@
 .claude/settings.local.json
 tools/python/
 tools/PortableGit/
+macierz_CX.xlsx
+data/cj.js
+__pycache__/

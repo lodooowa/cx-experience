@@ -5,7 +5,9 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const NS = 'http://www.w3.org/2000/svg';
   const GUTTER = 96, PW = 92, HEIGHT = 330, TOP = 14, BOTTOM = 14, MIN = -5, MAX = 5;
-  const cj = window.CX_CJ, core = window.CX.cjCore;
+  // Dwa zestawy danych: produkcyjny (data/cj.js z macierz_CX.xlsx, poza repozytorium) i demo (data/cj-demo.js z macierz_CX_demo.xlsx). Domyślnie produkcyjny, o ile istnieje; ?dane=demo wymusza demo.
+  const hasProd = !!window.CX_CJ, demo = new URLSearchParams(location.search).get('dane') === 'demo' || !hasProd;
+  const cj = demo ? window.CX_CJ_DEMO : window.CX_CJ, core = window.CX.cjCore;
   let model, sel = null, rel = null, shown = new Set(['now']), painFilter = new Set();
   let zoom = 1;
   let seriesDots = [], colX = [], colW = [], totalW = 0;
@@ -210,7 +212,10 @@
     model = core.model(cj);
     shown = new Set(core.HORIZONS.filter(h => h.key === 'now' || model.hasForecast(h.key)).map(h => h.key));
     cj.painPoints.forEach((p, i) => ppIndex.set(p.id, i));
-    $('demoPill').hidden = !/DEMO/.test(cj.forecastStatus || '');
+    $('demoPill').hidden = !demo && !/DEMO/.test(cj.forecastStatus || '');
+    $('demoPill').textContent = demo ? 'DANE DEMO' : 'PROGNOZA DEMO';
+    $('dataProd').setAttribute('aria-current', String(!demo)); $('dataDemo').setAttribute('aria-current', String(demo));
+    if (!hasProd) { $('dataProd').removeAttribute('href'); $('dataProd').setAttribute('aria-disabled', 'true'); $('dataProd').title = 'Brak macierz_CX.xlsx i data/cj.js: uruchom konwertuj-dane po dodaniu pliku produkcyjnego'; }
     if (cj.warnings && cj.warnings.length) {
       $('warnings').hidden = false;
       $('warnings').innerHTML = `<summary>Uwagi do danych: ${cj.warnings.length}</summary><ul>${cj.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;

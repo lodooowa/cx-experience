@@ -2,7 +2,10 @@
 .cj-views { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
 .cj-views-label { margin-right: 4px; color: var(--text-muted); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .cj-views .chip[aria-pressed="false"] { opacity: 1; text-decoration: none; }
-.cj-views .chip[aria-pressed="true"] { background: var(--brand-primary); color: #fff; font-weight: 700; }
+.cj-views .chip[aria-pressed="true"], .cj-views .chip[aria-current="true"] { background: var(--brand-primary); color: #fff; font-weight: 700; }
+.cj-views .chip { text-decoration: none; }
+.cj-views .chip[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.cj-data-label { margin-left: auto; }
 .view-viz .cj-zoom, .view-viz .cj-pan { display: none; }
 .cj-viz[hidden], .viz-view[hidden], #chartPanel[hidden] { display: none; }
 
