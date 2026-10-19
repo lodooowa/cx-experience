@@ -26,9 +26,8 @@ SHEETS = {
     "Mapowanie_RC_IN": ["Root Cause ID", "Initiative ID"],
     "Dane": ["Kolejność", "Nr", "Krok / opis", "Segment / etap", "Grupa", "Kolor HEX"],
 }
-# Prognoza i Initiative ID to opcjonalne kolumny zakładki "Macierz CX" (obok poziomu emocji); brak kolumn lub pusta komórka = brak prognozy.
-# Initiative ID: brak = powiązanie tylko przez root cause.
-FORECAST = ["Po Quick Wins", "Po Mid Term", "Po Long Term", "Status prognozy", "Initiative ID"]
+# Prognoza to opcjonalne kolumny zakładki "Macierz CX" (obok poziomu emocji); brak kolumn lub pusta komórka = brak prognozy.
+FORECAST = ["Po Quick Wins", "Po Mid Term", "Po Long Term"]
 
 
 def table(book, name, columns, required=True, optional=()):
@@ -106,20 +105,15 @@ def convert(xlsx, js_path):
     known(t["Mapowanie_PP_RC"], "Mapowanie_PP_RC", "Root Cause ID", rc_ids)
     known(t["Mapowanie_RC_IN"], "Mapowanie_RC_IN", "Root Cause ID", rc_ids)
     known(t["Mapowanie_RC_IN"], "Mapowanie_RC_IN", "Initiative ID", in_ids)
-    known([r for r in t["Macierz CX"] if "Initiative ID" in r], "Macierz CX", "Initiative ID", in_ids)
     pairs = {(r["Pain Point ID"], r["Root Cause ID"]) for r in t["Mapowanie_PP_RC"]}
 
-    fc, initiative, fstatus = {}, {}, set()
+    fc = {}
     for r in t["Macierz CX"]:
         if not any(r.get(c) for c in FORECAST[:3]):
             continue
         where = "Prognoza " + r["Touchpoint ID"]
         fc[r["Touchpoint ID"]] = dict(qw=number(r["Po Quick Wins"], where + " (Quick Wins)", warnings), mid=number(r["Po Mid Term"], where + " (Mid Term)", warnings),
                                       long=number(r["Po Long Term"], where + " (Long Term)", warnings))
-        initiative[r["Touchpoint ID"]] = r.get("Initiative ID", "")
-        if r.get("Status prognozy"):
-            fstatus.add(r["Status prognozy"])
-    fstatus = sorted(fstatus)
 
     tps, no_title = [], []
     for r in t["Macierz CX"]:
@@ -138,8 +132,6 @@ def convert(xlsx, js_path):
             warnings.append(f"{r['Touchpoint ID']}: brak poziomu emocji")
         if r["Touchpoint ID"] in fc:
             item["forecast"] = fc[r["Touchpoint ID"]]
-            if initiative.get(r["Touchpoint ID"]):
-                item["initiative"] = initiative[r["Touchpoint ID"]]
         tps.append(item)
     if no_title:
         warnings.append("Punkty bez nazwy (kolumna 'Punkt styku'): " + ", ".join(no_title))
@@ -149,7 +141,7 @@ def convert(xlsx, js_path):
         if not stages or stages[-1]["name"] != s["stage"]:
             stages.append(dict(name=s["stage"], group=s["group"], color=s["color"]))
     data = dict(
-        forecastStatus="/".join(fstatus) if len(fstatus) else "", stages=stages, steps=list(steps.values()), touchpoints=tps,
+        stages=stages, steps=list(steps.values()), touchpoints=tps,
         painPoints=[dict(id=r["Pain Point ID"], name=r["Pain Point"], description=r["Opis"]) for r in t["Pain pointy strategiczne"]],
         rootCauses=[dict(id=r["Root Cause ID"], name=r["Root Cause"], description=r["Opis"]) for r in t["Root Causes"]],
         initiatives=[dict(id=r["Initiative ID"], painPoint=r["Pain Point ID"], rootCause=r["Root Cause ID"], type=r["Typ"], name=r["Inicjatywa"]) for r in t["Inicjatywy"]],

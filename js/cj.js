@@ -216,7 +216,7 @@
     }
     layout(); toolbar(); chart(); stepsList(); treeSvg();
     $('helpText').textContent = 'Powiększanie: przyciski nad wykresem albo Ctrl/⌘ + kółko myszy; „Cały przebieg” pokazuje całą podróż naraz. Skala emocji klienta od −5 do +5. Brak wartości w danych oznacza przerwę w krzywej. Krzywe po Quick Wins, Mid i Long Term pochodzą z kolumn prognozy w zakładce Macierz CX'
-      + (cj.forecastStatus ? ' (status: ' + cj.forecastStatus + ', wartości przykładowe do czasu uzupełnienia przez eksperta).' : ' (brak wartości).');
+      + (cj.forecastStatus ? ' (status: ' + cj.forecastStatus + ', wartości przykładowe do czasu uzupełnienia przez eksperta).' : '.');
     $('horizons').addEventListener('click', e => { const b = e.target.closest('.hz'); if (!b || b.disabled) return; shown.has(b.dataset.h) ? shown.delete(b.dataset.h) : shown.add(b.dataset.h); apply(); });
     $('pains').addEventListener('click', e => { const b = e.target.closest('.pp'); if (!b) return; painFilter.has(b.dataset.pp) ? painFilter.delete(b.dataset.pp) : painFilter.add(b.dataset.pp); apply(); });
     $('detail').addEventListener('click', e => { if (e.target.closest('.det-close')) select(sel); });

@@ -1,7 +1,6 @@
 // DANE wygenerowane przez tools/cj-xlsx-to-data.py z macierz_CX.xlsx. NIE EDYTUJ RĘCZNIE:
 // źródłem jest xlsx (po zmianach uruchom skrypt ponownie). Zostaw window.CX_CJ = oraz końcowy średnik.
 window.CX_CJ = {
- "forecastStatus": "DEMO",
  "stages": [
   {
    "name": "Nieświadomy",
