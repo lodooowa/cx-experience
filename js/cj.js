@@ -26,7 +26,7 @@
   function toolbar() {
     $('horizons').innerHTML = core.HORIZONS.map(h => {
       const ok = h.key === 'now' || model.hasForecast(h.key);
-      return `<button type="button" class="chip hz hz-${h.key}" data-h="${h.key}" aria-pressed="${shown.has(h.key)}"${ok && h.key !== 'now' ? '' : h.key === 'now' ? ' disabled' : ' disabled title="Brak wartości w zakładce Prognoza"'}><i class="sw"></i>${esc(h.label)}${h.key !== 'now' && cj.forecastStatus ? ' (' + esc(cj.forecastStatus) + ')' : ''}</button>`;
+      return `<button type="button" class="chip hz hz-${h.key}" data-h="${h.key}" aria-pressed="${shown.has(h.key)}"${ok && h.key !== 'now' ? '' : h.key === 'now' ? ' disabled' : ' disabled title="Brak wartości prognozy w arkuszu"'}><i class="sw"></i>${esc(h.label)}${h.key !== 'now' && cj.forecastStatus ? ' (' + esc(cj.forecastStatus) + ')' : ''}</button>`;
     }).join('');
     $('pains').innerHTML = cj.painPoints.map(p => `<button type="button" class="chip pp ${ppClass(p.id)}" data-pp="${esc(p.id)}" aria-pressed="${painFilter.has(p.id)}" title="${esc(p.description)}"><i class="sw"></i>${esc(p.name)}</button>`).join('');
   }
@@ -208,7 +208,7 @@
       $('warnings').innerHTML = `<summary>Uwagi do danych: ${cj.warnings.length}</summary><ul>${cj.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;
     }
     layout(); toolbar(); chart(); stepsList(); treeSvg();
-    $('note').textContent = 'Powiększanie: przyciski nad wykresem albo Ctrl/⌘ + kółko myszy; „Cały przebieg” pokazuje całą podróż naraz. Skala emocji klienta od −5 do +5. Brak wartości w danych oznacza przerwę w krzywej. Krzywe po Quick Wins, Mid i Long Term pochodzą z zakładki Prognoza'
+    $('note').textContent = 'Powiększanie: przyciski nad wykresem albo Ctrl/⌘ + kółko myszy; „Cały przebieg” pokazuje całą podróż naraz. Skala emocji klienta od −5 do +5. Brak wartości w danych oznacza przerwę w krzywej. Krzywe po Quick Wins, Mid i Long Term pochodzą z kolumn prognozy w zakładce Macierz CX'
       + (cj.forecastStatus ? ' (status: ' + cj.forecastStatus + ', wartości przykładowe do czasu uzupełnienia przez eksperta).' : ' (brak wartości).');
     $('horizons').addEventListener('click', e => { const b = e.target.closest('.hz'); if (!b || b.disabled) return; shown.has(b.dataset.h) ? shown.delete(b.dataset.h) : shown.add(b.dataset.h); apply(); });
     $('pains').addEventListener('click', e => { const b = e.target.closest('.pp'); if (!b) return; painFilter.has(b.dataset.pp) ? painFilter.delete(b.dataset.pp) : painFilter.add(b.dataset.pp); apply(); });

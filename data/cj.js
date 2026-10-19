@@ -1,4 +1,4 @@
-// DANE wygenerowane przez tools/cj-xlsx-to-data.py z macierz_anonymized.xlsx. NIE EDYTUJ RĘCZNIE:
+// DANE wygenerowane przez tools/cj-xlsx-to-data.py z macierz_CX.xlsx. NIE EDYTUJ RĘCZNIE:
 // źródłem jest xlsx (po zmianach uruchom skrypt ponownie). Zostaw window.CX_CJ = oraz końcowy średnik.
 window.CX_CJ = {
  "forecastStatus": "DEMO",
@@ -491,12 +491,7 @@ window.CX_CJ = {
    "justification": "",
    "step": "3b",
    "stage": "Wyszukiwanie",
-   "emotionValue": null,
-   "forecast": {
-    "qw": null,
-    "mid": null,
-    "long": null
-   }
+   "emotionValue": null
   },
   {
    "id": "TP050",
@@ -1019,12 +1014,7 @@ window.CX_CJ = {
    "justification": "W zależności od dostępności terminów.",
    "step": "14",
    "stage": "Opieka nad klientem",
-   "emotionValue": null,
-   "forecast": {
-    "qw": null,
-    "mid": null,
-    "long": null
-   }
+   "emotionValue": null
   },
   {
    "id": "TP021",
@@ -1355,12 +1345,7 @@ window.CX_CJ = {
    "justification": "",
    "step": "19a",
    "stage": "Pomoc techniczna i rozwiązywanie problemów",
-   "emotionValue": null,
-   "forecast": {
-    "qw": null,
-    "mid": null,
-    "long": null
-   }
+   "emotionValue": null
   },
   {
    "id": "TP031",
@@ -1379,12 +1364,7 @@ window.CX_CJ = {
    "justification": "",
    "step": "19b",
    "stage": "Pomoc techniczna i rozwiązywanie problemów",
-   "emotionValue": null,
-   "forecast": {
-    "qw": null,
-    "mid": null,
-    "long": null
-   }
+   "emotionValue": null
   },
   {
    "id": "TP032",

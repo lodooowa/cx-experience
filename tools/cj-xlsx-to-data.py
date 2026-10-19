@@ -1,4 +1,4 @@
-# Źródłem danych widoku Customer Journey jest macierz_anonymized.xlsx. Skrypt czyta go i zapisuje data/cj.js (window.CX_CJ).
+# Źródłem danych widoku Customer Journey jest macierz_CX.xlsx. Skrypt czyta go i zapisuje data/cj.js (window.CX_CJ).
 # Tylko biblioteka standardowa Pythona 3. Użycie: python3 tools/cj-xlsx-to-data.py [plik.xlsx]
 # Błędy referencji przerywają konwersję (BŁĄD DANYCH); niejednoznaczne wartości trafiają do "warnings" i są widoczne na stronie.
 import importlib.util, json, math, sys
@@ -26,8 +26,9 @@ SHEETS = {
     "Mapowanie_RC_IN": ["Root Cause ID", "Initiative ID"],
     "Dane": ["Kolejność", "Nr", "Krok / opis", "Segment / etap", "Grupa", "Kolor HEX"],
 }
-FORECAST = ["Touchpoint ID", "Po Quick Wins", "Po Mid Term", "Po Long Term", "status_danych"]
-FORECAST_OPTIONAL = ["Initiative ID"]  # powiązanie punktu z inicjatywą; brak kolumny lub pusta komórka = powiązanie tylko przez root cause
+# Prognoza i Initiative ID to opcjonalne kolumny zakładki "Macierz CX" (obok poziomu emocji); brak kolumn lub pusta komórka = brak prognozy.
+# Initiative ID: brak = powiązanie tylko przez root cause.
+FORECAST = ["Po Quick Wins", "Po Mid Term", "Po Long Term", "Status prognozy", "Initiative ID"]
 
 
 def table(book, name, columns, required=True, optional=()):
@@ -71,8 +72,7 @@ def number(value, where, warnings):
 
 def convert(xlsx, js_path):
     book = x2d.read_xlsx(xlsx)
-    t = {name: table(book, name, cols) for name, cols in SHEETS.items()}
-    forecast = table(book, "Prognoza", FORECAST, required=False, optional=FORECAST_OPTIONAL)
+    t = {name: table(book, name, cols, optional=FORECAST if name == "Macierz CX" else ()) for name, cols in SHEETS.items()}
     warnings = []
 
     def unique(rows, col, name):
@@ -106,19 +106,20 @@ def convert(xlsx, js_path):
     known(t["Mapowanie_PP_RC"], "Mapowanie_PP_RC", "Root Cause ID", rc_ids)
     known(t["Mapowanie_RC_IN"], "Mapowanie_RC_IN", "Root Cause ID", rc_ids)
     known(t["Mapowanie_RC_IN"], "Mapowanie_RC_IN", "Initiative ID", in_ids)
-    known(forecast, "Prognoza", "Touchpoint ID", tp_ids)
-    known([r for r in forecast if "Initiative ID" in r], "Prognoza", "Initiative ID", in_ids)
+    known([r for r in t["Macierz CX"] if "Initiative ID" in r], "Macierz CX", "Initiative ID", in_ids)
     pairs = {(r["Pain Point ID"], r["Root Cause ID"]) for r in t["Mapowanie_PP_RC"]}
 
-    fc = {}
-    for r in forecast:
-        if r["Touchpoint ID"] in fc:
-            raise DataError(f"Zakładka 'Prognoza', wiersz {r['_row']}: powtórzone Touchpoint ID '{r['Touchpoint ID']}'")
+    fc, initiative, fstatus = {}, {}, set()
+    for r in t["Macierz CX"]:
+        if not any(r.get(c) for c in FORECAST[:3]):
+            continue
         where = "Prognoza " + r["Touchpoint ID"]
         fc[r["Touchpoint ID"]] = dict(qw=number(r["Po Quick Wins"], where + " (Quick Wins)", warnings), mid=number(r["Po Mid Term"], where + " (Mid Term)", warnings),
                                       long=number(r["Po Long Term"], where + " (Long Term)", warnings))
-    initiative = {r["Touchpoint ID"]: r.get("Initiative ID", "") for r in forecast}
-    fstatus = sorted({r["status_danych"] for r in forecast})
+        initiative[r["Touchpoint ID"]] = r.get("Initiative ID", "")
+        if r.get("Status prognozy"):
+            fstatus.add(r["Status prognozy"])
+    fstatus = sorted(fstatus)
 
     tps, no_title = [], []
     for r in t["Macierz CX"]:
@@ -155,7 +156,7 @@ def convert(xlsx, js_path):
         painRoot=[[r["Pain Point ID"], r["Root Cause ID"]] for r in t["Mapowanie_PP_RC"]],
         rootInitiative=[[r["Root Cause ID"], r["Initiative ID"]] for r in t["Mapowanie_RC_IN"]],
         warnings=warnings)
-    hdr = ("// DANE wygenerowane przez tools/cj-xlsx-to-data.py z macierz_anonymized.xlsx. NIE EDYTUJ RĘCZNIE:\n"
+    hdr = ("// DANE wygenerowane przez tools/cj-xlsx-to-data.py z macierz_CX.xlsx. NIE EDYTUJ RĘCZNIE:\n"
            "// źródłem jest xlsx (po zmianach uruchom skrypt ponownie). Zostaw window.CX_CJ = oraz końcowy średnik.\n")
     with open(js_path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(hdr + "window.CX_CJ = " + json.dumps(data, ensure_ascii=False, indent=1) + ";\n")
@@ -163,7 +164,7 @@ def convert(xlsx, js_path):
 
 
 if __name__ == "__main__":
-    xlsx = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "macierz_anonymized.xlsx"
+    xlsx = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "macierz_CX.xlsx"
     try:
         print("Gotowe. punkty, kroki, etapy, ostrzeżenia:", *convert(xlsx, ROOT / "data" / "cj.js"))
     except DataError as error:

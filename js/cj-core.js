@@ -2,7 +2,7 @@
   'use strict';
 
   // Widok Customer Journey: walidacja, serie emocji i powiązania pain point → root cause → inicjatywa. Bez DOM.
-  // Seria "now" to emocje ze źródła, serie qw/mid/long to prognoza z zakładki Prognoza; brak wartości = przerwa (null), nic nie jest dopełniane.
+  // Seria "now" to emocje ze źródła, serie qw/mid/long to prognoza z kolumn prognozy zakładki Macierz CX; brak wartości = przerwa (null), nic nie jest dopełniane.
   const fail = text => { throw Error('data/cj.js: ' + text); };
   const HORIZONS = [{ key: 'now', label: 'Obecnie' }, { key: 'qw', label: 'Po Quick Wins' }, { key: 'mid', label: 'Po Mid Term' }, { key: 'long', label: 'Po Long Term' }];
   const isLevel = v => v === null || (typeof v === 'number' && v >= -5 && v <= 5);
