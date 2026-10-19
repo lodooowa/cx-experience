@@ -29,6 +29,7 @@
 
     <section class="matrix-toolbar" aria-label="Filtry i przesuwanie">
       <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
+      <span class="cj-help"><button type="button" class="ghost" id="helpBtn" aria-label="Jak czytać wykres" aria-describedby="helpText">?</button><span class="cj-help-text" id="helpText" role="tooltip"></span></span>
       <div class="cj-zoom" role="group" aria-label="Powiększenie wykresu"><button type="button" class="ghost" id="zoomOut" aria-label="Oddal">−</button><span id="zoomLevel" aria-live="polite">100%</span><button type="button" class="ghost" id="zoomIn" aria-label="Przybliż">+</button><button type="button" class="ghost" id="zoomFit">Cały przebieg</button><button type="button" class="ghost" id="zoomReset">100%</button></div>
       <div class="cj-pan" role="group" aria-label="Przesuwanie wykresu"><button type="button" class="ghost" id="panLeft" aria-label="Przesuń wykres w lewo">‹</button><button type="button" class="ghost" id="panRight" aria-label="Przesuń wykres w prawo">›</button></div>
     </section>
@@ -58,7 +59,6 @@
           </div>
         </div>
       </div>
-      <p class="cj-note" id="note"></p>
       <div class="cj-detail" id="detail" role="region" aria-label="Szczegóły" hidden></div>
     </section>
 

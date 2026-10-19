@@ -19,6 +19,7 @@
   };
   const showError = message => { $('app').hidden = true; $('errorScreen').hidden = false; $('errorText').textContent = message; };
   const title = t => t.title || '(bez nazwy) ' + t.id;
+  const emClass = v => v === null || v === undefined ? 'em-none' : v < 0 ? 'em-neg' : v === 0 ? 'em-zero' : v < 4 ? 'em-pos' : 'em-high';
   const level = v => v === null || v === undefined ? 'brak danych' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v);
   const ppClass = id => ppIndex.has(id) ? 'pp-' + (ppIndex.get(id) % 6) : 'pp-none';
   const y = v => TOP + (MAX - v) / (MAX - MIN) * (HEIGHT - TOP - BOTTOM);
@@ -103,7 +104,7 @@
     const colorOf = name => (cj.stages.find(s => s.name === name) || {}).color || '#999';
     $('stageRow').innerHTML = runs(t => stepOf(t).stage).map(r => `<div class="cj-cell stage-start" style="width:${rowW(r)}px;--stage:${esc(colorOf(stepOf(r.t).stage))}"><span title="${esc(stepOf(r.t).stage)}">${esc(stepOf(r.t).stage)}</span></div>`).join('');
     $('stepRow').innerHTML = runs(t => t.step).map(r => `<div class="cj-cell${edge(r.first)}" style="width:${rowW(r)}px"><span title="${esc(r.t.step + '. ' + stepOf(r.t).name)}"><b>${esc(r.t.step)}</b> <em class="sn">${esc(stepOf(r.t).name)}</em></span></div>`).join('');
-    $('ppRow').innerHTML = pts.map((t, i) => `<div class="cj-cell pp-cell ${ppClass(t.painPoint)}${edge(i)}" data-i="${i}" style="width:${colW[i]}px">${t.painPoint ? `<i class="dot" aria-hidden="true"></i><b class="badge" title="${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || t.painPoint)}">${esc(t.painPoint)}</b>` : '<i class="none" title="Brak pain pointu w danych">–</i>'}</div>`).join('');
+    $('ppRow').innerHTML = pts.map((t, i) => `<div class="cj-cell pp-cell ${ppClass(t.painPoint)}${edge(i)}" data-i="${i}" style="width:${colW[i]}px">${t.painPoint ? `<i class="dot" aria-hidden="true"></i><b class="badge" title="${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || t.painPoint)}">${esc(t.painPoint)}</b><span class="ppname">${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || '')}</span>` : '<i class="none" title="Brak pain pointu w danych">–</i>'}</div>`).join('');
     $('steps').innerHTML = pts.map((t, i) => `<button type="button" class="cj-tp ${ppClass(t.painPoint)}${t.title ? '' : ' unnamed'}${edge(i)}" data-i="${i}" style="width:${colW[i]}px" aria-pressed="false" title="${esc(title(t))}" aria-label="${esc(title(t) + ', emocja ' + level(t.emotionValue) + (t.painPoint ? ', pain point ' + t.painPoint : ''))}"><span>${esc(title(t))}</span></button>`).join('');
     pointEls = [...document.querySelectorAll('.cj-tp')];
     ppCells = [...document.querySelectorAll('.pp-cell')];
@@ -168,22 +169,28 @@
     box.hidden = !sel;
     if (!sel) return;
     const named = (list, id) => (list.find(i => i.id === id) || {}).name || id;
+    const close = '<button type="button" class="det-close" aria-label="Zamknij szczegóły" title="Zamknij (Esc)">×</button>';
     const row = (label, value) => value ? `<p><b>${esc(label)}:</b> ${esc(value)}</p>` : '';
     if (sel.kind === 'tp') {
       const t = cj.touchpoints.find(x => x.id === sel.id), f = t.forecast;
-      box.innerHTML = `<h3>${esc(title(t))} <small>${esc(t.id)}</small></h3>`
-        + row('Krok', t.step + '. ' + cj.steps.find(s => s.nr === t.step).name) + row('Kanał', t.channel) + row('Właściciel', t.owner) + row('Współwłaściciel', t.coOwner)
-        + `<p><b>Emocja:</b> ${esc(t.emotion || 'brak danych')}, poziom ${esc(level(t.emotionValue))}</p>` + row('Uzasadnienie z danych', t.justification)
+      const meta = [['Krok', t.step + '. ' + cj.steps.find(s => s.nr === t.step).name], ['Kanał', t.channel], ['Właściciel', t.owner], ['Współwłaściciel', t.coOwner]].filter(m => m[1])
+        .map(m => `<span><b>${esc(m[0])}:</b> ${esc(m[1])}</span>`).join('');
+      const chip = (label, v) => `<span class="em ${emClass(v)}">${label ? esc(label) + ' ' : ''}${esc(level(v))}</span>`;
+      const goal = (cls, label, text) => text ? `<div class="goal ${cls}"><small>${esc(label)}</small>${esc(text)}</div>` : '';
+      const goals = [goal('qw', 'Quick Win · cel krótkoterminowy', t.quickWin), goal('mid', 'Mid Term · cel średnioterminowy', t.midTerm), goal('dir', 'Rekomendowany kierunek · cel długoterminowy', t.recommendation), goal('long', 'Long Term', t.longTerm)].join('');
+      box.innerHTML = `<h3>${esc(title(t))} <small>${esc(t.id)}</small></h3><div class="det-meta">${meta}</div>`
+        + `<p class="det-emotion"><b>Emocja:</b> ${esc(t.emotion || 'brak danych')} ${chip('', t.emotionValue)}`
+        + (f ? ` <span class="fc">Prognoza${cj.forecastStatus ? ' (' + esc(cj.forecastStatus) + ')' : ''}: ${chip('QW', f.qw)} ${chip('Mid', f.mid)} ${chip('Long', f.long)}</span>` : '')
+        + (t.justification ? ` <span class="why">${esc(t.justification)}</span>` : '') + '</p>'
+        + row('Problem', t.problem)
         + row('Pain point', t.painPoint ? t.painPoint + ' ' + named(cj.painPoints, t.painPoint) : '') + row('Root cause', t.rootCause ? t.rootCause + ' ' + named(cj.rootCauses, t.rootCause) : '')
         + row('Inicjatywa', t.initiative ? t.initiative + ' ' + named(cj.initiatives, t.initiative) : '')
-        + row('Problem', t.problem) + row('Rekomendowany kierunek', t.recommendation)
-        + row('Quick Win', t.quickWin) + row('Mid Term', t.midTerm) + row('Long Term', t.longTerm)
-        + (f ? `<p><b>Prognoza${cj.forecastStatus ? ' (' + esc(cj.forecastStatus) + ')' : ''}:</b> po QW ${esc(level(f.qw))}, po Mid ${esc(level(f.mid))}, po Long ${esc(level(f.long))}</p>` : '')
-        + '<small>Escape zamyka.</small>';
+        + (goals ? `<div class="goals">${goals}</div>` : '')
+        + close;
     } else {
       const list = { pp: cj.painPoints, rc: cj.rootCauses, in: cj.initiatives }[sel.kind], item = list.find(i => i.id === sel.id);
       box.innerHTML = `<h3>${esc(item.name)} <small>${esc(item.id)}</small></h3>${row('Opis', item.description)}${row('Typ', item.type)}`
-        + `<p><b>Powiązane punkty styku:</b> ${rel.tp.size ? [...rel.tp].map(id => esc(title(cj.touchpoints.find(t => t.id === id)))).join(', ') : 'brak'}</p><small>Escape zamyka.</small>`;
+        + `<p><b>Powiązane punkty styku:</b> ${rel.tp.size ? [...rel.tp].map(id => esc(title(cj.touchpoints.find(t => t.id === id)))).join(', ') : 'brak'}</p>${close}`;
     }
   }
 
@@ -208,10 +215,11 @@
       $('warnings').innerHTML = `<summary>Uwagi do danych: ${cj.warnings.length}</summary><ul>${cj.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;
     }
     layout(); toolbar(); chart(); stepsList(); treeSvg();
-    $('note').textContent = 'Powiększanie: przyciski nad wykresem albo Ctrl/⌘ + kółko myszy; „Cały przebieg” pokazuje całą podróż naraz. Skala emocji klienta od −5 do +5. Brak wartości w danych oznacza przerwę w krzywej. Krzywe po Quick Wins, Mid i Long Term pochodzą z kolumn prognozy w zakładce Macierz CX'
+    $('helpText').textContent = 'Powiększanie: przyciski nad wykresem albo Ctrl/⌘ + kółko myszy; „Cały przebieg” pokazuje całą podróż naraz. Skala emocji klienta od −5 do +5. Brak wartości w danych oznacza przerwę w krzywej. Krzywe po Quick Wins, Mid i Long Term pochodzą z kolumn prognozy w zakładce Macierz CX'
       + (cj.forecastStatus ? ' (status: ' + cj.forecastStatus + ', wartości przykładowe do czasu uzupełnienia przez eksperta).' : ' (brak wartości).');
     $('horizons').addEventListener('click', e => { const b = e.target.closest('.hz'); if (!b || b.disabled) return; shown.has(b.dataset.h) ? shown.delete(b.dataset.h) : shown.add(b.dataset.h); apply(); });
     $('pains').addEventListener('click', e => { const b = e.target.closest('.pp'); if (!b) return; painFilter.has(b.dataset.pp) ? painFilter.delete(b.dataset.pp) : painFilter.add(b.dataset.pp); apply(); });
+    $('detail').addEventListener('click', e => { if (e.target.closest('.det-close')) select(sel); });
     $('inner').addEventListener('click', e => { const b = e.target.closest('.cj-tp, .pp-cell'); if (b) select({ kind: 'tp', id: model.points[Number(b.dataset.i)].id }); });
     $('chart').addEventListener('click', e => { const g = e.target.closest('.cj-mark'); if (g) select({ kind: 'tp', id: model.points[Number(g.dataset.i)].id }); });
     const node = e => { const g = e.target.closest('.cj-node'); if (g) select({ kind: g.dataset.kind, id: g.dataset.id }); };
