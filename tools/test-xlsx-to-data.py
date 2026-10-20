@@ -197,6 +197,22 @@ def main():
     book = {"Arkusz": [(1, ["Grupa nagłówków", ""]), (2, ["pain_point-id", "  Root CAUSE  ", "Poziom emocji (-5 do +5)", "Dominująca emocja"]), (3, ["PP01", "RC01", "-2", "Zła"])]}
     rec = cj.table(book, "Arkusz", ["Pain Point ID", "Root Cause", "Poziom emocji (-5 do +5)", "Dominujaca emocja"])
     assert rec[0]["Pain Point ID"] == "PP01" and rec[0]["Dominujaca emocja"] == "Zła", "tolerancyjne nazwy kolumn (wielkość liter, polskie znaki, podkreślenia)"
+    # Zakładka "Przepływ": scalanie scenariuszy, puste scenariusze, błędy z numerem wiersza.
+    H = cj.FLOW
+    def flow(*rows):
+        book = {"Przepływ": [(1, list(H))] + [(n + 2, list(r)) for n, r in enumerate(rows)]}
+        return cj.convert_flow(cj.table(book, "Przepływ", H), {"TP1", "TP2", "TP3"}, [])
+    f = flow(("TP1", "TP2", "", "", "nie"), ("TP1", "TP2", "", "Serwis", ""), ("TP2", "TP3", "powrót", "Serwis", "tak"), ("TP3", "TP1", "", "", ""))
+    assert [(e["from"], e["to"], e["scenarios"], e["optional"]) for e in f["edges"]] == [("TP1", "TP2", [], False), ("TP2", "TP3", ["Serwis"], True), ("TP3", "TP1", [], False)], "scalanie par i scenariuszy"
+    assert f["scenarios"] == ["Serwis"] and f["edges"][1]["label"] == "powrót", "lista scenariuszy i etykieta"
+    for rows, text in [((("TP1", "XX", "", "", ""),), "'Przepływ', wiersz 2: Do (Touchpoint ID) 'XX'"), ((("TP1", "TP1", "", "", ""),), "do niego samego"),
+                       ((("TP1", "TP2", "", "A", ""), ("TP1", "TP2", "", "A", "")), "wiersz 3: powtórzone przejście")]:
+        try:
+            flow(*rows)
+        except cj.DataError as error:
+            assert text in str(error), str(error)
+        else:
+            raise AssertionError("brak błędu: " + text)
     print("OK: czytnik (sharedStrings + inlineStr), konwersja, błędy z arkuszem i wierszem, zgodność z plikami w repo")
 
 

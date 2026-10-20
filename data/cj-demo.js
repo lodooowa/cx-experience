@@ -1850,5 +1850,457 @@ window.CX_CJ_DEMO = {
    "IN01"
   ]
  ],
+ "flow": {
+  "edges": [
+   {
+    "from": "TP047",
+    "to": "TP036",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP036",
+    "to": "TP037",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP037",
+    "to": "TP048",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP048",
+    "to": "TP003",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP003",
+    "to": "TP038",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP038",
+    "to": "TP049",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP049",
+    "to": "TP051",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP051",
+    "to": "TP004",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP004",
+    "to": "TP039",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP039",
+    "to": "TP005",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP005",
+    "to": "TP050",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP050",
+    "to": "TP006",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP006",
+    "to": "TP007",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP007",
+    "to": "TP061",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP061",
+    "to": "TP062",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP062",
+    "to": "TP008",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP008",
+    "to": "TP009",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP009",
+    "to": "TP010",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP010",
+    "to": "TP011",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP011",
+    "to": "TP012",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP012",
+    "to": "TP040",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP040",
+    "to": "TP013",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP013",
+    "to": "TP014",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP014",
+    "to": "TP015",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP015",
+    "to": "TP052",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP052",
+    "to": "TP053",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP053",
+    "to": "TP016",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP016",
+    "to": "TP017",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP017",
+    "to": "TP018",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP018",
+    "to": "TP054",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP054",
+    "to": "TP019",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP019",
+    "to": "TP020",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP020",
+    "to": "TP021",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP021",
+    "to": "TP022",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP022",
+    "to": "TP023",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP023",
+    "to": "TP024",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP024",
+    "to": "TP025",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP025",
+    "to": "TP026",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP026",
+    "to": "TP027",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP027",
+    "to": "TP041",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP041",
+    "to": "TP028",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP028",
+    "to": "TP042",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP042",
+    "to": "TP043",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP043",
+    "to": "TP055",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP055",
+    "to": "TP029",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP029",
+    "to": "TP030",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP030",
+    "to": "TP031",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP031",
+    "to": "TP032",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP032",
+    "to": "TP044",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP044",
+    "to": "TP056",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP056",
+    "to": "TP033",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP033",
+    "to": "TP034",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP034",
+    "to": "TP045",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP045",
+    "to": "TP057",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP057",
+    "to": "TP058",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP058",
+    "to": "TP059",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP059",
+    "to": "TP035",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP035",
+    "to": "TP046",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP046",
+    "to": "TP060",
+    "label": "",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP038",
+    "to": "TP048",
+    "label": "powrót po braku odpowiedzi (DEMO)",
+    "scenarios": [],
+    "optional": false
+   },
+   {
+    "from": "TP004",
+    "to": "TP049",
+    "label": "ponowne zapytanie (DEMO)",
+    "scenarios": [
+     "Serwis"
+    ],
+    "optional": false
+   },
+   {
+    "from": "TP037",
+    "to": "TP049",
+    "label": "skrót (DEMO)",
+    "scenarios": [],
+    "optional": true
+   },
+   {
+    "from": "TP005",
+    "to": "TP006",
+    "label": "alternatywa (DEMO)",
+    "scenarios": [
+     "Serwis"
+    ],
+    "optional": true
+   }
+  ],
+  "scenarios": [
+   "Serwis"
+  ]
+ },
  "warnings": []
 };

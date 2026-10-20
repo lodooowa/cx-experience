@@ -27,6 +27,8 @@
 
     <section class="matrix-toolbar" aria-label="Filtry i widok">
       <div class="chips" id="lanes" role="group" aria-label="Tory"></div>
+      <label class="case-select" id="dataWrap" hidden>Dane <select id="dataSelect" aria-label="Źródło danych"><option value="real">Produkcyjne</option><option value="demo">Demo</option></select></label>
+      <label class="case-select" id="scenarioWrap" hidden>Scenariusz <select id="scenarioSelect" aria-label="Pokaż przejścia wybranego scenariusza"></select></label>
       <label class="case-select" id="caseWrap" hidden>Przypadek <select id="caseSelect" aria-label="Pokaż trasę przypadku klienta"></select></label>
       <div class="zoom-tools" id="zoomTools" role="group" aria-label="Powiększenie">
         <button type="button" id="zoomOut" class="ghost" aria-label="Pomniejsz">−</button>
@@ -37,6 +39,7 @@
       <div class="legend-tip"><button type="button" class="legend-btn" aria-describedby="legend" aria-label="Legenda">?</button><p class="legend" id="legend" role="tooltip"></p></div>
     </section>
 
+    <p class="case-info" id="flowNote" role="status" hidden></p>
     <p class="case-info" id="caseInfo" role="status" hidden></p>
 
     <div class="case-stepper" id="caseStepper" hidden>
@@ -59,9 +62,10 @@
     </section>
   </main>
 </div>
-<div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić mapy przepływu</h1><p id="errorText"></p><small>Sprawdź pliki data/matrix.js i data/flow.js i odśwież stronę.</small></div>
-<script src="../data/matrix.js"></script>
-<script src="../data/flow.js"></script>
+<div id="errorScreen" class="error-screen" hidden><h1>Nie można uruchomić mapy przepływu</h1><p id="errorText"></p><small>Sprawdź macierz_CX.xlsx (zakładki Macierz CX i Przepływ), uruchom 2-przebuduj-dane i odśwież stronę.</small></div>
+<script src="../data/cj.js"></script>
+<script src="../data/cj-demo.js"></script>
+<script src="../js/cj-flow-adapter.js"></script>
 <script src="../js/matrix-core.js"></script>
 <script src="../js/flow-core.js"></script>
 <script src="../js/flow-layout.js"></script>

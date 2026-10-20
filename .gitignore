@@ -5,3 +5,4 @@ tools/PortableGit/
 macierz_CX.xlsx
 data/cj.js
 __pycache__/
+*.xlsx.bak

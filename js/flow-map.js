@@ -245,7 +245,7 @@
     state.selected = id;
     const cs = caseSteps().map.get(id);
     const caseHtml = !cs && state.caseId ? '<section class="case-detail"><p class="st-brakuje">Punkt pominięty w tym przypadku.</p></section>' : cs ? '<section class="case-detail"><h3>Przypadek</h3>' + cs.steps.map(step => `<p class="st-${esc(step.state)}"><strong><span aria-hidden="true">${esc(stateMarks[step.state] || '?')}</span> Krok ${esc(step.n)}: ${esc(stateLabel(step.state))}</strong>${step.note ? '<br>' + esc(step.note) : ''}</p>`).join('') + '</section>' : '';
-    $('detailBody').innerHTML = caseHtml + mx.detailsHtml(tpIndex.get(id));
+    $('detailBody').innerHTML = caseHtml + (window.CX_FLOW.detailsHtml || mx.detailsHtml)(tpIndex.get(id));
     $('detailDrawer').hidden = false;
     $('workspace').classList.add('has-drawer');
     syncSelected();
@@ -355,6 +355,7 @@
     });
     $('stepPrev').addEventListener('click', () => stepTo((state.step === null ? 0 : state.step) - 1));
     $('stepNext').addEventListener('click', () => stepTo(state.step === null ? 0 : state.step + 1));
+    $('scenarioSelect').addEventListener('change', event => { window.CX.cjFlow.setScenario(event.target.value); redraw(); });
     $('caseSelect').addEventListener('change', event => {
       state.caseId = event.target.value;
       state.step = null;
@@ -430,6 +431,17 @@
     $('demoPill').hidden = !(data.status === 'DEMO' || flow.status === 'DEMO');
     allLanes = core.lanes(data, flow);
     state.lanes = new Set(allLanes.map(lane => lane.id));
+    $('flowNote').hidden = !flow.note;
+    $('flowNote').textContent = flow.note || '';
+    const cj = window.CX.cjFlow;
+    $('dataWrap').hidden = !cj;
+    if (cj) {
+      $('dataSelect').value = cj.demo ? 'demo' : 'real';
+      $('dataSelect').options[0].disabled = !window.CX_CJ;
+      $('dataSelect').addEventListener('change', event => { location.search = '?dane=' + event.target.value; });
+    }
+    $('scenarioWrap').hidden = !(cj && cj.scenarios.length);
+    if (cj) $('scenarioSelect').innerHTML = '<option value="">Wszystkie</option>' + cj.scenarios.map(name => `<option value="${esc(name)}">${esc(name)}</option>`).join('');
     const cases = flow.cases || [];
     $('caseWrap').hidden = !cases.length;
     $('caseSelect').innerHTML = '<option value="">Bez przypadku</option>' + cases.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');

@@ -77,6 +77,10 @@ Wizualizacje (otwierane dwuklikiem, offline, na tych samych danych):
 - Tory: domyślnie macierz i podtyp punktu (importer, dealer, salon, serwis). Nowy tor to wartość w kolumnie `tor_nadpisanie` punktu oraz jego etykieta w `slowniki` (grupa `tor`; kolejność wierszy tej grupy to kolejność torów; ID toru nie może być samą liczbą).
 - Graf i przypadki w danych DEMO są wymyślone, żeby pokazać mechanikę. Docelowo wpisuje je ekspert CX. Test: `node tools/test-flow-core.js`.
 
+### Mapa przepływu z macierzy CX (`macierz_CX.xlsx`)
+
+`pages/mapa.html` czyta ten sam plik co widok Customer Journey. Ekspert uzupełnia zakładkę `Przepływ` (dopisuje ją `python3 tools/add-flow-sheet.py [plik.xlsx]`, z kopią `.bak`, bez zmian przy ponownym uruchomieniu): wiersz = jedno przejście `Z` → `Do` (Touchpoint ID z `Macierz CX`, listy rozwijane). Powrót do wcześniejszego punktu to zwykły wiersz wstecz, a odgałęzienie to kilka wierszy z tym samym `Z`. `Scenariusz` (opcjonalny) ogranicza przejście do scenariusza; pusty = wszystkie. `Opcjonalny` = `tak` rysuje linię przerywaną. Tory mapy to właściciel biznesowy (brak: kanał), kolumny to kroki z zakładki `Dane`. Po edycji: `2-przebuduj-dane`.
+
 ## Do przemyślenia
 
 - Miernik: jak mierzyć efekt wdrożonych usprawnień.

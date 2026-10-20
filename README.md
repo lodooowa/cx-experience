@@ -35,7 +35,7 @@ pages/   matrix.html, priorytety.html, radar.html, mapa.html, cj.html (strony wi
 css/matrix.css       wspólne style widoków; osobno priorities.css, radar.css, flow.css
 js/matrix-core.js    wspólny model danych (CX.mx)
 js/matrix.js, priorities.js, radar.js   logika poszczególnych widoków
-js/flow-core.js, flow-layout.js, flow-map.js   graf, układ i rysowanie mapy przepływu
+js/flow-core.js, flow-layout.js, flow-map.js   graf, układ i rysowanie mapy przepływu; js/cj-flow-adapter.js: dane macierzy CX → wejście mapy
 data/matrix.js, data/flow.js   GENEROWANE z macierz-demo.xlsx, nie edytować ręcznie
 macierz-demo.xlsx, data/macierz-demo/*.csv   źródło danych i eksport CSV
 tools/               konwerter xlsx, seed xlsx i testy
@@ -88,7 +88,7 @@ Osobne strony na wspólnym modelu danych, otwierane dwuklikiem (offline):
 - `pages/priorytety.html`: mapa koszt × zysk akcji naprawczych,
 - `pages/radar.html`: radar podróży klienta,
 - `pages/cj.html`: podróż klienta (Customer Journey): wykres emocji −5…+5 po punktach styku w krokach i etapach, pain pointy, drzewo pain point → root cause → inicjatywa oraz krzywe prognozy po Quick Wins, Mid i Long Term. Dwa zestawy danych: prawdziwe („Real”) z `macierz_CX.xlsx` (edytuje go ekspert, plik i `data/cj.js` są poza repozytorium i `1-sciagnij-zmiany` ich nie nadpisuje) oraz demo z `macierz_CX_demo.xlsx` (w repozytorium, wszystkie pola wypełnione przykładowymi wartościami DEMO, → `data/cj-demo.js`); konwersja: `python3 tools/cj-xlsx-to-data.py` albo `2-przebuduj-dane`. Przełącznik „Dane: Real / Demo” nad wykresem (`?dane=demo`); bez pliku produkcyjnego strona pokazuje demo. Kolumny prognozy (`Po Quick Wins`, `Po Mid Term`, `Po Long Term`) w zakładce `Macierz CX` są w demo przykładowe,
-- `pages/mapa.html`: mapa przepływu (swimlane: tory = wykonawcy, kolumny = procesy, krawędzie = kolejne kroki). Lista „Przypadek” podświetla trasę klienta z `data/flow.js` (stan kroku: znak i kolor, pominięte punkty przygaszone); przyciski Start/Dalej/Wstecz prowadzą krok po kroku (mapa przesuwa się do punktu, kropka jedzie po trasie; bez ruchu przy `prefers-reduced-motion`).
+- `pages/mapa.html`: mapa przepływu (swimlane) budowana z `macierz_CX.xlsx` (`data/cj.js`; `?dane=demo` = `macierz_CX_demo.xlsx`): tory = właściciel biznesowy (brak: kanał), kolumny = kroki z zakładki `Dane`, krawędzie = zakładka `Przepływ` (Z, Do, Etykieta, Scenariusz, Opcjonalny; powrót to wiersz do wcześniejszego punktu). Zakładkę dopisuje `python3 tools/add-flow-sheet.py`; bez niej mapa pokazuje komunikat. Adapter: `js/cj-flow-adapter.js`. Przypadki klienta (lista „Przypadek”, `data/flow.js` z `macierz-demo.xlsx`) nie są częścią tej mapy (stan kroku: znak i kolor, pominięte punkty przygaszone); przyciski Start/Dalej/Wstecz prowadzą krok po kroku (mapa przesuwa się do punktu, kropka jedzie po trasie; bez ruchu przy `prefers-reduced-motion`).
 
 Widok cj startuje od całego przebiegu; nad wykresem jest podsumowanie z samych danych (średnia emocji i liczba punktów poniżej zera na etap, najniższe punkty, klik w etap pokazuje jego pain pointy i inicjatywy), a przycisk „Drukuj / zapisz PDF” zapisuje wykres na stronie A4 poziomej (tylko widok Wykres). Brak poziomu emocji jest oznaczony pustym znacznikiem przy dolnej krawędzi. Nazwy kolumn w xlsx są porównywane bez względu na wielkość liter, polskie znaki, spacje i podkreślenia.
 

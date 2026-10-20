@@ -28,6 +28,8 @@ SHEETS = {
     "Dane": ["Kolejność", "Nr", "Krok / opis", "Segment / etap", "Grupa", "Kolor HEX"],
 }
 # Prognoza to opcjonalne kolumny zakładki "Macierz CX" (obok poziomu emocji); brak kolumn lub pusta komórka = brak prognozy.
+# Opcjonalna zakładka "Przepływ": krawędzie mapy przepływu między Touchpoint ID z "Macierz CX". Brak zakładki = brak mapy.
+FLOW = ["Z (Touchpoint ID)", "Do (Touchpoint ID)", "Etykieta", "Scenariusz", "Opcjonalny (tak/nie)"]
 FORECAST = ["Po Quick Wins", "Po Mid Term", "Po Long Term"]
 
 
@@ -78,6 +80,39 @@ def number(value, where, warnings):
     return None
 
 
+def convert_flow(rows, tp_ids, warnings):
+    # Wiersz = jedno przejście w jednym scenariuszu (pusty scenariusz = wszystkie). Ta sama para w kilku scenariuszach scala się w jedną krawędź.
+    edges, seen = {}, set()
+    for r in rows:
+        a, b, scenario = r[FLOW[0]], r[FLOW[1]], r[FLOW[3]]
+        for col, tp in ((FLOW[0], a), (FLOW[1], b)):
+            if tp not in tp_ids:
+                raise DataError(f"Zakładka 'Przepływ', wiersz {r['_row']}: {col} '{tp}' nie istnieje w 'Macierz CX'")
+        if a == b:
+            raise DataError(f"Zakładka 'Przepływ', wiersz {r['_row']}: przejście z punktu '{a}' do niego samego")
+        if (a, b, scenario) in seen:
+            raise DataError(f"Zakładka 'Przepływ', wiersz {r['_row']}: powtórzone przejście {a} → {b} (scenariusz '{scenario}')")
+        seen.add((a, b, scenario))
+        opt = r[FLOW[4]].casefold()
+        if opt not in ("", "tak", "nie"):
+            warnings.append(f"Przepływ, wiersz {r['_row']}: 'Opcjonalny' ma wartość '{r[FLOW[4]]}' (oczekiwano tak/nie), uznano za 'nie'")
+        e = edges.setdefault((a, b), dict(**{"from": a, "to": b}, label="", scenarios=[], optional=True, _all=False))
+        if e["label"] and r[FLOW[2]] and e["label"] != r[FLOW[2]]:
+            warnings.append(f"Przepływ, wiersz {r['_row']}: przejście {a} → {b} ma kilka etykiet, użyto '{e['label']}'")
+        e["label"] = e["label"] or r[FLOW[2]]
+        e["optional"] = e["optional"] and opt == "tak"
+        if scenario:
+            e["scenarios"].append(scenario)
+        else:
+            e["_all"] = True
+    out = []
+    for e in edges.values():
+        if e.pop("_all"):
+            e["scenarios"] = []
+        out.append(e)
+    return dict(edges=out, scenarios=sorted({s for e in out for s in e["scenarios"]}))
+
+
 def convert(xlsx, js_path, var="CX_CJ"):
     book = x2d.read_xlsx(xlsx)
     t = {name: table(book, name, cols, optional=FORECAST if name == "Macierz CX" else ()) for name, cols in SHEETS.items()}
@@ -114,6 +149,9 @@ def convert(xlsx, js_path, var="CX_CJ"):
     known(t["Mapowanie_PP_RC"], "Mapowanie_PP_RC", "Root Cause ID", rc_ids)
     known(t["Mapowanie_RC_IN"], "Mapowanie_RC_IN", "Root Cause ID", rc_ids)
     known(t["Mapowanie_RC_IN"], "Mapowanie_RC_IN", "Initiative ID", in_ids)
+    flow = None
+    if "Przepływ" in book:
+        flow = convert_flow(table(book, "Przepływ", FLOW, required=False), tp_ids, warnings)
     pairs = {(r["Pain Point ID"], r["Root Cause ID"]) for r in t["Mapowanie_PP_RC"]}
 
     fc = {}
@@ -156,7 +194,7 @@ def convert(xlsx, js_path, var="CX_CJ"):
         initiatives=[dict(id=r["Initiative ID"], painPoint=r["Pain Point ID"], rootCause=r["Root Cause ID"], type=r["Typ"], name=r["Inicjatywa"]) for r in t["Inicjatywy"]],
         painRoot=[[r["Pain Point ID"], r["Root Cause ID"]] for r in t["Mapowanie_PP_RC"]],
         rootInitiative=[[r["Root Cause ID"], r["Initiative ID"]] for r in t["Mapowanie_RC_IN"]],
-        warnings=warnings)
+        flow=flow, warnings=warnings)
     hdr = (f"// DANE wygenerowane przez tools/cj-xlsx-to-data.py z {xlsx.name}. NIE EDYTUJ RĘCZNIE:\n"
            f"// źródłem jest xlsx (po zmianach uruchom skrypt ponownie). Zostaw window.{var} = oraz końcowy średnik.\n")
     with open(js_path, "w", encoding="utf-8", newline="\n") as fh:
