@@ -127,7 +127,8 @@
     stageStats = stages;
     const known = now.filter(v => v !== null), low = pts.map((t, i) => ({ t, i, v: now[i] })).filter(x => x.v !== null && x.v < 0).sort((a, b) => a.v - b.v).slice(0, 3);
     const hasFc = core.HORIZONS.some(h => h.key !== 'now' && model.hasForecast(h.key));
-    $('summary').innerHTML = `<p class="sum-line"><b>${known.length} z ${pts.length}</b> punktów styku ma poziom emocji; <b>${known.filter(v => v < 0).length}</b> poniżej zera.${cj.warnings && cj.warnings.length ? ` <button type="button" class="chip sum-warn" id="warnBtn" aria-expanded="false" aria-controls="warnings">Jakość danych: ${cj.warnings.length}</button>` : ''} Średnia emocji obecnie na etapach:</p>`
+    $('sumWarn').innerHTML = cj.warnings && cj.warnings.length ? `<button type="button" class="chip sum-warn" id="warnBtn" aria-expanded="false" aria-controls="warnings">Jakość danych: ${cj.warnings.length}</button>` : '';
+    $('sumBody').innerHTML = `<p class="sum-line"><b>${known.length} z ${pts.length}</b> punktów styku ma poziom emocji; <b>${known.filter(v => v < 0).length}</b> poniżej zera. Średnia emocji obecnie na etapach:</p>`
       + `<div class="sum-stages">${stages.map(s => `<button type="button" class="sum-stage" data-i="${s.first}" style="--stage:${esc(s.st.color)}" title="Przejdź do etapu"><span class="ss-name">${esc(s.st.name)}</span><b class="em ${emClass(s.avg)}">${s.avg === null ? 'brak danych' : fmt(s.avg)}</b><small>${s.known ? s.neg + ' z ' + s.known + ' poniżej 0' : 'brak wartości'}</small></button>`).join('')}</div><div class="sum-detail" id="stageDetail" hidden></div>`
       + (low.length ? `<div class="sum-low"><span>Najniższe punkty:</span>${low.map(x => `<button type="button" class="chip" data-i="${x.i}">${esc(level(x.v))} · ${esc(title(x.t))} <small>${esc(stageOf(x.t))}</small></button>`).join('')}</div>` : '')
       + `<div class="sum-actions">${hasFc ? '<button type="button" class="ghost" id="fcBtn" aria-pressed="false">Pokaż prognozę</button> ' : ''}<button type="button" class="ghost" id="printBtn">Drukuj / zapisz PDF</button></div>`;
@@ -265,7 +266,7 @@
     dataSel.addEventListener('change', () => { location.search = '?dane=' + dataSel.value; });
     if (cj.warnings && cj.warnings.length) {
       $('warnings').innerHTML = `<b>Uwagi do danych</b><ul>${cj.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;
-      $('summary').addEventListener('click', e => { if (!e.target.closest('#warnBtn')) return; const open = $('warnings').hidden; $('warnings').hidden = !open; $('warnBtn').setAttribute('aria-expanded', String(open)); });
+      $('sumWarn').addEventListener('click', e => { if (!e.target.closest('#warnBtn')) return; const open = $('warnings').hidden; $('warnings').hidden = !open; $('warnBtn').setAttribute('aria-expanded', String(open)); });
     }
     layout(); toolbar(); chart(); stepsList(); treeSvg(); summary();
     $('helpText').textContent = 'Powiększanie: przyciski nad wykresem albo Ctrl/⌘ + kółko myszy; „Cały przebieg” pokazuje całą podróż naraz. Skala emocji klienta od −5 do +5. Brak wartości w danych oznacza przerwę w krzywej. Krzywe po Quick Wins, Mid i Long Term pochodzą z kolumn prognozy w zakładce Macierz CX'
@@ -275,6 +276,7 @@
     $('pains').addEventListener('click', pickPain);
     $('ppLegend').addEventListener('click', pickPain);
     $('summary').addEventListener('click', e => {
+      if (e.target.closest('#sumToggle')) { const open = $('sumBody').hidden; $('sumBody').hidden = !open; $('sumToggle').setAttribute('aria-expanded', String(open)); $('sumToggle').firstChild.textContent = open ? '▾' : '▸'; return; }
       if (e.target.closest('#printBtn')) { window.print(); return; }
       if (e.target.closest('#fcBtn')) {
         const fc = core.HORIZONS.filter(h => h.key !== 'now' && model.hasForecast(h.key)), on = fc.every(h => shown.has(h.key));

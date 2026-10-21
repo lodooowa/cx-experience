@@ -20,7 +20,7 @@
 .v-neg { fill: var(--v-neg); } .v-zero { fill: var(--v-zero); } .v-pos { fill: var(--v-pos); }
 
 /* Orbita */
-.orbit { display: block; width: 100%; height: clamp(680px, 76vw, 1120px); }
+.orbit { display: block; width: 100%; height: clamp(460px, min(76vw, calc(100vh - 230px)), 860px); }
 .o-wedge { fill-opacity: .1; } .o-band { fill-opacity: .85; }
 .o-stage { fill: #d3deef; font-size: 12px; font-weight: 700; letter-spacing: .03em; pointer-events: auto; }
 .o-sep { stroke: rgba(160, 190, 230, .16); }

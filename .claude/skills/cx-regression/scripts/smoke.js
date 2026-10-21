@@ -109,7 +109,9 @@ async function runPage(browser, key, profileKey) {
 
   if (key === 'cj') {
     check(scope, 'krzywa emocji na wykresie', await page.locator('#chart .cj-series.hz-now .cj-line').count() === 1);
-    check(scope, 'podsumowanie etapów ma karty', await page.locator('.sum-stage').count() > 0);
+    check(scope, 'podsumowanie etapów domyślnie zwinięte', await page.locator('#sumBody').isHidden());
+    await page.locator('#sumToggle').click();
+    check(scope, 'rozwinięte podsumowanie ma karty etapów', await page.locator('.sum-stage').count() > 0 && await page.locator('.sum-stage').first().isVisible());
     await page.locator('.sum-stage').first().click();
     check(scope, 'karta etapu otwiera szczegóły etapu', await page.locator('#stageDetail').isVisible());
     await page.locator('.sum-stage').first().click();

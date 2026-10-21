@@ -37,15 +37,13 @@
       <div class="cj-pan" role="group" aria-label="Przesuwanie wykresu"><button type="button" class="ghost" id="panLeft" aria-label="Przesuń wykres w lewo">‹</button><button type="button" class="ghost" id="panRight" aria-label="Przesuń wykres w prawo">›</button></div>
     </section>
 
-    <section class="cj-warnings" id="warnings" aria-label="Uwagi do danych" hidden></section>
-
     <div class="cj-filters" id="filtersPanel" role="region" aria-label="Filtry" hidden>
       <div class="cj-filter-group"><h2>Krzywe emocji</h2><div class="chips" id="horizons" role="group" aria-label="Krzywe emocji"></div></div>
       <div class="cj-filter-group"><h2>Pain pointy <small>(bez wyboru pokazane są wszystkie)</small></h2><div class="chips" id="pains" role="group" aria-label="Pain pointy"></div></div>
       <div class="cj-filter-actions"><button type="button" class="ghost" id="filtersClear">Wyczyść filtr pain pointów</button><button type="button" class="ghost" id="filtersClose">Zamknij</button></div>
     </div>
 
-    <section class="cj-summary" id="summary" aria-label="Podsumowanie emocji klienta"></section>
+    <section class="cj-summary" id="summary" aria-label="Podsumowanie emocji klienta"><div class="sum-head"><button type="button" class="sum-toggle" id="sumToggle" aria-expanded="false" aria-controls="sumBody"><i aria-hidden="true">▸</i> Podsumowanie emocji po etapach</button></div><div id="sumBody" hidden></div></section>
 
     <section class="cj-viz" id="viz" aria-label="Wizualizacja emocji klienta" hidden>
       <div class="viz-bar">
@@ -90,6 +88,7 @@
       <p class="cj-note">Kliknij element drzewa, aby podświetlić powiązane punkty styku. Kliknięcie punktu podświetla jego pain point i przyczynę.</p>
       <div class="cj-tree-scroll"><svg id="tree" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Drzewo pain pointów"></svg></div>
     </section>
+    <div class="cj-dq"><span id="sumWarn"></span><section class="cj-warnings" id="warnings" aria-label="Uwagi do danych" hidden></section></div>
   </main>
 </div>
 <div class="cj-tip" id="tip" role="tooltip" hidden></div>
