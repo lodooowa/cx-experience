@@ -2,6 +2,7 @@
 .cj-select { min-width: 0; max-width: none; flex: 0 1 auto; }
 @media (max-width: 850px) { .cj-select { flex: 1 1 0; } }
 .view-viz .cj-zoom, .view-viz .cj-pan { display: none; }
+.view-landscape .cj-zoom { display: flex; }
 .cj-viz[hidden], .viz-view[hidden], #chartPanel[hidden] { display: none; }
 
 .cj-viz { margin-top: 12px; }

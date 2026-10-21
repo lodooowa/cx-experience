@@ -16,6 +16,7 @@
     for (let v = -5; v <= 5; v++) axis.append(el('text', { x: 40, y: y(v) + 4, class: 'l-axis-label', 'text-anchor': 'end' }, v > 0 ? '+' + v : v < 0 ? '−' + Math.abs(v) : '0'));
     const scroller = document.createElement('div');
     scroller.className = 'land-scroll'; scroller.tabIndex = 0; scroller.setAttribute('role', 'group'); scroller.setAttribute('aria-label', 'Krajobraz emocji. Przewijaj poziomo strzałkami.');
+    let zoom = 1;
     const svg = el('svg', { class: 'land', width: W, height: H, viewBox: `0 0 ${W} ${H}` });
     let html = `<defs><linearGradient id="lTerrain" gradientUnits="userSpaceOnUse" x1="0" y1="${y(5)}" x2="0" y2="${y(-5)}"><stop offset="0" stop-color="#3fcf8e"/><stop offset=".5" stop-color="#6f86a6"/><stop offset="1" stop-color="#ff5a63"/></linearGradient>
       <linearGradient id="lWater" gradientUnits="userSpaceOnUse" x1="0" y1="${y(5)}" x2="0" y2="${y(-5)}"><stop offset="0" stop-color="#8fe6ff" stop-opacity=".85"/><stop offset="1" stop-color="#2f6fdd" stop-opacity=".45"/></linearGradient>
@@ -75,7 +76,7 @@
       if (i >= 0) {
         trav.style.transform = `translate(${x(i)}px, ${y(v === null ? 0 : v)}px)`;
         trav.classList.toggle('empty', v === null);
-        scroller.scrollTo({ left: Math.max(0, x(i) - scroller.clientWidth / 2), behavior: ctrl.reduced() ? 'auto' : 'smooth' });
+        scroller.scrollTo({ left: Math.max(0, x(i) * zoom - scroller.clientWidth / 2), behavior: ctrl.reduced() ? 'auto' : 'smooth' });
       }
       els.forEach((e, k) => e.g.classList.toggle('cur', k === i));
     }
@@ -92,7 +93,7 @@
       const key = st.sel && st.sel.kind === 'tp' ? st.sel.id : null;
       if (key && key !== lastSel) {
         const i = pts.findIndex(t => t.id === key);
-        if (x(i) < scroller.scrollLeft + COL || x(i) > scroller.scrollLeft + scroller.clientWidth - COL) scroller.scrollTo({ left: Math.max(0, x(i) - scroller.clientWidth / 2), behavior: ctrl.reduced() ? 'auto' : 'smooth' });
+        if (x(i) * zoom < scroller.scrollLeft + COL * zoom || x(i) * zoom > scroller.scrollLeft + scroller.clientWidth - COL * zoom) scroller.scrollTo({ left: Math.max(0, x(i) * zoom - scroller.clientWidth / 2), behavior: ctrl.reduced() ? 'auto' : 'smooth' });
       }
       lastSel = key;
     }
@@ -103,11 +104,29 @@
     svg.addEventListener('pointermove', e => { const i = pick(e); if (i >= 0 && e.pointerType === 'mouse') host.showTip(e, i); else host.hideTip(); });
     svg.addEventListener('pointerleave', () => host.hideTip());
     scroller.addEventListener('scroll', () => host.hideTip());
+    // Powiększenie jak na wykresie: te same przyciski, skala jednolita (osie i teksty rosną razem z terenem).
+    const MAXZ = 1.8, fitZoom = () => Math.max(.1, Math.min(1, (scroller.clientWidth - 2) / W)), $ = host.$;
+    const active = () => document.body.classList.contains('view-landscape');
+    function setZoom(next, anchor) {
+      next = Math.min(MAXZ, Math.max(fitZoom(), next));
+      const ax = anchor === undefined ? scroller.clientWidth / 2 : anchor, frac = (scroller.scrollLeft + ax) / (W * zoom);
+      zoom = next;
+      svg.setAttribute('width', W * zoom); svg.setAttribute('height', H * zoom);
+      axis.setAttribute('width', 46 * zoom); axis.setAttribute('height', H * zoom); axis.style.flexBasis = 46 * zoom + 'px';
+      $('zoomLevel').textContent = Math.round(zoom * 100) + '%';
+      scroller.scrollLeft = frac * W * zoom - ax;
+    }
+    const on = (id, fn) => $(id).addEventListener('click', () => { if (active()) fn(); });
+    on('zoomIn', () => setZoom(zoom * 1.25)); on('zoomOut', () => setZoom(zoom / 1.25));
+    on('zoomFit', () => setZoom(fitZoom())); on('zoomReset', () => setZoom(1));
+    scroller.addEventListener('wheel', e => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), e.clientX - scroller.getBoundingClientRect().left); }, { passive: false });
+    scroller.addEventListener('keydown', e => { if (e.key === '+' || e.key === '=') setZoom(zoom * 1.25); else if (e.key === '-') setZoom(zoom / 1.25); else if (e.key === '0') setZoom(1); else return; e.preventDefault(); });
+    window.addEventListener('resize', () => { if (active() && zoom < fitZoom()) setZoom(fitZoom()); });
     scroller.append(svg);
     const wrap = document.createElement('div');
     wrap.className = 'land-wrap'; wrap.append(axis, scroller);
     box.append(wrap);
-    return { draw, update, setCursor: moveCursor, legend: 'Teren to emocje obecne: dolina oznacza niską emocję, szczyt wysoką. Błękitna „woda” pokazuje wybrany horyzont tam, gdzie prognoza jest wyższa niż obecnie. Pulsujące punkty to pain pointy z ujemną emocją, pod terenem widać kod pain pointu.' };
+    return { draw, update, activate: () => { setZoom(zoom); }, setCursor: moveCursor, legend: 'Teren to emocje obecne: dolina oznacza niską emocję, szczyt wysoką. Błękitna „woda” pokazuje wybrany horyzont tam, gdzie prognoza jest wyższa niż obecnie. Pulsujące punkty to pain pointy z ujemną emocją, pod terenem widać kod pain pointu.' };
   }
 
   window.CX = window.CX || {};

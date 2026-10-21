@@ -90,10 +90,13 @@
     const { $ } = host;
     $('viz').hidden = next === 'chart'; $('chartPanel').hidden = next !== 'chart';
     document.body.classList.toggle('view-viz', next !== 'chart');
+    document.body.classList.toggle('view-landscape', next === 'landscape');
     for (const key of Object.keys(BOXES)) $(BOXES[key]).hidden = key !== next;
+    if (next === 'chart') window.dispatchEvent(new Event('cj-zoom-label'));
     if (next !== 'chart') {
       if (!instances[next]) instances[next] = window.CX.cjViews[next](host, ctrl, $(BOXES[next]));
       $('vizLegend').textContent = instances[next].legend;
+      if (instances[next].activate) instances[next].activate();
       redraw();
     }
   }

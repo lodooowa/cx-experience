@@ -312,10 +312,11 @@
     let printZoom = null;
     window.addEventListener('beforeprint', () => { if ($('chartPanel').hidden) return; printZoom = zoom; zoom = Math.min(zoom, 880 / (model.points.length * PW)); render(); });
     window.addEventListener('afterprint', () => { if (printZoom === null) return; zoom = printZoom; printZoom = null; render(); });
-    $('zoomIn').addEventListener('click', () => setZoom(zoom * 1.25));
-    $('zoomOut').addEventListener('click', () => setZoom(zoom / 1.25));
-    $('zoomFit').addEventListener('click', () => setZoom(fitZoom()));
-    $('zoomReset').addEventListener('click', () => setZoom(1));
+    $('zoomIn').addEventListener('click', () => !document.body.classList.contains('view-viz') && setZoom(zoom * 1.25));
+    $('zoomOut').addEventListener('click', () => !document.body.classList.contains('view-viz') && setZoom(zoom / 1.25));
+    $('zoomFit').addEventListener('click', () => !document.body.classList.contains('view-viz') && setZoom(fitZoom()));
+    $('zoomReset').addEventListener('click', () => !document.body.classList.contains('view-viz') && setZoom(1));
+    window.addEventListener('cj-zoom-label', () => { $('zoomLevel').textContent = Math.round(zoom * 100) + '%'; });
     scroll2.addEventListener('wheel', e => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), e.clientX - scroll2.getBoundingClientRect().left); }, { passive: false });
     scroll2.addEventListener('keydown', e => { if (e.key === '+' || e.key === '=') setZoom(zoom * 1.25); else if (e.key === '-') setZoom(zoom / 1.25); else if (e.key === '0') setZoom(1); else return; e.preventDefault(); });
     window.addEventListener('resize', () => { if (zoom < fitZoom()) setZoom(fitZoom()); });
