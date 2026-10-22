@@ -9,7 +9,7 @@
   const hasProd = !!window.CX_CJ, demo = new URLSearchParams(location.search).get('dane') === 'demo' || !hasProd;
   const cj = demo ? window.CX_CJ_DEMO : window.CX_CJ, core = window.CX.cjCore;
   let model, sel = null, rel = null, shown = new Set(['now']), painFilter = new Set();
-  let zoom = 1, stageStats = [];
+  let zoom = 1, hlStage = null;
   let seriesDots = [], colX = [], colW = [], totalW = 0;
   let dots = [], pointEls = [], ppCells = [], hoverEl = null, ppIndex = new Map(), treeNodes = [];
 
@@ -64,7 +64,7 @@
     for (const stage of cj.stages) {
       const idx = pts.map((t, i) => i).filter(i => cj.steps.find(s => s.nr === pts[i].step).stage === stage.name);
       if (!idx.length) continue;
-      svg.append(el('rect', { x: colX[idx[0]], y: 0, width: colX[idx[idx.length - 1]] + colW[idx[idx.length - 1]] - colX[idx[0]], height: HEIGHT, class: 'cj-band', style: 'fill:' + stage.color }));
+      svg.append(el('rect', { x: colX[idx[0]], y: 0, width: colX[idx[idx.length - 1]] + colW[idx[idx.length - 1]] - colX[idx[0]], height: HEIGHT, class: 'cj-band', 'data-stage': stage.name, style: 'fill:' + stage.color }));
     }
     pts.forEach((t, i) => { if (i && t.step !== pts[i - 1].step) svg.append(el('line', { x1: colX[i], x2: colX[i], y1: 0, y2: HEIGHT, class: 'cj-sep' })); });
     for (let v = MIN; v <= MAX; v++) svg.append(el('line', { x1: 0, x2: width, y1: y(v), y2: y(v), class: v === 0 ? 'cj-zero' : 'cj-grid' }));
@@ -108,53 +108,31 @@
     const edge = i => (stageStart.has(i) ? ' stage-start' : stepStart.has(i) ? ' step-start' : '');
     const rowW = r => colW.slice(r.first, r.first + r.n).reduce((a, b) => a + b, 0);
     const colorOf = name => (cj.stages.find(s => s.name === name) || {}).color || '#999';
-    $('stageRow').innerHTML = runs(t => stepOf(t).stage).map(r => `<div class="cj-cell stage-start" style="width:${rowW(r)}px;--stage:${esc(colorOf(stepOf(r.t).stage))}"><span title="${esc(stepOf(r.t).stage)}">${esc(stepOf(r.t).stage)}</span></div>`).join('');
-    $('stepRow').innerHTML = runs(t => t.step).map(r => `<div class="cj-cell${edge(r.first)}" style="width:${rowW(r)}px"><span title="${esc(r.t.step + '. ' + stepOf(r.t).name)}"><b>${esc(r.t.step)}</b> <em class="sn">${esc(stepOf(r.t).name)}</em></span></div>`).join('');
-    $('ppRow').innerHTML = pts.map((t, i) => `<div class="cj-cell pp-cell ${ppClass(t.painPoint)}${edge(i)}" data-i="${i}" style="width:${colW[i]}px">${t.painPoint ? `<i class="dot" aria-hidden="true"></i><b class="badge" title="${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || t.painPoint)}">${esc(t.painPoint)}</b><span class="ppname">${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || '')}</span>` : '<i class="none" title="Brak pain pointu w danych">–</i>'}</div>`).join('');
-    $('steps').innerHTML = pts.map((t, i) => `<button type="button" class="cj-tp ${ppClass(t.painPoint)}${t.title ? '' : ' unnamed'}${edge(i)}" data-i="${i}" style="width:${colW[i]}px" aria-pressed="false" title="${esc(title(t))}" aria-label="${esc(title(t) + ', emocja ' + level(t.emotionValue) + (t.painPoint ? ', pain point ' + t.painPoint : ''))}"><span>${esc(title(t))}</span></button>`).join('');
+    $('stageRow').innerHTML = runs(t => stepOf(t).stage).map(r => `<div class="cj-cell stage-start" data-stage="${esc(stepOf(r.t).stage)}" style="width:${rowW(r)}px;--stage:${esc(colorOf(stepOf(r.t).stage))}"><span title="${esc(stepOf(r.t).stage)}">${esc(stepOf(r.t).stage)}</span></div>`).join('');
+    // Średnia emocji (poziom obecny) po etapie; punkty bez wartości pomijane, brak wartości = „brak”.
+    const fmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1).replace('.', ',');
+    $('avgRow').innerHTML = runs(t => stepOf(t).stage).map(r => {
+      const vals = model.series.now.slice(r.first, r.first + r.n).filter(v => v !== null), avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, name = stepOf(r.t).stage;
+      return `<div class="cj-cell stage-start" style="width:${rowW(r)}px;--stage:${esc(colorOf(name))}"><button type="button" class="em cj-avg ${emClass(avg)}" data-stage="${esc(name)}" aria-pressed="false" title="Średnia emocji klienta w etapie „${esc(name)}” (${vals.length} z ${r.n} punktów ma wartość). Kliknij, by podświetlić etap.">śr. ${avg === null ? 'brak' : fmt(avg)}</button></div>`;
+    }).join('');
+    $('stepRow').innerHTML = runs(t => t.step).map(r => `<div class="cj-cell${edge(r.first)}" data-stage="${esc(stepOf(r.t).stage)}" style="width:${rowW(r)}px"><span title="${esc(r.t.step + '. ' + stepOf(r.t).name)}"><b>${esc(r.t.step)}</b> <em class="sn">${esc(stepOf(r.t).name)}</em></span></div>`).join('');
+    $('ppRow').innerHTML = pts.map((t, i) => `<div class="cj-cell pp-cell ${ppClass(t.painPoint)}${edge(i)}" data-i="${i}" data-stage="${esc(stepOf(t).stage)}" style="width:${colW[i]}px">${t.painPoint ? `<i class="dot" aria-hidden="true"></i><b class="badge" title="${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || t.painPoint)}">${esc(t.painPoint)}</b><span class="ppname">${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || '')}</span>` : '<i class="none" title="Brak pain pointu w danych">–</i>'}</div>`).join('');
+    $('steps').innerHTML = pts.map((t, i) => `<button type="button" class="cj-tp ${ppClass(t.painPoint)}${t.title ? '' : ' unnamed'}${edge(i)}" data-i="${i}" data-stage="${esc(stepOf(t).stage)}" style="width:${colW[i]}px" aria-pressed="false" title="${esc(title(t))}" aria-label="${esc(title(t) + ', emocja ' + level(t.emotionValue) + (t.painPoint ? ', pain point ' + t.painPoint : ''))}"><span>${esc(title(t))}</span></button>`).join('');
     pointEls = [...document.querySelectorAll('.cj-tp')];
     ppCells = [...document.querySelectorAll('.pp-cell')];
+    markStage();
   }
 
-  // Podsumowanie z samych danych (poziom obecny): średnia i liczba punktów poniżej zera na etap oraz najniższe punkty. Punkty bez wartości są pomijane, nic nie jest dopełniane.
+  // Ostrzeżenia danych i przycisk prognozy (reszta dawnego podsumowania zastąpiona pigułkami średnich nad etapami).
   function summary() {
-    const pts = model.points, now = model.series.now, stageOf = t => cj.steps.find(s => s.nr === t.step).stage;
-    const fmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1).replace('.', ',');
-    const stages = cj.stages.map(st => {
-      const idx = pts.map((t, i) => i).filter(i => stageOf(pts[i]) === st.name), vals = idx.map(i => now[i]).filter(v => v !== null);
-      return { st, first: idx[0], known: vals.length, neg: vals.filter(v => v < 0).length, avg: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null };
-    }).filter(s => s.first !== undefined);
-    stageStats = stages;
-    const known = now.filter(v => v !== null), low = pts.map((t, i) => ({ t, i, v: now[i] })).filter(x => x.v !== null && x.v < 0).sort((a, b) => a.v - b.v).slice(0, 3);
-    const hasFc = core.HORIZONS.some(h => h.key !== 'now' && model.hasForecast(h.key));
     $('sumWarn').innerHTML = cj.warnings && cj.warnings.length ? `<button type="button" class="chip sum-warn" id="warnBtn" aria-expanded="false" aria-controls="warnings">Jakość danych: ${cj.warnings.length}</button>` : '';
-    $('sumBody').innerHTML = `<p class="sum-line"><b>${known.length} z ${pts.length}</b> punktów styku ma poziom emocji; <b>${known.filter(v => v < 0).length}</b> poniżej zera. Średnia emocji obecnie na etapach:</p>`
-      + `<div class="sum-stages">${stages.map(s => `<button type="button" class="sum-stage" data-i="${s.first}" style="--stage:${esc(s.st.color)}" title="Przejdź do etapu"><span class="ss-name">${esc(s.st.name)}</span><b class="em ${emClass(s.avg)}">${s.avg === null ? 'brak danych' : fmt(s.avg)}</b><small>${s.known ? s.neg + ' z ' + s.known + ' poniżej 0' : 'brak wartości'}</small></button>`).join('')}</div><div class="sum-detail" id="stageDetail" hidden></div>`
-      + (low.length ? `<div class="sum-low"><span>Najniższe punkty:</span>${low.map(x => `<button type="button" class="chip" data-i="${x.i}">${esc(level(x.v))} · ${esc(title(x.t))} <small>${esc(stageOf(x.t))}</small></button>`).join('')}</div>` : '')
-      + `<div class="sum-actions">${hasFc ? '<button type="button" class="ghost" id="fcBtn" aria-pressed="false">Pokaż prognozę</button> ' : ''}<button type="button" class="ghost" id="printBtn">Drukuj / zapisz PDF</button></div>`;
+    $('fcBtn').hidden = !core.HORIZONS.some(h => h.key !== 'now' && model.hasForecast(h.key));
   }
 
-  // Drążenie etapu: średnie na horyzontach, pain pointy i inicjatywy powiązane z punktami etapu (tylko z danych).
-  function stageDetail(first) {
-    const box = $('stageDetail'), s = stageStats.find(x => x.first === first);
-    document.querySelectorAll('.sum-stage').forEach(b => b.setAttribute('aria-pressed', String(!!s && Number(b.dataset.i) === first)));
-    box.hidden = !s;
-    if (!s) return;
-    const pts = model.points, idx = pts.map((t, i) => i).filter(i => cj.steps.find(st => st.nr === pts[i].step).stage === s.st.name);
-    const avg = key => { const v = idx.map(i => model.series[key][i]).filter(x => x !== null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
-    const fmt = v => v === null ? 'brak' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1).replace('.', ',');
-    const hz = core.HORIZONS.filter(h => h.key === 'now' || model.hasForecast(h.key)).map(h => `<span>${esc(h.label)} <b class="em ${emClass(avg(h.key))}">${fmt(avg(h.key))}</b></span>`).join(' → ');
-    const count = new Map(), inits = new Map();
-    idx.forEach(i => {
-      const t = pts[i];
-      if (t.painPoint) count.set(t.painPoint, (count.get(t.painPoint) || 0) + 1);
-      (t.initiative ? [t.initiative] : cj.rootInitiative.filter(([r]) => r === t.rootCause).map(r => r[1])).forEach(id => inits.set(id, (inits.get(id) || 0) + 1));
-    });
-    const name = (list, id) => (list.find(x => x.id === id) || {}).name || id;
-    const ppList = [...count].sort((a, b) => b[1] - a[1]).map(([id, n]) => `<li class="${ppClass(id)}"><i class="dot"></i>${esc(id)} ${esc(name(cj.painPoints, id))} <small>· ${n} pkt</small></li>`).join('');
-    const inList = [...inits].sort((a, b) => b[1] - a[1]).map(([id]) => { const x = cj.initiatives.find(i => i.id === id) || { id, name: id, type: '' }; return `<li>${esc(id)}${x.type ? ' · ' + esc(x.type) : ''}: ${esc(x.name)}</li>`; }).join('');
-    box.innerHTML = `<h3>${esc(s.st.name)} <small>${idx.length} pkt styku</small></h3><p class="sd-hz">Średnia emocji: ${hz}${model.hasForecast('qw') && cj.forecastStatus ? ` <small>(prognoza: ${esc(cj.forecastStatus)})</small>` : ''}</p>`
-      + `<div class="sd-cols"><div><h4>Pain pointy w etapie</h4><ul>${ppList || '<li>brak</li>'}</ul></div><div><h4>Powiązane inicjatywy</h4><ul>${inList || '<li>brak</li>'}</ul></div></div>`;
+  // Podświetlenie etapu wybranego pigułką: wszystkie elementy z data-stage tego etapu zostają, reszta jest przygaszona.
+  function markStage() {
+    $('chartPanel').classList.toggle('hl-on', !!hlStage);
+    document.querySelectorAll('#chartPanel [data-stage]').forEach(e => { const on = e.dataset.stage === hlStage; e.classList.toggle('hl', on); if (e.classList.contains('cj-avg')) e.setAttribute('aria-pressed', String(on)); });
   }
 
   function treeSvg() {
@@ -275,17 +253,17 @@
     const pickPain = e => { const b = e.target.closest('.pp'); if (!b) return; painFilter.has(b.dataset.pp) ? painFilter.delete(b.dataset.pp) : painFilter.add(b.dataset.pp); apply(); };
     $('pains').addEventListener('click', pickPain);
     $('ppLegend').addEventListener('click', pickPain);
-    $('summary').addEventListener('click', e => {
-      if (e.target.closest('#sumToggle')) { const open = $('sumBody').hidden; $('sumBody').hidden = !open; $('sumToggle').setAttribute('aria-expanded', String(open)); $('sumToggle').firstChild.textContent = open ? '▾' : '▸'; return; }
-      if (e.target.closest('#printBtn')) { window.print(); return; }
-      if (e.target.closest('#fcBtn')) {
-        const fc = core.HORIZONS.filter(h => h.key !== 'now' && model.hasForecast(h.key)), on = fc.every(h => shown.has(h.key));
-        fc.forEach(h => on ? shown.delete(h.key) : shown.add(h.key)); apply(); return;
-      }
-      const low = e.target.closest('.sum-low [data-i]'), stage = e.target.closest('.sum-stage');
-      if (low) select({ kind: 'tp', id: model.points[Number(low.dataset.i)].id });
-      else if (stage) { const first = Number(stage.dataset.i), off = stage.getAttribute('aria-pressed') === 'true'; stageDetail(off ? -1 : first); if (!off) $('scroll').scrollLeft = colX[first]; }
+    $('printBtn').addEventListener('click', () => window.print());
+    $('fcBtn').addEventListener('click', () => {
+      const fc = core.HORIZONS.filter(h => h.key !== 'now' && model.hasForecast(h.key)), on = fc.every(h => shown.has(h.key));
+      fc.forEach(h => on ? shown.delete(h.key) : shown.add(h.key)); apply();
     });
+    $('avgBtn').addEventListener('click', () => {
+      const on = $('avgBtn').getAttribute('aria-pressed') !== 'true';
+      $('avgBtn').setAttribute('aria-pressed', String(on)); $('chartPanel').classList.toggle('show-avg', on);
+      if (!on) { hlStage = null; markStage(); }
+    });
+    $('avgRow').addEventListener('click', e => { const b = e.target.closest('.cj-avg'); if (!b) return; hlStage = hlStage === b.dataset.stage ? null : b.dataset.stage; markStage(); });
     $('detail').addEventListener('click', e => { if (e.target.closest('.det-close')) select(sel); });
     $('inner').addEventListener('click', e => { const b = e.target.closest('.cj-tp, .pp-cell'); if (b) select({ kind: 'tp', id: model.points[Number(b.dataset.i)].id }); });
     $('chart').addEventListener('click', e => { const g = e.target.closest('.cj-mark'); if (g) select({ kind: 'tp', id: model.points[Number(g.dataset.i)].id }); });

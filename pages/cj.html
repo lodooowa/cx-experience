@@ -32,6 +32,9 @@
       <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
       <label class="select-wrap matrix-select cj-select"><span>WIDOK</span><select id="viewSelect" aria-label="Sposób prezentacji emocji"><optgroup label="Przegląd"><option value="chart">Wykres</option></optgroup><optgroup label="Prezentacja"><option value="orbit">Orbita</option><option value="landscape">Krajobraz</option></optgroup></select></label>
       <label class="select-wrap matrix-select cj-select"><span>DANE</span><select id="dataSelect" aria-label="Rodzaj danych"><option value="prod">Real</option><option value="demo">Demo</option></select></label>
+      <button type="button" class="ghost" id="avgBtn" aria-pressed="false" title="Pokaż nad etapami średnią emocji klienta">Średnie po etapach</button>
+      <button type="button" class="ghost" id="fcBtn" aria-pressed="false" hidden>Pokaż prognozę</button>
+      <button type="button" class="ghost" id="printBtn">Drukuj / zapisz PDF</button>
       <span class="cj-help"><button type="button" class="ghost" id="helpBtn" aria-label="Jak czytać wykres" aria-describedby="helpText">?</button><span class="cj-help-text" id="helpText" role="tooltip"></span></span>
       <div class="cj-zoom" role="group" aria-label="Powiększenie wykresu"><button type="button" class="ghost" id="zoomOut" aria-label="Oddal">−</button><span id="zoomLevel" aria-live="polite">100%</span><button type="button" class="ghost" id="zoomIn" aria-label="Przybliż">+</button><button type="button" class="ghost" id="zoomFit">Cały przebieg</button><button type="button" class="ghost" id="zoomReset">100%</button></div>
       <div class="cj-pan" role="group" aria-label="Przesuwanie wykresu"><button type="button" class="ghost" id="panLeft" aria-label="Przesuń wykres w lewo">‹</button><button type="button" class="ghost" id="panRight" aria-label="Przesuń wykres w prawo">›</button></div>
@@ -43,7 +46,6 @@
       <div class="cj-filter-actions"><button type="button" class="ghost" id="filtersClear">Wyczyść filtr pain pointów</button><button type="button" class="ghost" id="filtersClose">Zamknij</button></div>
     </div>
 
-    <section class="cj-summary" id="summary" aria-label="Podsumowanie emocji klienta"><div class="sum-head"><button type="button" class="sum-toggle" id="sumToggle" aria-expanded="false" aria-controls="sumBody"><i aria-hidden="true">▸</i> Podsumowanie emocji po etapach</button></div><div id="sumBody" hidden></div></section>
 
     <section class="cj-viz" id="viz" aria-label="Wizualizacja emocji klienta" hidden>
       <div class="viz-bar">
@@ -62,6 +64,7 @@
     <section class="cj-panel" id="chartPanel" aria-label="Wykres emocji i punkty styku">
       <div class="cj-chart-row">
         <div class="cj-gutter" aria-hidden="true">
+          <div class="cj-glabel cj-g-avg">Średnia emocji</div>
           <div class="cj-glabel cj-g-stage">Etap</div>
           <svg class="cj-axis" id="axis"></svg>
           <div class="cj-glabel cj-g-step">Krok</div>
@@ -70,6 +73,7 @@
         </div>
         <div class="cj-scroll" id="scroll" tabindex="0" role="group" aria-label="Wykres emocji i lista punktów styku. Przewijaj poziomo strzałkami.">
           <div class="cj-inner" id="inner">
+            <div class="cj-row cj-avg-row" id="avgRow"></div>
             <div class="cj-row cj-stage-row" id="stageRow"></div>
             <svg id="chart" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="chartTitle"><title id="chartTitle"></title></svg>
             <div class="cj-row cj-step-row" id="stepRow"></div>

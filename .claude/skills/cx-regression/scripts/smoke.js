@@ -109,13 +109,13 @@ async function runPage(browser, key, profileKey) {
 
   if (key === 'cj') {
     check(scope, 'krzywa emocji na wykresie', await page.locator('#chart .cj-series.hz-now .cj-line').count() === 1);
-    check(scope, 'podsumowanie etapów domyślnie zwinięte', await page.locator('#sumBody').isHidden());
-    await page.locator('#sumToggle').click();
-    check(scope, 'rozwinięte podsumowanie ma karty etapów', await page.locator('.sum-stage').count() > 0 && await page.locator('.sum-stage').first().isVisible());
-    await page.locator('.sum-stage').first().click();
-    check(scope, 'karta etapu otwiera szczegóły etapu', await page.locator('#stageDetail').isVisible());
-    await page.locator('.sum-stage').first().click();
-    check(scope, 'ponowny klik zamyka szczegóły etapu', await page.locator('#stageDetail').isHidden());
+    check(scope, 'pigułki średnich etapów domyślnie ukryte', await page.locator('.cj-avg').first().isHidden() || (await page.locator('.cj-avg-row').first().boundingBox() || { height: 0 }).height === 0);
+    await page.locator('#avgBtn').click();
+    check(scope, 'po włączeniu są pigułki średnich etapów', await page.locator('.cj-avg').count() > 0 && await page.locator('.cj-avg').first().isVisible());
+    await page.locator('.cj-avg').first().click();
+    check(scope, 'klik pigułki podświetla etap', await page.locator('#chartPanel.hl-on .cj-stage-row .cj-cell.hl').count() === 1);
+    await page.locator('.cj-avg').first().click();
+    check(scope, 'ponowny klik zdejmuje podświetlenie', await page.locator('#chartPanel.hl-on').count() === 0);
     check(scope, 'legenda pain pointów pod wykresem', await page.locator('#ppLegend .pp').count() > 0);
     check(scope, 'widok i dane to listy rozwijane', await page.locator('select#viewSelect, select#dataSelect').count() === 2);
     check(scope, 'drzewo pain pointów ma węzły', await page.locator('.cj-node').count() > 0);
