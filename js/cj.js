@@ -329,6 +329,11 @@
     $('stageRow').addEventListener('click', e => { const c = e.target.closest('[data-stage]'); if (!c) return; hlStage = hlStage === c.dataset.stage ? null : c.dataset.stage; markStage(); });
     const treePanel = $('treePanel');
     try { treePanel.open = sessionStorage.getItem('cj-tree-open') === '1'; } catch (e) { /* brak storage: domyślnie zwinięte */ }
+    // Po rozwinięciu przewiń tak, by cała sekcja była widoczna (gdy wyższa niż okno: od jej góry).
+    treePanel.querySelector('summary').addEventListener('click', () => requestAnimationFrame(() => {
+      if (!treePanel.open) return;
+      treePanel.scrollIntoView({ block: treePanel.offsetHeight > innerHeight ? 'start' : 'end', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }));
     treePanel.addEventListener('toggle', () => { try { sessionStorage.setItem('cj-tree-open', treePanel.open ? '1' : '0'); } catch (e) { /* ignoruj */ } });
     $('detail').addEventListener('click', e => { if (e.target.closest('.det-close')) select(sel); const l = e.target.closest('.det-link'); if (l) select({ kind: l.dataset.kind, id: l.dataset.id }); const r = e.target.closest('.rel-tp'); if (r) select({ kind: 'tp', id: r.dataset.id }); });
     $('inner').addEventListener('click', e => { const b = e.target.closest('.cj-tp, .pp-cell'); if (b) select({ kind: 'tp', id: model.points[Number(b.dataset.i)].id }); });
