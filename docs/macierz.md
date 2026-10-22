@@ -79,7 +79,7 @@ Wizualizacje (otwierane dwuklikiem, offline, na tych samych danych):
 
 ### Mapa przepływu z macierzy CX (`macierz_CX.xlsx`)
 
-`pages/mapa.html` czyta ten sam plik co widok Customer Journey. Ekspert uzupełnia zakładkę `Przepływ` (dopisuje ją `python3 tools/add-flow-sheet.py [plik.xlsx]`, z kopią `.bak`, bez zmian przy ponownym uruchomieniu): wiersz = jedno przejście `Z` → `Do` (Touchpoint ID z `Macierz CX`, listy rozwijane). Powrót do wcześniejszego punktu to zwykły wiersz wstecz, a odgałęzienie to kilka wierszy z tym samym `Z`. `Scenariusz` (opcjonalny) ogranicza przejście do scenariusza; pusty = wszystkie. `Opcjonalny` = `tak` rysuje linię przerywaną. Tory mapy to właściciel biznesowy (brak: kanał), kolumny to kroki z zakładki `Dane`. Po edycji: `2-przebuduj-dane`.
+`pages/mapa.html` czyta ten sam plik co widok Customer Journey. Ekspert uzupełnia zakładkę `Przepływ` (dopisuje ją `python3 tools/add-flow-sheet.py [plik.xlsx]`, z kopią `.bak`, bez zmian przy ponownym uruchomieniu): wiersz = jedno przejście `Z` → `Do` (Touchpoint ID z `Macierz CX`, listy rozwijane); kolumny `Z – punkt styku` i `Do – punkt styku` to formuły podglądu nazwy (konwerter ich nie czyta; `— brak takiego ID` = błędne ID), a ponowne uruchomienie skryptu przebudowuje starą zakładkę z zachowaniem wpisanych przejść. Powrót do wcześniejszego punktu to zwykły wiersz wstecz, a odgałęzienie to kilka wierszy z tym samym `Z`. `Scenariusz` (opcjonalny) ogranicza przejście do scenariusza; pusty = wszystkie. `Opcjonalny` = `tak` rysuje linię przerywaną. Tory mapy to właściciel biznesowy (brak: kanał), kolumny to kroki z zakładki `Dane`. Po edycji: `2-przebuduj-dane`.
 
 ## Do przemyślenia
 

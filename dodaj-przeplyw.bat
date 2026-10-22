@@ -1,5 +1,5 @@
 @echo off
-rem Dwuklik (Windows): dopisuje zakladke "Przeplyw" (Z, Do, Etykieta, Scenariusz, Opcjonalny) do macierz_CX.xlsx i macierz_CX_demo.xlsx. Zamknij pliki w Excelu przed uruchomieniem. Kopia zapasowa: plik.xlsx.bak. Ponowne uruchomienie niczego nie psuje. Wymaga Pythona 3 (przenosnego w tools\python albo systemowego).
+rem Dwuklik (Windows): dopisuje zakladke "Przeplyw" (Z, Do, Etykieta, Scenariusz, Opcjonalny + nazwy punktow) do macierz_CX.xlsx i macierz_CX_demo.xlsx. Zamknij pliki w Excelu przed uruchomieniem. Kopia zapasowa: plik.xlsx.bak. Ponowne uruchomienie niczego nie psuje. Wymaga Pythona 3 (przenosnego w tools\python albo systemowego).
 chcp 65001 >nul
 set PYTHONIOENCODING=utf-8
 cd /d "%~dp0"
