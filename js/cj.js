@@ -4,14 +4,14 @@
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const NS = 'http://www.w3.org/2000/svg';
-  const GUTTER = 96, PW = 92, HEIGHT = 330, TOP = 14, BOTTOM = 14, MIN = -5, MAX = 5;
+  const GUTTER = 140, PW = 92, HEIGHT = 330, TOP = 14, BOTTOM = 14, MIN = -5, MAX = 5;
   // Dwa zestawy danych: produkcyjny (data/cj.js z macierz_CX.xlsx, poza repozytorium) i demo (data/cj-demo.js z macierz_CX_demo.xlsx). Domyślnie produkcyjny, o ile istnieje; ?dane=demo wymusza demo.
   const hasProd = !!window.CX_CJ, demo = new URLSearchParams(location.search).get('dane') === 'demo' || !hasProd;
   const cj = demo ? window.CX_CJ_DEMO : window.CX_CJ, core = window.CX.cjCore;
   let model, sel = null, rel = null, shown = new Set(['now']), painFilter = new Set();
   let zoom = 1, hlStage = null;
   let seriesDots = [], colX = [], colW = [], totalW = 0;
-  let dots = [], pointEls = [], ppCells = [], hoverEl = null, ppIndex = new Map(), treeNodes = [];
+  let dots = [], pointEls = [], stickyTps = [], ppCells = [], hoverEl = null, ppIndex = new Map(), treeNodes = [];
 
   const el = (name, attrs = {}, text) => {
     const node = document.createElementNS(NS, name);
@@ -32,7 +32,6 @@
       return `<button type="button" class="chip hz hz-${h.key}" data-h="${h.key}" aria-pressed="${shown.has(h.key)}"${ok && h.key !== 'now' ? '' : h.key === 'now' ? ' disabled' : ' disabled title="Brak wartości prognozy w arkuszu"'}><i class="sw"></i>${esc(h.label)}${h.key !== 'now' && cj.forecastStatus ? ' (' + esc(cj.forecastStatus) + ')' : ''}</button>`;
     }).join('');
     $('pains').innerHTML = cj.painPoints.map(p => `<button type="button" class="chip pp ${ppClass(p.id)}" data-pp="${esc(p.id)}" aria-pressed="${painFilter.has(p.id)}" title="${esc(p.description)}"><i class="sw"></i>${esc(p.name)}</button>`).join('');
-    $('ppLegend').innerHTML = cj.painPoints.map(p => `<button type="button" class="chip pp ${ppClass(p.id)}" data-pp="${esc(p.id)}" aria-pressed="${painFilter.has(p.id)}" title="${esc(p.description)}"><i class="sw"></i>${esc(p.id)} ${esc(p.name)}</button>`).join('');
   }
 
   // Szerokość kolumny punktu: PW * powiększenie; od 80% etap dostaje dodatkowo tyle miejsca, żeby jego nazwa zmieściła się w jednej linii (po równo na jego punkty).
@@ -40,6 +39,15 @@
     const ctx = document.createElement('canvas').getContext('2d');
     ctx.font = '800 10px "Helvetica Neue", Helvetica, Arial, sans-serif';
     const stageOf = t => cj.steps.find(s => s.nr === t.step).stage;
+    // Najmniejsza szerokość komórki, przy której „nr. nazwa” (11 px) łamie się na max 2 linie.
+    const stepNeed = nr => {
+      ctx.font = '600 11px "Helvetica Neue", Helvetica, Arial, sans-serif';
+      const words = (nr + ' ' + cj.steps.find(s => s.nr === nr).name).split(/\s+/), sp = ctx.measureText(' ').width, ww = words.map(w => ctx.measureText(w).width);
+      const lines = avail => { let n = 1, cur = 0; ww.forEach(w => { if (cur && cur + sp + w > avail) { n++; cur = w; } else cur += (cur ? sp : 0) + w; }); return n; };
+      let w = Math.ceil(Math.max(...ww)) + 4;
+      while (lines(w) > 2) w++;
+      return w + 16 + 8;
+    };
     colX = []; colW = []; totalW = 0;
     let i = 0;
     while (i < model.points.length) {
@@ -47,8 +55,18 @@
       let n = 0;
       while (i + n < model.points.length && stageOf(model.points[i + n]) === stage) n++;
       const need = zoom >= .8 ? Math.ceil(ctx.measureText(stage.toUpperCase()).width + stage.length * .4 + 24) : 0;
-      const total = Math.max(Math.round(n * PW * zoom), need), each = Math.floor(total / n);
-      for (let k = 0; k < n; k++) { const w = k === n - 1 ? total - each * (n - 1) : each; colX.push(totalW); colW.push(w); totalW += w; }
+      // Kroki: nazwa ma się zmieścić w max 2 liniach, więc krok dostaje tyle miejsca, ile trzeba (od 80% powiększenia).
+      const runs = [];
+      for (let k = 0; k < n; k++) {
+        const st = model.points[i + k].step, last = runs[runs.length - 1];
+        if (last && last.step === st) last.n++; else runs.push({ step: st, n: 1 });
+      }
+      runs.forEach(r => { r.w = Math.round(r.n * PW * zoom); if (zoom >= .8) r.w = Math.max(r.w, stepNeed(r.step)); });
+      const sum = runs.reduce((a, r) => a + r.w, 0), extra = Math.max(0, need - sum);
+      runs.forEach(r => {
+        const total = r.w + Math.round(extra * r.n / n), each = Math.floor(total / r.n);
+        for (let k = 0; k < r.n; k++) { const w = k === r.n - 1 ? total - each * (r.n - 1) : each; colX.push(totalW); colW.push(w); totalW += w; }
+      });
       i += n;
     }
   }
@@ -92,7 +110,7 @@
     const axis = $('axis');
     axis.replaceChildren();
     axis.setAttribute('viewBox', `0 0 ${GUTTER} ${HEIGHT}`); axis.setAttribute('width', GUTTER); axis.setAttribute('height', HEIGHT);
-    axis.append(el('text', { transform: `translate(14 ${HEIGHT / 2}) rotate(-90)`, class: 'cj-axis-title', 'text-anchor': 'middle' }, 'Poziom emocji klienta (−5 do +5)'));
+    axis.append(el('text', { transform: `translate(${(GUTTER - 30) / 2} ${HEIGHT / 2}) rotate(-90)`, class: 'cj-axis-title', 'text-anchor': 'middle', 'dominant-baseline': 'central' }, 'Poziom emocji klienta (−5 do +5)'));
     for (let v = MIN; v <= MAX; v++) axis.append(el('text', { x: GUTTER - 8, y: y(v) + 4, class: 'cj-axis-label', 'text-anchor': 'end' }, v > 0 ? '+' + v : v < 0 ? '−' + Math.abs(v) : '0'));
   }
 
@@ -113,13 +131,16 @@
     const fmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1).replace('.', ',');
     $('avgRow').innerHTML = runs(t => stepOf(t).stage).map(r => {
       const vals = model.series.now.slice(r.first, r.first + r.n).filter(v => v !== null), avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, name = stepOf(r.t).stage;
-      return `<div class="cj-cell stage-start" style="width:${rowW(r)}px;--stage:${esc(colorOf(name))}"><button type="button" class="em cj-avg ${emClass(avg)}" data-stage="${esc(name)}" aria-pressed="false" title="Średnia emocji klienta w etapie „${esc(name)}” (${vals.length} z ${r.n} punktów ma wartość). Kliknij, by podświetlić etap.">śr. ${avg === null ? 'brak' : fmt(avg)}</button></div>`;
+      return `<div class="cj-cell stage-start" data-stage="${esc(name)}" style="width:${rowW(r)}px;--stage:${esc(colorOf(name))}"><button type="button" class="em cj-avg ${emClass(avg)}" data-stage="${esc(name)}" aria-pressed="false" title="Średnia emocji klienta w etapie „${esc(name)}” (${vals.length} z ${r.n} punktów ma wartość). Kliknij, by podświetlić etap.">${avg === null ? 'brak' : fmt(avg)}</button></div>`;
     }).join('');
-    $('stepRow').innerHTML = runs(t => t.step).map(r => `<div class="cj-cell${edge(r.first)}" data-stage="${esc(stepOf(r.t).stage)}" style="width:${rowW(r)}px"><span title="${esc(r.t.step + '. ' + stepOf(r.t).name)}"><b>${esc(r.t.step)}</b> <em class="sn">${esc(stepOf(r.t).name)}</em></span></div>`).join('');
-    $('ppRow').innerHTML = pts.map((t, i) => `<div class="cj-cell pp-cell ${ppClass(t.painPoint)}${edge(i)}" data-i="${i}" data-stage="${esc(stepOf(t).stage)}" style="width:${colW[i]}px">${t.painPoint ? `<i class="dot" aria-hidden="true"></i><b class="badge" title="${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || t.painPoint)}">${esc(t.painPoint)}</b><span class="ppname">${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || '')}</span>` : '<i class="none" title="Brak pain pointu w danych">–</i>'}</div>`).join('');
-    $('steps').innerHTML = pts.map((t, i) => `<button type="button" class="cj-tp ${ppClass(t.painPoint)}${t.title ? '' : ' unnamed'}${edge(i)}" data-i="${i}" data-stage="${esc(stepOf(t).stage)}" style="width:${colW[i]}px" aria-pressed="false" title="${esc(title(t))}" aria-label="${esc(title(t) + ', emocja ' + level(t.emotionValue) + (t.painPoint ? ', pain point ' + t.painPoint : ''))}"><span>${esc(title(t))}</span></button>`).join('');
-    pointEls = [...document.querySelectorAll('.cj-tp')];
-    ppCells = [...document.querySelectorAll('.pp-cell')];
+    $('stepRow').innerHTML = runs(t => t.step).map(r => `<div class="cj-cell${edge(r.first)}" data-stage="${esc(stepOf(r.t).stage)}" style="width:${rowW(r)}px;--stage:${esc(colorOf(stepOf(r.t).stage))}"><span title="${esc(r.t.step + '. ' + stepOf(r.t).name)}"><b>${esc(r.t.step)}</b> <em class="sn">${esc(stepOf(r.t).name)}</em></span></div>`).join('');
+    $('ppRow').innerHTML = pts.map((t, i) => `<div class="cj-cell pp-cell ${ppClass(t.painPoint)}${edge(i)}" data-i="${i}" data-stage="${esc(stepOf(t).stage)}" style="width:${colW[i]}px;--stage:${esc(colorOf(stepOf(t).stage))}">${t.painPoint ? `<i class="dot" aria-hidden="true"></i><b class="badge" title="${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || t.painPoint)}">${esc(t.painPoint)}</b><span class="ppname">${esc((cj.painPoints.find(p => p.id === t.painPoint) || {}).name || '')}</span>` : '<i class="none" title="Brak pain pointu w danych">–</i>'}</div>`).join('');
+    $('steps').innerHTML = pts.map((t, i) => `<button type="button" class="cj-tp ${ppClass(t.painPoint)}${t.title ? '' : ' unnamed'}${edge(i)}" data-i="${i}" data-stage="${esc(stepOf(t).stage)}" style="width:${colW[i]}px;--stage:${esc(colorOf(stepOf(t).stage))}" aria-pressed="false" title="${esc(title(t))}" aria-label="${esc(title(t) + ', emocja ' + level(t.emotionValue) + (t.painPoint ? ', pain point ' + t.painPoint : ''))}"><span>${esc(title(t))}</span></button>`).join('');
+    pointEls = [...$('steps').querySelectorAll('.cj-tp')];
+    ppCells = [...$('ppRow').querySelectorAll('.pp-cell')];
+    $('stickyTrack').innerHTML = `<div class="cj-row cj-stage-row">${$('stageRow').innerHTML}</div><div class="cj-row cj-step-row">${$('stepRow').innerHTML}</div><div class="cj-row cj-tp-row">${$('steps').innerHTML}</div>`;
+    stickyTps = [...$('stickyTrack').querySelectorAll('.cj-tp')];
+    stickyTps.forEach(b => b.setAttribute('tabindex', '-1'));
     markStage();
   }
 
@@ -166,10 +187,11 @@
     model.points.forEach((t, i) => {
       const on = rel.tp.has(t.id), filtered = painFilter.size && !painFilter.has(t.painPoint);
       const classes = (el) => { el.classList.toggle('on', on); el.classList.toggle('off', (active && !on) || !!filtered); };
-      classes(dots[i]); classes(pointEls[i]); classes(ppCells[i]);
+      classes(dots[i]); classes(pointEls[i]); classes(ppCells[i]); if (stickyTps[i]) classes(stickyTps[i]);
       // Wykres: punkty spoza zaznaczenia lub filtra pain pointów są przygaszone na krzywych.
       seriesDots.filter(d => d.i === i).forEach(d => d.c.classList.toggle('off', (active && !on) || !!filtered));
       pointEls[i].setAttribute('aria-pressed', String(sel && sel.kind === 'tp' && sel.id === t.id));
+      if (stickyTps[i]) stickyTps[i].setAttribute('aria-pressed', pointEls[i].getAttribute('aria-pressed'));
     });
     treeNodes.forEach(g => {
       const kind = g.dataset.kind, id = g.dataset.id, on = rel[kind].has(id);
@@ -183,51 +205,98 @@
     });
     document.querySelectorAll('.cj-series').forEach(g => g.classList.toggle('hidden', !shown.has(g.dataset.h)));
     $('horizons').querySelectorAll('.hz').forEach(b => b.setAttribute('aria-pressed', String(shown.has(b.dataset.h))));
-    document.querySelectorAll('#pains .pp, #ppLegend .pp').forEach(b => b.setAttribute('aria-pressed', String(painFilter.has(b.dataset.pp))));
+    document.querySelectorAll('#pains .pp').forEach(b => b.setAttribute('aria-pressed', String(painFilter.has(b.dataset.pp))));
     const forecasts = core.HORIZONS.filter(h => h.key !== 'now' && model.hasForecast(h.key)), count = painFilter.size;
     if ($('fcBtn')) { const on = forecasts.every(h => shown.has(h.key)); $('fcBtn').setAttribute('aria-pressed', String(on)); $('fcBtn').textContent = on ? 'Ukryj prognozę' : 'Pokaż prognozę'; }
+    $('filtersClear').hidden = !count;
     $('filtersCount').hidden = !count; $('filtersCount').textContent = count;
     detail();
     if (window.CX.cjViz) window.CX.cjViz.update();
   }
 
+  // Ikony nagłówków pól w drawerze (inline SVG, kolory z CSS: .ico-*).
+  const ICONS = {
+    warn: '<path d="M0-9.5 10 8H-10Z" class="f"/><path d="M0-3.5v6" class="s"/><circle cx="0" cy="5.2" r="1.1" class="f2"/>',
+    pain: '<circle r="10.5" class="r r1"/><circle r="7.5" class="r r2"/><circle r="4.5" class="r r3"/><circle r="2.6" class="f"/>',
+    root: '<circle r="6.4" class="s"/><circle r="8.6" class="s g" stroke-dasharray="1.6 2.2"/><path d="M-2-1.6a2 2 0 1 1 3 1.7c-.7.4-1 .8-1 1.5" class="s"/><circle cx="0" cy="3.6" r=".9" class="f"/>',
+    init: '<path d="M-3.8 3.2C-6.2 1.6-7 -.4-7-2.4A7 7 0 0 1 7-2.4C7-.4 6.2 1.6 3.8 3.2Z" class="s"/><path d="M-2.8 6.3h5.6M-1.6 8.8h3.2" class="s"/><path d="M-1.6 3.2V-.6L0-1.8l1.6 1.2v3.8" class="s"/>'
+  };
+
+  const drawerBelow = window.matchMedia('(max-width: 850px)');
+
   function detail() {
     const box = $('detail');
     box.hidden = !sel;
+    // Miejsce po prawej na drawer, żeby skrajne punkty dało się przewinąć na lewo od niego.
+    $('inner').style.paddingRight = sel && !drawerBelow.matches ? box.offsetWidth + 16 + 'px' : '';
+    document.body.classList.toggle('drawer-open', !!sel && !drawerBelow.matches);
     if (!sel) return;
     const named = (list, id) => (list.find(i => i.id === id) || {}).name || id;
     const close = '<button type="button" class="det-close" aria-label="Zamknij szczegóły" title="Zamknij (Esc)">×</button>';
     const row = (label, value) => value ? `<p><b>${esc(label)}:</b> ${esc(value)}</p>` : '';
     if (sel.kind === 'tp') {
-      const t = cj.touchpoints.find(x => x.id === sel.id), f = t.forecast;
-      const meta = [['Krok', t.step + '. ' + cj.steps.find(s => s.nr === t.step).name], ['Kanał', t.channel], ['Właściciel', t.owner], ['Współwłaściciel', t.coOwner]].filter(m => m[1])
-        .map(m => `<span><b>${esc(m[0])}:</b> ${esc(m[1])}</span>`).join('');
-      const chip = (label, v) => `<span class="em ${emClass(v)}">${label ? esc(label) + ' ' : ''}${esc(level(v))}</span>`;
-      const goal = (cls, label, text) => text ? `<div class="goal ${cls}"><small>${esc(label)}</small>${esc(text)}</div>` : '';
-      const goals = [goal('qw', 'Quick Win · cel krótkoterminowy', t.quickWin), goal('mid', 'Mid Term · cel średnioterminowy', t.midTerm), goal('dir', 'Rekomendowany kierunek · cel długoterminowy', t.recommendation), goal('long', 'Long Term', t.longTerm)].join('');
-      box.innerHTML = `<h3>${esc(title(t))} <small>${esc(t.id)}</small></h3><div class="det-meta">${meta}</div>`
-        + `<p class="det-emotion"><b>Emocja:</b> ${esc(t.emotion || 'brak danych')} ${chip('', t.emotionValue)}`
-        + (f ? ` <span class="fc">Prognoza${cj.forecastStatus ? ' (' + esc(cj.forecastStatus) + ')' : ''}: ${chip('QW', f.qw)} ${chip('Mid', f.mid)} ${chip('Long', f.long)}</span>` : '')
-        + (t.justification ? ` <span class="why">${esc(t.justification)}</span>` : '') + '</p>'
-        + row('Problem', t.problem)
-        + row('Pain point', t.painPoint ? t.painPoint + ' ' + named(cj.painPoints, t.painPoint) : '') + row('Root cause', t.rootCause ? t.rootCause + ' ' + named(cj.rootCauses, t.rootCause) : '')
-        + row('Inicjatywa', t.initiative ? t.initiative + ' ' + named(cj.initiatives, t.initiative) : '')
-        + (goals ? `<div class="goals">${goals}</div>` : '')
+      const t = cj.touchpoints.find(x => x.id === sel.id), f = t.forecast, stp = cj.steps.find(s => s.nr === t.step);
+      // Stały układ: każda sekcja ma zawsze te same pola i wysokość (brak danych = „—”), żeby przy przełączaniu punktów szukać w tym samym miejscu.
+      const na = '<span class="na">—</span>';
+      const val = v => v ? esc(v) : na;
+      const meta = (label, v, cls) => `<div class="m ${cls || ''}"><span class="det-label">${esc(label)}</span><span class="mv" title="${esc(v || '')}">${val(v)}</span></div>`;
+      const chip = (v) => `<span class="em ${emClass(v)}">${esc(level(v))}</span>`;
+      const step = (cls, label, text, v) => `<li class="tl ${cls}${text ? '' : ' empty'}"><span class="tl-head"><b>${esc(label)}</b>${v === undefined ? '' : chip(v)}</span><span class="tl-text" title="${esc(text || '')}">${val(text)}</span></li>`;
+      const tl = [step('qw', 'Quick Win', t.quickWin, f ? f.qw : undefined), step('mid', 'Mid Term', t.midTerm, f ? f.mid : undefined), step('long', 'Long Term', t.longTerm, f ? f.long : undefined)].join('');
+      const field = (label, value, icon, cls, link) => { const rid = Array.isArray(value), text = rid ? value.join(' ') : value, html = rid ? `<span class="rid">${esc(value[0])}</span> ${esc(value[1])}` : esc(value); return `<dt>${icon ? `<svg class="ico ico-${icon}" viewBox="-12 -12 24 24" aria-hidden="true">${ICONS[icon]}</svg>` : ''}${esc(label)}</dt><dd class="${cls}" title="${esc(text || '')}">${value && link ? `<button type="button" class="det-link" data-kind="${link[0]}" data-id="${esc(link[1])}">${html}</button>` : value ? html : na}</dd>`; };
+      const withName = (id, list) => id ? [id, named(list, id)] : '';
+      box.innerHTML = `<section class="det-head"><h3 title="${esc(title(t))}">${esc(title(t))} <small class="rid">${esc(t.id)}</small></h3><div class="det-meta">`
+        + meta('Etap', stp.stage, 'row') + meta('Krok', t.step + '. ' + stp.name, 'row') + meta('Kanał', t.channel, 'row') + '<div class="owners">' + meta('Właściciel', t.owner, 'inline') + meta('Współwłaściciel', t.coOwner, 'inline') + '</div></div></section>'
+        + `<section class="det-emotion"><span class="det-label">Emocja</span> ${chip(t.emotionValue)} <span class="ev">${val(t.emotion)}</span>`
+        + `<span class="why" title="${esc(t.justification || '')}">${t.justification ? esc(t.justification) : ''}</span></section>`
+        + '<dl class="det-fields">' + field('Problem', t.problem, 'warn', 'c-problem') + field('Pain point', withName(t.painPoint, cj.painPoints), 'pain', 'c-pp', ['pp', t.painPoint])
+        + field('Root cause', withName(t.rootCause, cj.rootCauses), 'root', 'c-rc', ['rc', t.rootCause]) + field('Inicjatywa', withName(t.initiative, cj.initiatives), 'init', 'c-in') + '</dl>'
+        + `<section class="det-plan"><h4 class="det-label">Plan działań${f && cj.forecastStatus ? ' · prognoza (' + esc(cj.forecastStatus) + ')' : ''}</h4><div class="recommend"><span class="det-label">Rekomendowany kierunek</span><span class="rec-text" title="${esc(t.recommendation || '')}">${val(t.recommendation)}</span></div><ol class="timeline">${tl}</ol></section>`
         + close;
     } else {
       const list = { pp: cj.painPoints, rc: cj.rootCauses, in: cj.initiatives }[sel.kind], item = list.find(i => i.id === sel.id);
-      box.innerHTML = `<h3>${esc(item.name)} <small>${esc(item.id)}</small></h3>${row('Opis', item.description)}${row('Typ', item.type)}`
-        + `<p><b>Powiązane punkty styku:</b> ${rel.tp.size ? [...rel.tp].map(id => esc(title(cj.touchpoints.find(t => t.id === id)))).join(', ') : 'brak'}</p>${close}`;
+      const icon = { pp: 'pain', rc: 'root', in: 'init' }[sel.kind], kindName = { pp: 'Pain point', rc: 'Root cause', in: 'Inicjatywa' }[sel.kind];
+      const tps = model.points.filter(t => rel.tp.has(t.id));
+      const li = t => `<li><button type="button" class="rel-tp" data-id="${esc(t.id)}" title="${esc(title(t))}"><span class="rel-step">${esc(t.step)}</span><span class="rel-name">${esc(title(t))}<small>${esc(cj.steps.find(s => s.nr === t.step).stage)} · <span class="rid">${esc(t.id)}</span></small></span><span class="em ${emClass(t.emotionValue)}">${esc(level(t.emotionValue))}</span></button></li>`;
+      box.innerHTML = `<section class="det-head"><span class="det-kind"><svg class="ico ico-${icon}" viewBox="-12 -12 24 24" aria-hidden="true">${ICONS[icon]}</svg><span class="det-label">${kindName}${item.type ? ' · ' + esc(item.type) : ''}</span></span>`
+        + `<h3 title="${esc(item.name)}">${esc(item.name)} <small class="rid">${esc(item.id)}</small></h3>${item.description ? `<p class="det-desc">${esc(item.description)}</p>` : ''}</section>`
+        + `<section class="det-plan det-related"><h4 class="det-label">Powiązane punkty styku (${tps.length})</h4>${tps.length ? `<ul class="rel-list">${tps.map(li).join('')}</ul>` : '<p class="na">Brak powiązanych punktów styku.</p>'}</section>${close}`;
     }
   }
 
   function select(next) {
     sel = sel && next && sel.kind === next.kind && sel.id === next.id ? null : next;
     apply();
+    // Wybór pain pointu, przyczyny lub inicjatywy (np. linkiem z drawera) rozwija drzewo i pokazuje jego gałąź.
+    if (sel && sel.kind !== 'tp') {
+      const tree = $('treePanel');
+      tree.open = true;
+      tree.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }
     if (sel && sel.kind === 'tp') {
       const i = model.points.findIndex(t => t.id === sel.id), scroll = $('scroll'), x = colX[i];
-      if (x < scroll.scrollLeft || x + colW[i] > scroll.scrollLeft + scroll.clientWidth) scroll.scrollLeft = Math.max(0, x - scroll.clientWidth / 2);
+      const sr = scroll.getBoundingClientRect(), visible = drawerBelow.matches ? scroll.clientWidth : Math.max(120, Math.min(scroll.clientWidth, $('detail').getBoundingClientRect().left - sr.left));
+      // Przesuwamy minimalnie: punkt ma się zmieścić w widocznej części (z zapasem 74 px), bez centrowania.
+      if (x < scroll.scrollLeft) glideTo(scroll, Math.max(0, x - 74));
+      else if (x + colW[i] > scroll.scrollLeft + visible) glideTo(scroll, x + colW[i] - visible + 74);
     }
+  }
+
+  // Płynne przesunięcie wykresu do punktu (1 s); wheel/dotyk/przeciąganie je przerywa.
+  let glideId = 0;
+  function glideTo(el, to) {
+    cancelAnimationFrame(glideId);
+    const from = el.scrollLeft, max = el.scrollWidth - el.clientWidth;
+    to = Math.min(to, max);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || Math.abs(to - from) < 2) { el.scrollLeft = to; return; }
+    const t0 = performance.now(), stop = () => cancelAnimationFrame(glideId);
+    ['wheel', 'pointerdown', 'touchstart'].forEach(ev => el.addEventListener(ev, stop, { once: true, passive: true }));
+    const step = now => {
+      const k = Math.min(1, (now - t0) / 1000);
+      el.scrollLeft = from + (to - from) * (1 - Math.pow(1 - k, 3));
+      if (k < 1) glideId = requestAnimationFrame(step);
+    };
+    glideId = requestAnimationFrame(step);
   }
 
   function init() {
@@ -252,19 +321,16 @@
     $('horizons').addEventListener('click', e => { const b = e.target.closest('.hz'); if (!b || b.disabled) return; shown.has(b.dataset.h) ? shown.delete(b.dataset.h) : shown.add(b.dataset.h); apply(); });
     const pickPain = e => { const b = e.target.closest('.pp'); if (!b) return; painFilter.has(b.dataset.pp) ? painFilter.delete(b.dataset.pp) : painFilter.add(b.dataset.pp); apply(); };
     $('pains').addEventListener('click', pickPain);
-    $('ppLegend').addEventListener('click', pickPain);
-    $('printBtn').addEventListener('click', () => window.print());
     $('fcBtn').addEventListener('click', () => {
       const fc = core.HORIZONS.filter(h => h.key !== 'now' && model.hasForecast(h.key)), on = fc.every(h => shown.has(h.key));
       fc.forEach(h => on ? shown.delete(h.key) : shown.add(h.key)); apply();
     });
-    $('avgBtn').addEventListener('click', () => {
-      const on = $('avgBtn').getAttribute('aria-pressed') !== 'true';
-      $('avgBtn').setAttribute('aria-pressed', String(on)); $('chartPanel').classList.toggle('show-avg', on);
-      if (!on) { hlStage = null; markStage(); }
-    });
     $('avgRow').addEventListener('click', e => { const b = e.target.closest('.cj-avg'); if (!b) return; hlStage = hlStage === b.dataset.stage ? null : b.dataset.stage; markStage(); });
-    $('detail').addEventListener('click', e => { if (e.target.closest('.det-close')) select(sel); });
+    $('stageRow').addEventListener('click', e => { const c = e.target.closest('[data-stage]'); if (!c) return; hlStage = hlStage === c.dataset.stage ? null : c.dataset.stage; markStage(); });
+    const treePanel = $('treePanel');
+    try { treePanel.open = sessionStorage.getItem('cj-tree-open') === '1'; } catch (e) { /* brak storage: domyślnie zwinięte */ }
+    treePanel.addEventListener('toggle', () => { try { sessionStorage.setItem('cj-tree-open', treePanel.open ? '1' : '0'); } catch (e) { /* ignoruj */ } });
+    $('detail').addEventListener('click', e => { if (e.target.closest('.det-close')) select(sel); const l = e.target.closest('.det-link'); if (l) select({ kind: l.dataset.kind, id: l.dataset.id }); const r = e.target.closest('.rel-tp'); if (r) select({ kind: 'tp', id: r.dataset.id }); });
     $('inner').addEventListener('click', e => { const b = e.target.closest('.cj-tp, .pp-cell'); if (b) select({ kind: 'tp', id: model.points[Number(b.dataset.i)].id }); });
     $('chart').addEventListener('click', e => { const g = e.target.closest('.cj-mark'); if (g) select({ kind: 'tp', id: model.points[Number(g.dataset.i)].id }); });
     const node = e => { const g = e.target.closest('.cj-node'); if (g) select({ kind: g.dataset.kind, id: g.dataset.id }); };
@@ -273,11 +339,25 @@
     // Powiększanie: ponowne rozmieszczenie kolumn (wysokość i czcionki bez zmian). Przy małej szerokości kolumn nazwy się chowają, zostaje krzywa, kolory etapów i pain pointów.
     const scroll2 = $('scroll');
     const MAXZ = 1.8, fitZoom = () => Math.max(.1, Math.min(1, (scroll2.clientWidth - 2) / (model.points.length * PW)));
+    // Przyklejony nagłówek: po przewinięciu strony pod filtrami zostaje nazwa etapu, a niżej także nazwa kroku (kopie wierszy przesuwane razem z poziomym przewijaniem).
+    const STICKY_TP = 64, sticky = $('stickyHead'), toolbarEl = document.querySelector('.matrix-toolbar');
+    const syncSticky = () => {
+      const top = toolbarEl && getComputedStyle(toolbarEl).position === 'sticky' ? toolbarEl.offsetHeight : 0;
+      sticky.style.setProperty('--sticky-top', top + 'px');
+      const stageH = $('stageRow').offsetHeight, step = $('stepRow').getBoundingClientRect().top < top + stageH, tp = $('steps').getBoundingClientRect().top < top + stageH + $('stepRow').offsetHeight;
+      const room = document.querySelector('.cj-chart-row').getBoundingClientRect().bottom - top > stageH + (step ? $('stepRow').offsetHeight : 0) + (tp ? STICKY_TP : 0) + 40;
+      sticky.classList.toggle('s-stage', room && $('stageRow').getBoundingClientRect().top < top);
+      sticky.classList.toggle('s-step', step);
+      sticky.classList.toggle('s-tp', tp);
+      $('stickyTrack').style.transform = `translateX(${-$('scroll').scrollLeft}px)`;
+    };
+    window.addEventListener('scroll', syncSticky, { passive: true }); window.addEventListener('resize', syncSticky); $('scroll').addEventListener('scroll', syncSticky, { passive: true });
+    $('stickyTrack').addEventListener('click', e => { const b = e.target.closest('.cj-tp'); if (b) { select({ kind: 'tp', id: model.points[Number(b.dataset.i)].id }); return; } const c = e.target.closest('[data-stage]'); if (!c) return; hlStage = hlStage === c.dataset.stage ? null : c.dataset.stage; markStage(); });
     const render = () => {
       hideTip(); layout(); chart(); stepsList();
       document.querySelector('.cj-chart-row').parentNode.classList.toggle('compact', PW * zoom < 60);
       $('zoomLevel').textContent = Math.round(zoom * 100) + '%';
-      apply();
+      apply(); syncSticky();
     };
     const setZoom = (next, anchor) => {
       next = Math.min(MAXZ, Math.max(fitZoom(), next));
@@ -298,13 +378,7 @@
     scroll2.addEventListener('wheel', e => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), e.clientX - scroll2.getBoundingClientRect().left); }, { passive: false });
     scroll2.addEventListener('keydown', e => { if (e.key === '+' || e.key === '=') setZoom(zoom * 1.25); else if (e.key === '-') setZoom(zoom / 1.25); else if (e.key === '0') setZoom(1); else return; e.preventDefault(); });
     window.addEventListener('resize', () => { if (zoom < fitZoom()) setZoom(fitZoom()); });
-    // Pain pointy pod nazwami punktów: domyślnie zwinięty pasek z kropkami, po rozwinięciu plakietki z kodem.
-    $('ppToggle').addEventListener('click', () => {
-      const open = $('ppRow').classList.toggle('collapsed') === false;
-      $('ppToggle').setAttribute('aria-expanded', String(open)); $('ppToggle').querySelector('i').textContent = open ? '▾' : '▸';
-      $('gutterPp').classList.toggle('collapsed', !open);
-    });
-    // Filtry w małym panelu rozwijanym w dół; Escape najpierw zamyka panel, potem zaznaczenie.
+    // Filtry w małym panelu rozwijanym w dół; Escape najpierw zamyka panel, potem czyści zaznaczenie i podświetlenie etapu.
     const panel = $('filtersPanel'), btn = $('filtersBtn');
     const toggleFilters = open => { panel.hidden = !open; btn.setAttribute('aria-expanded', String(open)); };
     btn.addEventListener('click', () => toggleFilters(panel.hidden));
@@ -321,7 +395,9 @@
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape' || window.CX.cjViz.playing()) return;
       if (!moreList.hidden) { toggleMore(false); moreBtn.focus(); return; }
-      if (!panel.hidden) { toggleFilters(false); btn.focus(); } else if (sel) select(sel);
+      if (!panel.hidden) { toggleFilters(false); btn.focus(); return; }
+      if (sel) select(sel);
+      if (hlStage) { hlStage = null; markStage(); }
     });
     // Przesuwanie wykresu: przeciąganie myszą, przyciski ‹ › (strzałki i dotyk działają natywnie; przewijanie boczne bywa niewidoczne).
     const scroll = $('scroll');

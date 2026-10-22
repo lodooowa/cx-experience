@@ -32,18 +32,16 @@
       <button type="button" class="primary" id="filtersBtn" aria-expanded="false" aria-controls="filtersPanel">Filtry <b id="filtersCount" hidden></b></button>
       <label class="select-wrap matrix-select cj-select"><span>WIDOK</span><select id="viewSelect" aria-label="Sposób prezentacji emocji"><optgroup label="Przegląd"><option value="chart">Wykres</option></optgroup><optgroup label="Prezentacja"><option value="orbit">Orbita</option><option value="landscape">Krajobraz</option></optgroup></select></label>
       <label class="select-wrap matrix-select cj-select"><span>DANE</span><select id="dataSelect" aria-label="Rodzaj danych"><option value="prod">Real</option><option value="demo">Demo</option></select></label>
-      <button type="button" class="ghost" id="avgBtn" aria-pressed="false" title="Pokaż nad etapami średnią emocji klienta">Średnie po etapach</button>
       <button type="button" class="ghost" id="fcBtn" aria-pressed="false" hidden>Pokaż prognozę</button>
-      <button type="button" class="ghost" id="printBtn">Drukuj / zapisz PDF</button>
       <span class="cj-help"><button type="button" class="ghost" id="helpBtn" aria-label="Jak czytać wykres" aria-describedby="helpText">?</button><span class="cj-help-text" id="helpText" role="tooltip"></span></span>
       <div class="cj-zoom" role="group" aria-label="Powiększenie wykresu"><button type="button" class="ghost" id="zoomOut" aria-label="Oddal">−</button><span id="zoomLevel" aria-live="polite">100%</span><button type="button" class="ghost" id="zoomIn" aria-label="Przybliż">+</button><button type="button" class="ghost" id="zoomFit">Cały przebieg</button><button type="button" class="ghost" id="zoomReset">100%</button></div>
       <div class="cj-pan" role="group" aria-label="Przesuwanie wykresu"><button type="button" class="ghost" id="panLeft" aria-label="Przesuń wykres w lewo">‹</button><button type="button" class="ghost" id="panRight" aria-label="Przesuń wykres w prawo">›</button></div>
     </section>
 
     <div class="cj-filters" id="filtersPanel" role="region" aria-label="Filtry" hidden>
+      <button type="button" class="filters-close" id="filtersClose" aria-label="Zamknij filtry" title="Zamknij (Esc)">×</button>
       <div class="cj-filter-group"><h2>Krzywe emocji</h2><div class="chips" id="horizons" role="group" aria-label="Krzywe emocji"></div></div>
-      <div class="cj-filter-group"><h2>Pain pointy <small>(bez wyboru pokazane są wszystkie)</small></h2><div class="chips" id="pains" role="group" aria-label="Pain pointy"></div></div>
-      <div class="cj-filter-actions"><button type="button" class="ghost" id="filtersClear">Wyczyść filtr pain pointów</button><button type="button" class="ghost" id="filtersClose">Zamknij</button></div>
+      <div class="cj-filter-group"><h2>Pain pointy <small>(bez wyboru pokazane są wszystkie)</small><button type="button" class="filters-clear" id="filtersClear" hidden>Wyczyść</button></h2><div class="chips" id="pains" role="group" aria-label="Pain pointy"></div></div>
     </div>
 
 
@@ -62,36 +60,39 @@
     </section>
 
     <section class="cj-panel" id="chartPanel" aria-label="Wykres emocji i punkty styku">
+      <div class="cj-sticky" id="stickyHead" aria-hidden="true"><div class="cj-sticky-in">
+        <div class="cj-sticky-g"><div class="cj-glabel cj-g-stage">Etap</div><div class="cj-glabel cj-g-step">Krok</div><div class="cj-glabel cj-g-tp">Punkt styku</div></div>
+        <div class="cj-sticky-win"><div class="cj-sticky-track" id="stickyTrack"></div></div>
+      </div></div>
       <div class="cj-chart-row">
         <div class="cj-gutter" aria-hidden="true">
-          <div class="cj-glabel cj-g-avg">Średnia emocji</div>
           <div class="cj-glabel cj-g-stage">Etap</div>
           <svg class="cj-axis" id="axis"></svg>
+          <div class="cj-gavg cj-glabel" title="Średnia emocji klienta w etapie">Średnia emocji</div>
           <div class="cj-glabel cj-g-step">Krok</div>
           <div class="cj-glabel cj-g-tp">Punkt styku</div>
-          <div class="cj-gpp collapsed" id="gutterPp"><button type="button" class="cj-glabel cj-g-pp" id="ppToggle" aria-expanded="false" aria-controls="ppRow" title="Pokaż lub ukryj pain pointy">Pain point <i aria-hidden="true">▸</i></button></div>
+          <div class="cj-gpp cj-glabel">Pain point</div>
         </div>
         <div class="cj-scroll" id="scroll" tabindex="0" role="group" aria-label="Wykres emocji i lista punktów styku. Przewijaj poziomo strzałkami.">
           <div class="cj-inner" id="inner">
-            <div class="cj-row cj-avg-row" id="avgRow"></div>
             <div class="cj-row cj-stage-row" id="stageRow"></div>
             <svg id="chart" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="chartTitle"><title id="chartTitle"></title></svg>
+            <div class="cj-row cj-avg-row" id="avgRow"></div>
             <div class="cj-row cj-step-row" id="stepRow"></div>
             <div class="cj-row cj-tp-row" id="steps"></div>
-            <div class="cj-row cj-pp-row collapsed" id="ppRow"></div>
+            <div class="cj-row cj-pp-row" id="ppRow"></div>
           </div>
         </div>
       </div>
-      <div class="cj-pp-legend" id="ppLegend" role="group" aria-label="Pain pointy (filtr punktów)"></div>
     </section>
 
     <div class="cj-detail" id="detail" role="region" aria-label="Szczegóły" hidden></div>
 
-    <section class="cj-panel cj-tree-panel" aria-label="Pain pointy i przyczyny źródłowe">
-      <h2>Pain pointy → przyczyny źródłowe → inicjatywy</h2>
+    <details class="cj-panel cj-tree-panel" id="treePanel" aria-label="Pain pointy i przyczyny źródłowe">
+      <summary><h2>Pain pointy → przyczyny źródłowe → inicjatywy</h2></summary>
       <p class="cj-note">Kliknij element drzewa, aby podświetlić powiązane punkty styku. Kliknięcie punktu podświetla jego pain point i przyczynę.</p>
       <div class="cj-tree-scroll"><svg id="tree" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Drzewo pain pointów"></svg></div>
-    </section>
+    </details>
     <div class="cj-dq"><span id="sumWarn"></span><section class="cj-warnings" id="warnings" aria-label="Uwagi do danych" hidden></section></div>
   </main>
 </div>

@@ -3,7 +3,7 @@
 
   // Widok „Krajobraz”: emocja klienta jako profil terenu (dolina = niska emocja). Teren to emocje obecne, „woda” to krzywa wybranego horyzontu
   // (widać ją tylko tam, gdzie wychodzi ponad teren, czyli gdzie prognoza jest wyższa niż obecnie). Brak wartości w danych to przerwa.
-  const COL = 70, H = 460, PLOT_T = 70, PLOT_B = 390, LANE = 430, STRIP = 28;
+  const COL = 70, H = 424, PLOT_T = 70, PLOT_B = 390, STRIP = 28;
   const y = v => PLOT_T + (5 - v) / 10 * (PLOT_B - PLOT_T);
   const num = n => n.toFixed(1);
   const kind = v => v < 0 ? 'neg' : v === 0 ? 'zero' : 'pos';
@@ -40,10 +40,8 @@
     const els = pts.map((t, i) => {
       const g = el('g', { class: 'l-node ' + ppClass(t.painPoint), tabindex: 0, role: 'button', 'data-i': i, 'aria-label': title(t) });
       const hit = el('rect', { class: 'l-hit', x: i * COL, y: 0, width: COL, height: H });
-      const flag = el('line', { class: 'l-flag', x1: x(i), x2: x(i), y2: LANE - 11 }), pulse = el('circle', { class: 'l-pulse', cx: x(i), r: 11 }), dot = el('circle', { class: 'l-dot', cx: x(i), r: 5 });
-      const pill = el('g', { class: 'l-pill' });
-      if (t.painPoint) pill.append(el('rect', { x: x(i) - 21, y: LANE - 10, width: 42, height: 20, rx: 10 }), el('text', { x: x(i), y: LANE + 4, 'text-anchor': 'middle' }, t.painPoint));
-      g.append(hit, flag, pulse, dot, pill); nodes.append(g);
+      const flag = el('line', { class: 'l-flag', x1: x(i), x2: x(i), y2: PLOT_B }), pulse = el('circle', { class: 'l-pulse', cx: x(i), r: 11 }), dot = el('circle', { class: 'l-dot', cx: x(i), r: 5 });
+      g.append(hit, flag, pulse, dot); nodes.append(g);
       return { g, flag, pulse, dot };
     });
 
@@ -126,7 +124,7 @@
     const wrap = document.createElement('div');
     wrap.className = 'land-wrap'; wrap.append(axis, scroller);
     box.append(wrap);
-    return { draw, update, activate: () => { setZoom(zoom); }, setCursor: moveCursor, legend: 'Teren to emocje obecne: dolina oznacza niską emocję, szczyt wysoką. Błękitna „woda” pokazuje wybrany horyzont tam, gdzie prognoza jest wyższa niż obecnie. Pulsujące punkty to pain pointy z ujemną emocją, pod terenem widać kod pain pointu.' };
+    return { draw, update, activate: () => { setZoom(zoom); }, setCursor: moveCursor, legend: 'Teren to emocje obecne: dolina oznacza niską emocję, szczyt wysoką. Błękitna „woda” pokazuje wybrany horyzont tam, gdzie prognoza jest wyższa niż obecnie. Pulsujące punkty to pain pointy z ujemną emocją.' };
   }
 
   window.CX = window.CX || {};

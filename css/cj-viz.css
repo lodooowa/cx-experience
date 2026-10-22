@@ -6,6 +6,8 @@
 .cj-viz[hidden], .viz-view[hidden], #chartPanel[hidden] { display: none; }
 
 .cj-viz { margin-top: 12px; }
+/* Drawer przykrywa prawą stronę; widoki Orbita i Krajobraz zwężają się o jego szerokość, więc cały diagram zostaje widoczny. */
+.drawer-open .cj-viz { padding-right: calc(520px + 16px); }
 .viz-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
 .viz-hz { min-width: 150px; margin-right: auto; }
 .viz-play, .viz-play[aria-pressed="false"] { text-decoration: none; opacity: 1; }
@@ -77,7 +79,6 @@
 .l-pulse { display: none; fill: var(--pp); transform-box: fill-box; transform-origin: center; }
 .l-node[data-pulse="1"] .l-flag { display: block; }
 .l-node[data-pulse="1"] .l-pulse { display: block; animation: o-pulse 2.4s ease-out infinite; }
-.l-pill rect { fill: var(--pp); } .l-pill text { fill: #fff; font: 800 10px var(--font-ui); }
 .l-node[data-empty] .l-dot, .l-node[data-empty] .l-flag, .l-node[data-empty] .l-pulse { display: none; }
 .l-node.off { opacity: .2; }
 .l-node:hover .l-dot, .l-node:focus-visible .l-dot, .l-node.sel .l-dot, .l-node.cur .l-dot { stroke: #fff; stroke-width: 3.2; }

@@ -17,7 +17,7 @@ const PAGES = {
   priorytety: { file: 'pages/priorytety.html', item: '.act-open', main: '#board' },
   radar: { file: 'pages/radar.html', item: '#radar .node', main: '#stage' },
   mapa: { file: 'pages/mapa.html', item: '.flow-node', mobileItem: '.flow-item', main: '#flowViewport' },
-  cj: { file: 'pages/cj.html', item: '.cj-tp', main: '#scroll' }
+  cj: { file: 'pages/cj.html', item: '#steps .cj-tp', main: '#scroll' }
 };
 const PROFILES = {
   desktop: { viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' },
@@ -109,17 +109,23 @@ async function runPage(browser, key, profileKey) {
 
   if (key === 'cj') {
     check(scope, 'krzywa emocji na wykresie', await page.locator('#chart .cj-series.hz-now .cj-line').count() === 1);
-    check(scope, 'pigułki średnich etapów domyślnie ukryte', await page.locator('.cj-avg').first().isHidden() || (await page.locator('.cj-avg-row').first().boundingBox() || { height: 0 }).height === 0);
-    await page.locator('#avgBtn').click();
-    check(scope, 'po włączeniu są pigułki średnich etapów', await page.locator('.cj-avg').count() > 0 && await page.locator('.cj-avg').first().isVisible());
-    await page.locator('.cj-avg').first().click();
-    check(scope, 'klik pigułki podświetla etap', await page.locator('#chartPanel.hl-on .cj-stage-row .cj-cell.hl').count() === 1);
-    await page.locator('.cj-avg').first().click();
+    check(scope, 'wiersz średnich etapów jest w tabeli', await page.locator('#avgRow .cj-avg').count() > 0);
+    await page.locator('#zoomFit').click();
+    await page.waitForTimeout(500);
+    check(scope, 'po oddaleniu wiersze średniej i pain pointów są zwinięte do kropek', (await page.locator('#avgRow').boundingBox() || { height: 99 }).height <= 22 && (await page.locator('#ppRow').boundingBox() || { height: 99 }).height <= 22);
+    await page.locator('#zoomReset').click();
+    await page.waitForTimeout(500);
+    await page.locator('.cj-avg').first().click({ force: true });
+    check(scope, 'klik pigułki podświetla etap', await page.locator('#chartPanel.hl-on #stageRow .cj-cell.hl').count() === 1);
+    await page.locator('.cj-avg').first().click({ force: true });
     check(scope, 'ponowny klik zdejmuje podświetlenie', await page.locator('#chartPanel.hl-on').count() === 0);
-    check(scope, 'legenda pain pointów pod wykresem', await page.locator('#ppLegend .pp').count() > 0);
+    await page.locator('#stageRow .cj-cell').first().click();
+    check(scope, 'klik nazwy etapu podświetla etap', await page.locator('#chartPanel.hl-on #stageRow .cj-cell.hl').count() === 1);
+    await page.keyboard.press('Escape');
+    check(scope, 'Escape zdejmuje podświetlenie etapu', await page.locator('#chartPanel.hl-on').count() === 0);
     check(scope, 'widok i dane to listy rozwijane', await page.locator('select#viewSelect, select#dataSelect').count() === 2);
     check(scope, 'drzewo pain pointów ma węzły', await page.locator('.cj-node').count() > 0);
-    const pts = page.locator('.cj-tp'), n = await pts.count();
+    const pts = page.locator('#steps .cj-tp'), n = await pts.count();
     check(scope, 'są punkty styku', n > 0, n + ' szt.');
     for (const i of [...new Set([0, Math.floor((n - 1) / 2), n - 1])]) {
       await pts.nth(i).focus(); await page.keyboard.press('Enter');
@@ -130,10 +136,10 @@ async function runPage(browser, key, profileKey) {
     }
     const node = page.locator('.cj-node').first();
     await node.focus(); await page.keyboard.press('Enter');
-    check(scope, 'wybór węzła drzewa podświetla punkty', await page.locator('.cj-tp.on').count() > 0);
+    check(scope, 'wybór węzła drzewa podświetla punkty', await page.locator('#steps .cj-tp.on').count() > 0);
     await page.screenshot({ path: path.join(OUT, `${key}-${profileKey}-tree.png`), fullPage: true });
     await page.keyboard.press('Escape');
-    check(scope, 'Escape czyści zaznaczenie drzewa', await page.locator('.cj-tp.on').count() === 0);
+    check(scope, 'Escape czyści zaznaczenie drzewa', await page.locator('#steps .cj-tp.on').count() === 0);
     return finish();
   }
 
