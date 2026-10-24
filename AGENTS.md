@@ -114,6 +114,18 @@ To **przykładowe tokeny**, nie obowiązkowe kolory firmowe. Korzystaj z semanty
 
 Przy zmianach wyglądu sprawdzaj też desktop i węższy ekran. Przy zmianach UX sprawdź obsługę klawiaturą, focus, zamykanie drawera przez Escape, stany pustych pól oraz `prefers-reduced-motion`.
 
+### Zmiany w UI: tryb pracy (obowiązkowy)
+
+Dotyczy każdego zlecenia zmiany wyglądu lub zachowania interfejsu. Jeśli opis zmiany jest pusty lub zawiera niewypełniony placeholder, dopytaj zamiast zgadywać.
+
+1. **Checklista akceptacji przed kodem:** 4–8 konkretnych, obserwowalnych zachowań (np. „Ctrl+kółko zmienia zoom widoku Krajobraz”, „lista pokazuje wszystkie opcje z etykietami”).
+2. **Zrzuty „przed”** zmienianej strony, potem implementacja.
+3. **Weryfikacja w przeglądarce:** otwórz stronę przez `file://` i wykonaj prawdziwymi interakcjami każdy punkt checklisty, potem zrzuty „po” (desktop i wąski ekran).
+4. **Poprawki:** punkt, który nie przechodzi lub źle wygląda, popraw i zweryfikuj ponownie, najwyżej 5 iteracji. Po 5. zgłoś otwarte punkty zamiast kręcić się dalej.
+5. **Testy:** `node --check` na zmienionych `.js` oraz regresja z „Minimalnej regresji” poniżej.
+6. **Commit i push na `main`** dopiero, gdy wszystkie punkty checklisty i testy przechodzą. Zlecenie zmiany UI jest poleceniem commitu i pushu po zielonej weryfikacji.
+7. **Raport:** tabela „punkt checklisty | pass/fail | ścieżka zrzutu”.
+
 ### Minimalna regresja przed zakończeniem pracy
 
 - Otwórz `index.html` **bez serwera**, bez połączenia z internetem. Dane ładują się automatycznie.
