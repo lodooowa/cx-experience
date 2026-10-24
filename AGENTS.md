@@ -123,8 +123,8 @@ Dotyczy każdego zlecenia zmiany wyglądu lub zachowania interfejsu. Jeśli opis
 3. **Weryfikacja w przeglądarce:** otwórz stronę przez `file://` i wykonaj prawdziwymi interakcjami każdy punkt checklisty, potem zrzuty „po” (desktop i wąski ekran).
 4. **Poprawki:** punkt, który nie przechodzi lub źle wygląda, popraw i zweryfikuj ponownie, najwyżej 5 iteracji. Po 5. zgłoś otwarte punkty zamiast kręcić się dalej.
 5. **Testy:** `node --check` na zmienionych `.js` oraz regresja z „Minimalnej regresji” poniżej.
-6. **Commit i push na `main`** dopiero, gdy wszystkie punkty checklisty i testy przechodzą. Zlecenie zmiany UI jest poleceniem commitu i pushu po zielonej weryfikacji.
-7. **Raport:** tabela „punkt checklisty | pass/fail | ścieżka zrzutu”.
+6. **Raport i ocena użytkownika:** gdy wszystkie punkty checklisty i testy przechodzą, pokaż tabelę „punkt checklisty | pass/fail | ścieżka zrzutu” i czekaj na ocenę.
+7. **Commit i push na `main`** dopiero po akceptacji użytkownika.
 
 ### Minimalna regresja przed zakończeniem pracy
 
